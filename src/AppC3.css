@@ -1,23 +1,28 @@
-* {
-    box-sizing: border-box;
-  }
-  body {
-    background: #eee;
-  }
-  p {
-    text-align: center;
-  }
-  button {
-    margin-left: 1em;
-    background: #159fff;
-    border: none;
-    padding: 0.5em 2em;
-    color: white;
-    text-transform: uppercase;
-  }
+.zoom {
+	cursor: move;
+	fill: none;
+	pointer-events: all;
+}
+
+body {
+	font: 10px sans-serif;
+}
   
-  #chart {
-    background: #fff;
-    width: 90%;
-    margin: 1em auto;
-  }
+.axis path,
+.axis line {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+  
+.line {
+	fill: none;
+	stroke: steelblue;
+	stroke-width: 2px;
+}
+  
+#chart {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+}
