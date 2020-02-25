@@ -26,3 +26,23 @@ body {
 	height: 100%;
 	position: absolute;
 }
+
+
+.negro{
+	background-color: black;
+}
+
+.overlay {
+	fill: none;
+	pointer-events: all;
+}
+.lineHoverText {
+	text-shadow:
+	-2px -2px 0 #fff,
+	2px -2px 0 #fff,
+	-2px 2px 0 #fff,
+	2px 2px 0 #fff;
+}
+.hoverCircle {
+	opacity: .75;
+}
