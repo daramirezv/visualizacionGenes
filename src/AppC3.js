@@ -1,187 +1,209 @@
 import React, { Component } from "react";
-import './AppC3.css';
 import * as d3 from "d3";
-import archivo from './projections.csv';
+import './AppC3.css';
+import cancer from './cars.csv';
+import gen from './cancer.txt';
 const uuidv4 = require('uuid/v4');
-
 
 class AppC3 extends Component {
 
     constructor(props) {
         super(props);
+        this.state = { mesActual: "", objetosSitios: [] };
+        // this.onMouseOver = this.onMouseOver.bind(this);
     }
 
     componentDidMount() {
 
-        // Define margins
-        var margin = { top: 20, right: 80, bottom: 30, left: 50 },
-            width =
-                parseInt(d3.select("#chart").style("width")) - margin.left - margin.right,
-            height =
-                parseInt(d3.select("#chart").style("height")) - margin.top - margin.bottom;
+        var resultadofinal = [];
 
-        // Define date parser
-        var parseDate = d3.timeParse("%Y-%m-%d %H:%M:%S");
+        d3.text(gen).then(data => {
+            let arreglosIniciales = data.split(">");
+            let respuesta = [];
+            let nombres = [];
 
-        // Define scales
-        var xScale = d3.scaleTime().range([0, width]);
-        var yScale = d3.scaleLinear().range([height, 0]);
-        var color = d3.scaleOrdinal().range(d3.schemeCategory10);
+            for (let index = 0; index < arreglosIniciales.length; index++) {
+                if (index === 0) {
+                    continue;
+                }
+                let myString = arreglosIniciales[index];
+                nombres.push(myString.substring(0, myString.indexOf('\n')))
+                myString = myString.substring(myString.indexOf('\n') + 1);
+                respuesta.push(myString);
+            }
 
-        // Define axes
-        var xAxis = d3.axisBottom().scale(xScale);
-        var yAxis = d3.axisLeft().scale(yScale);
 
-        // Define lines
-        var line = d3
-            .line()
-            .curve(d3.curveMonotoneX)
-            .x(function (d) {
-                return xScale(d["date"]);
-            })
-            .y(function (d) {
-                return yScale(d["concentration"]);
-            });
+            for (let index = 0; index < respuesta[respuesta.length - 1].length; index++) {
+                let componentes = [];
 
-        // Define svg canvas
-        var svg = d3
-            .select("#chart")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                for (let indexInterno = 0; indexInterno < respuesta.length; indexInterno++) {
+                    componentes.push(respuesta[indexInterno].charAt(index));
+                }
 
-        // Read in data
-        d3.csv(archivo).then(data => {
+                if (componentes.some(v => v !== "-" && v !== "A" && v !== "T" && v !== "C" && v !== "G")) {
+                    continue;
+                }
 
-            // Set the color domain equal to the three product categories
-            var productCategories = d3.keys(data[0]).filter(function (key) {
-                return key !== "Order Month" && key !== "metric";
-            });
-            color.domain(productCategories);
+                let objetoTemp = "{ \"posicion\":" + (index + 1) + "";
 
-            // console.log(JSON.stringify(data, null, 2)) // to view the structure
+                for (let pos = 0; pos < componentes.length; pos++) {
 
-            // Format the data field
-            data.forEach(function (d) {
-                d["Order Month"] = parseDate(d["Order Month"]);
-            });
+                    objetoTemp += ", \"" + nombres[pos] + "\":\"" + respuesta[pos][index] + "\"";
+                }
 
-            // Filter the data to only include a single metric
-            var subset = data.filter(function (el) {
-                return el.metric === "Quantity";
-            });
-            // console.log(JSON.stringify(subset, null, 2))
+                objetoTemp += "}";
+                let res = JSON.parse(objetoTemp)
+                resultadofinal.push(res);
+            }
 
-            // Reformat data to make it more copasetic for d3
-            // data = An array of objects
-            // concentrations = An array of three objects, each of which contains an array of objects
-            var concentrations = productCategories.map(function (category) {
+            console.log(resultadofinal);
+            var svg = d3.select("svg"),
+                margin = { top: 20, right: 20, bottom: 110, left: 40 },
+                margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
+                width = +svg.attr("width") - margin.left - margin.right,
+                height = +svg.attr("height") - margin.top - margin.bottom,
+                height2 = +svg.attr("height") - margin2.top - margin2.bottom;
+
+            var x = d3.scaleLinear().range([0, width]),
+                x2 = d3.scaleLinear().range([0, width]),
+                y = d3.scaleBand().range([height, 0]),
+                y2 = d3.scaleBand().range([height2, 0]),
+                color = d3.scaleOrdinal().range(d3.schemeCategory10);
+
+            var xAxis = d3.axisBottom(x),
+                xAxis2 = d3.axisBottom(x2),
+                yAxis = d3.axisLeft(y);
+
+            var brush = d3.brushX()
+                .extent([[0, 0], [width, height2]])
+                .on("brush end", brushed);
+
+            var zoom = d3.zoom()
+                .scaleExtent([1, Infinity])
+                .translateExtent([[0, 0], [width, height]])
+                .extent([[0, 0], [width, height]])
+                .on("zoom", zoomed);
+
+            var line = d3.line()
+                .curve(d3.curveLinear)
+                .x(function (d) { return x(d["posicion"]); })
+                .y(function (d) { return y(d["nucleotido"]); });
+
+            var line2 = d3.line()
+                .curve(d3.curveLinear)
+                .x(function (d) { return x2(d["posicion"]); })
+                .y(function (d) { return y2(d["nucleotido"]); });
+
+            var clip = svg.append("defs").append("svg:clipPath")
+                .attr("id", "clip")
+                .append("svg:rect")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("x", 0)
+                .attr("y", 0);
+
+            var Line_chart = svg.append("g")
+                .attr("class", "focus")
+                .attr("transform", "translate(" + margin.left + "," + (2.81*margin.top) + ")")
+                .attr("clip-path", "url(#clip)");
+
+            var focus = svg.append("g")
+                .attr("class", "focus")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var context = svg.append("g")
+                .attr("class", "context")
+                .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+            var concentrations = nombres.map(function (category2) {
                 return {
-                    category: category,
-                    datapoints: subset.map(function (d) {
-                        return { date: d["Order Month"], concentration: +d[category] };
+                    category: category2,
+                    datapoints: resultadofinal.map(function (d) {
+                        return { posicion: d.posicion, nucleotido: d[category2] };
                     })
                 };
             });
-            // console.log(JSON.stringify(concentrations, null, 2)) // to view the structure
 
-            // Set the domain of the axes
-            xScale.domain(
-                d3.extent(subset, function (d) {
-                    return d["Order Month"];
-                })
-            );
+            x.domain(d3.extent(resultadofinal, function (d) { return d.posicion; }));
+            y.domain(["-", "G", "T", "C", "A"]);
+            x2.domain(x.domain());
+            y2.domain(y.domain());
+            color.domain(nombres);
 
-            yScale.domain([0.25, 0.5]);
-
-            // Place the axes on the chart
-            svg
-                .append("g")
-                .attr("class", "x axis")
+            focus.append("g")
+                .attr("class", "axis axis--x")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
 
-            svg
-                .append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .append("text")
-                .attr("class", "label")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .attr("dx", ".71em")
-                .style("text-anchor", "beginning")
-                .text("Product Concentration");
+            focus.append("g")
+                .attr("class", "axis axis--y")
+                .call(yAxis);
 
-            var products = svg
-                .selectAll(".category")
+            var Line_chartGroup = Line_chart.selectAll("g")
                 .data(concentrations)
                 .enter()
-                .append("g")
-                .attr("class", "category");
+                .append("g");
 
-            products
-                .append("path")
+            Line_chartGroup.append("path")
                 .attr("class", "line")
-                .attr("d", function (d) {
-                    return line(d.datapoints);
-                })
-                .style("stroke", function (d) {
-                    return color(d.category);
-                });
+                .attr("d", function (d) { return line(d.datapoints); })
+                .style("stroke", function (d) { return color(d.category); })
 
-            // console.log(JSON.stringify(d3.values(concentrations), null, 2)) // to view the structure
-            console.log(d3.values(concentrations)); // to view the structure
-            console.log(concentrations);
-            // console.log(concentrations.map(function()))
-        });
+            var ContextGroup = context.selectAll("g")
+                .data(concentrations)
+                .enter()
+                .append("g");
 
-        // Define responsive behavior
-        function resize() {
-            var width =
-                parseInt(d3.select("#chart").style("width")) - margin.left - margin.right,
-                height =
-                    parseInt(d3.select("#chart").style("height")) -
-                    margin.top -
-                    margin.bottom;
+            ContextGroup.append("path")
+                .attr("class", "line")
+                .attr("d", function (d) { return line2(d.datapoints); })
+                .style("stroke", function (d) { return color(d.category); })
 
-            // Update the range of the scale with new width/height
-            xScale.range([0, width]);
-            yScale.range([height, 0]);
+            context.append("g")
+                .attr("class", "axis axis--x")
+                .attr("transform", "translate(0," + height2 + ")")
+                .call(xAxis2);
 
-            // Update the axis and text with the new scale
-            svg
-                .select(".x.axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
+            context.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.move, x.range());
 
-            svg.select(".y.axis").call(yAxis);
+            svg.append("rect")
+                .attr("class", "zoom")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                .call(zoom);
 
-            // Force D3 to recalculate and update the line
-            svg.selectAll(".line").attr("d", function (d) {
-                return line(d.datapoints);
-            });
+            function brushed() {
+                if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+                var s = d3.event.selection || x2.range();
+                x.domain(s.map(x2.invert, x2));
+                Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
+                focus.select(".axis--x").call(xAxis);
+                svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
+                    .scale(width / (s[1] - s[0]))
+                    .translate(-s[0], 0));
+            }
 
-            // Update the tick marks
-            xAxis.ticks(Math.max(width / 75, 2));
-            yAxis.ticks(Math.max(height / 50, 2));
-        }
-
-        // Call the resize function whenever a resize event occurs
-        d3.select(window).on("resize", resize);
-
-        // Call the resize function
-        resize();
-
-
+            function zoomed() {
+                if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+                var t = d3.event.transform;
+                x.domain(t.rescaleX(x2).domain());
+                Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
+                focus.select(".axis--x").call(xAxis);
+                context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+            }
+        })
     }
 
     render() {
         return (
             <div className="App">
-                <svg id="chart" width="960" height="500"></svg>
-            </div>)
+                <svg width="960" height="500"></svg>
+            </div>
+        );
     }
 }
 

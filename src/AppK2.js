@@ -12,8 +12,6 @@ class AppK2 extends Component {
         // this.onMouseOver = this.onMouseOver.bind(this);
     }
 
-
-
     componentDidMount() {
 
         var svg = d3.select("svg"),

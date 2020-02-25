@@ -70,11 +70,12 @@ class App extends Component {
             let valPromedio = 0;
 
             //El metodo que va a creando cada objeto de llave valor con la posicion y la entropia
-            for (let index = 0; index < respuesta[2].length; index++) {
+            for (let index = 0; index < respuesta[respuesta.length-1].length; index++) {
                 let correccionSalto = 0;
                 let componentes = []
 
                 for (let indexInterno = 0; indexInterno < respuesta.length; indexInterno++) {
+                    //console.log(componentes);
                     componentes.push(respuesta[indexInterno].charAt(index));
                 }
 
@@ -94,7 +95,9 @@ class App extends Component {
                 else {
                     posPromedio++;
                 }
+
             }
+            //console.log(resultadofinal);
 
             //D3 PRIMER GRAFICO
 
