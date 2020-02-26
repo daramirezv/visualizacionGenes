@@ -47,3 +47,9 @@
   fill: none;
   pointer-events: all;
 }
+
+.centrar{
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, 0);
+}

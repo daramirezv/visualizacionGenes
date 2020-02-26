@@ -129,8 +129,8 @@ class AppFirstGraph extends Component {
 
     render() {
         return (
-            <div className="App">
-                <svg width="960" height="500"></svg>
+            <div className="App centrar">
+                <svg width="1200" height="500"></svg>
             </div>
         );
     }

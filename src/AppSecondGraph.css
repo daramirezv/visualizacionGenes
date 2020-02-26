@@ -46,3 +46,13 @@ body {
 .hoverCircle {
 	opacity: .75;
 }
+
+.segundaGrafica{
+	display: block
+}
+
+.centrar{
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, 0);
+}

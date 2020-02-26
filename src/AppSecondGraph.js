@@ -16,12 +16,17 @@ class AppSecondGraph extends Component {
         var nombresGenes = this.props.nombresGenes;
         var datosSegundaGrafica = this.props.datosSegundaGrafica;
 
-        var svg = d3.select("svg"),
-            margin = { top: 20, right: 20, bottom: 110, left: 40 },
+        var svg = d3.select("svg");
+        // var ancho = window.innerWidth;
+        // svg.attr("width", ancho*0.8);
+
+        var margin = { top: 20, right: 20, bottom: 110, left: 40 },
             margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             height2 = +svg.attr("height") - margin2.top - margin2.bottom;
+
+        
 
         var x = d3.scaleLinear().range([0, width]),
             x2 = d3.scaleLinear().range([0, width]),
@@ -154,22 +159,44 @@ class AppSecondGraph extends Component {
             focus.select(".axis--x").call(xAxis);
             context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
         }
+
+        var svgLegend = d3.select("#legend");
+
+        svgLegend.attr("height", nombresGenes.length*30 + margin.top);
+
+        svgLegend.selectAll("mydots")
+            .data(nombresGenes)
+            .enter()
+            .append("circle")
+            .attr("cx", margin.left)
+            .attr("cy", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("r", 7)
+            .style("fill", function (d) { return color(d) })
+
+        svgLegend.selectAll("mylabels")
+            .data(nombresGenes)
+            .enter()
+            .append("text")
+            .attr("x", margin.left + 20)
+            .attr("y", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .text(function (d) { return d })
+            .attr("text-anchor", "left")
+            .style("alignment-baseline", "middle")
+            .style("font-size", "15px")
     }
 
     componentDidUpdate() {
 
         let nombresGenes = []
 
-        if(this.state.filtro === "Todos")
-        {
+        if (this.state.filtro === "Todos") {
             nombresGenes = this.props.nombresGenes
         }
-        else
-        {
+        else {
             nombresGenes = [];
             nombresGenes.push(this.state.filtro);
         }
-        
+
         var datosSegundaGrafica = this.props.datosSegundaGrafica;
 
         d3.selectAll("svg > *").remove();
@@ -312,6 +339,30 @@ class AppSecondGraph extends Component {
             focus.select(".axis--x").call(xAxis);
             context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
         }
+
+        var svgLegend = d3.select("#legend");
+
+        svgLegend.attr("height", nombresGenes.length*30 + margin.top);
+
+        svgLegend.selectAll("mydots")
+            .data(nombresGenes)
+            .enter()
+            .append("circle")
+            .attr("cx", margin.left)
+            .attr("cy", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("r", 7)
+            .style("fill", function (d) { return color(d) })
+
+        svgLegend.selectAll("mylabels")
+            .data(nombresGenes)
+            .enter()
+            .append("text")
+            .attr("x", margin.left + 20)
+            .attr("y", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .text(function (d) { return d })
+            .attr("text-anchor", "left")
+            .style("alignment-baseline", "middle")
+            .style("font-size", "15px")
     }
 
     filtroSegundaGrafica(event) {
@@ -330,12 +381,21 @@ class AppSecondGraph extends Component {
 
     render() {
         return (
-            <div className="App">
-                <svg width="960" height="500"></svg>
-                <select className="custom-select" onChange={this.filtroSegundaGrafica}>
-                    <option defaultValue>Todos</option>
-                    {this.selecciones()}
-                </select>
+            <div className="App centrar">
+                <svg className="segundaGrafica" width="1200" height="500"></svg>
+                <svg className="segundaGrafica" width="1200" id="legend"></svg>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md">
+                            <form>
+                                <select width="500" className="form-control" onChange={this.filtroSegundaGrafica}>
+                                    <option defaultValue>Todos</option>
+                                    {this.selecciones()}
+                                </select>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
