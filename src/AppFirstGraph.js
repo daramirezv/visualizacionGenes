@@ -82,7 +82,17 @@ class AppFirstGraph extends Component {
 
         focus.append("g")
             .attr("class", "axis axis--y")
-            .call(yAxis);
+            .call(yAxis)
+            .call(g => g.selectAll(".tick line").clone()
+                .attr("x2", width)
+                .attr("stroke-opacity", 0.1))
+            .call(g => g.select(".tick:last-of-type text").clone()
+                .attr("class", "title")
+                .attr("x", 5)
+                .attr("y", -margin.top)
+                .attr("text-anchor", "start")
+                .attr("font-weight", "bold")
+                .text("Entropy"));
 
         context.append("path")
             .datum(resultadofinal)

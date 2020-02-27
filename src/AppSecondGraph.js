@@ -6,7 +6,7 @@ class AppSecondGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { filtro: "Todos" };
+        this.state = { filtro: "All Genes" };
         this.filtroSegundaGrafica = this.filtroSegundaGrafica.bind(this);
         this.selecciones = this.selecciones.bind(this);
     }
@@ -101,7 +101,17 @@ class AppSecondGraph extends Component {
 
         focus.append("g")
             .attr("class", "axis axis--y")
-            .call(yAxis);
+            .call(yAxis)
+            .call(g => g.selectAll(".tick line").clone()
+                .attr("x2", width)
+                .attr("stroke-opacity", 0.1))
+            .call(g => g.select(".tick:last-of-type text").clone()
+                .attr("class", "title")
+                .attr("x", 5)
+                .attr("y", -margin.top)
+                .attr("text-anchor", "start")
+                .attr("font-weight", "bold")
+                .text("Nucleotide"));
 
         var Line_chartGroup = Line_chart.selectAll("g")
             .data(concentrations)
@@ -189,7 +199,7 @@ class AppSecondGraph extends Component {
 
         let nombresGenes = []
 
-        if (this.state.filtro === "Todos") {
+        if (this.state.filtro === "All Genes") {
             nombresGenes = this.props.nombresGenes
         }
         else {
@@ -281,7 +291,17 @@ class AppSecondGraph extends Component {
 
         focus.append("g")
             .attr("class", "axis axis--y")
-            .call(yAxis);
+            .call(yAxis)
+            .call(g => g.selectAll(".tick line").clone()
+                .attr("x2", width)
+                .attr("stroke-opacity", 0.1))
+            .call(g => g.select(".tick:last-of-type text").clone()
+                .attr("class", "title")
+                .attr("x", 5)
+                .attr("y", -margin.top)
+                .attr("text-anchor", "start")
+                .attr("font-weight", "bold")
+                .text("Nucleotide"));
 
         var Line_chartGroup = Line_chart.selectAll("g")
             .data(concentrations)
@@ -389,7 +409,7 @@ class AppSecondGraph extends Component {
                         <div class="col-md">
                             <form>
                                 <select width="500" className="form-control" onChange={this.filtroSegundaGrafica}>
-                                    <option defaultValue>Todos</option>
+                                    <option defaultValue>All Genes</option>
                                     {this.selecciones()}
                                 </select>
                             </form>
