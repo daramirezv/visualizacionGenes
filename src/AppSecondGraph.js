@@ -26,8 +26,6 @@ class AppSecondGraph extends Component {
             height = +svg.attr("height") - margin.top - margin.bottom,
             height2 = +svg.attr("height") - margin2.top - margin2.bottom;
 
-        
-
         var x = d3.scaleLinear().range([0, width]),
             x2 = d3.scaleLinear().range([0, width]),
             y = d3.scaleBand().range([height, 0]),
@@ -106,7 +104,6 @@ class AppSecondGraph extends Component {
                 .attr("x2", width)
                 .attr("stroke-opacity", 0.1))
             .call(g => g.select(".tick:last-of-type text").clone()
-                .attr("class", "title")
                 .attr("x", 5)
                 .attr("y", -margin.top)
                 .attr("text-anchor", "start")
@@ -172,7 +169,7 @@ class AppSecondGraph extends Component {
 
         var svgLegend = d3.select("#legend");
 
-        svgLegend.attr("height", nombresGenes.length*30 + margin.top);
+        svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
 
         svgLegend.selectAll("mydots")
             .data(nombresGenes)
@@ -296,7 +293,6 @@ class AppSecondGraph extends Component {
                 .attr("x2", width)
                 .attr("stroke-opacity", 0.1))
             .call(g => g.select(".tick:last-of-type text").clone()
-                .attr("class", "title")
                 .attr("x", 5)
                 .attr("y", -margin.top)
                 .attr("text-anchor", "start")
@@ -362,7 +358,7 @@ class AppSecondGraph extends Component {
 
         var svgLegend = d3.select("#legend");
 
-        svgLegend.attr("height", nombresGenes.length*30 + margin.top);
+        svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
 
         svgLegend.selectAll("mydots")
             .data(nombresGenes)

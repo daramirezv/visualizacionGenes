@@ -121,8 +121,8 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                {this.state.datosSegundaGrafica.length > 0 && this.state.nombresGenes.length > 0 ? <AppSecondGraph datosSegundaGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} />: <h2>Loading...</h2>}
-                {/* {this.state.datosPrimerGrafica.length > 0 ? <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} /> : <h2>Loading...</h2>} */}
+                {/* {this.state.datosSegundaGrafica.length > 0 && this.state.nombresGenes.length > 0 ? <AppSecondGraph datosSegundaGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} /> : <h2>Loading...</h2>} */}
+                {this.state.datosPrimerGrafica.length > 0 ? <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} /> : <h2>Loading...</h2>}
             </div>
         );
     }

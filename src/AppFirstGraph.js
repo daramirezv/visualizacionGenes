@@ -64,7 +64,6 @@ class AppFirstGraph extends Component {
             .attr("class", "context")
             .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-
         x.domain(d3.extent(resultadofinal, function (d) { return d.posicion; }));
         y.domain([0, d3.max(resultadofinal, function (d) { return d.porcentaje; })]);
         x2.domain(x.domain());
@@ -87,7 +86,6 @@ class AppFirstGraph extends Component {
                 .attr("x2", width)
                 .attr("stroke-opacity", 0.1))
             .call(g => g.select(".tick:last-of-type text").clone()
-                .attr("class", "title")
                 .attr("x", 5)
                 .attr("y", -margin.top)
                 .attr("text-anchor", "start")
