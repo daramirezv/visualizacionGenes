@@ -2,14 +2,15 @@ import React, { Component } from "react";
 import * as d3 from "d3";
 import './App.css';
 import AppFirstGraph from './AppFirstGraph';
-import AppSecondGraph from './AppSecondGraph';
+import Pruebas from './Pruebas';
+import AppTrue from './AppTrue';
 import cancer from './cancer.txt';
 
 class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { datosPrimerGrafica: [], datosSegundaGrafica: [], nombresGenes: [] };
+        this.state = { datosPrimerGrafica: [], datosSegundaGrafica: [], nombresGenes: [], datosGraficaPruebas: [] };
     }
 
     componentDidMount() {
@@ -40,9 +41,38 @@ class App extends Component {
             return resultado;
         }
 
+        let objetoSegundaGrafica = (array, posicion) => {
+            if (array.length === 0)
+                return null;
+
+            let modeMap = {};
+
+            for (let i = 0; i < array.length; i++) {
+                let el = array[i];
+                if (modeMap[el] == null) {
+                    modeMap[el] = 1;
+                }
+                else {
+                    modeMap[el]++;
+                }
+            }
+
+            let tamanoArreglo = array.length;
+            let numeroA = modeMap["A"] ? modeMap["A"]: 0;
+            let numeroC = modeMap["C"] ? modeMap["C"]: 0;
+            let numeroG = modeMap["G"] ? modeMap["G"]: 0;
+            let numeroT = modeMap["T"] ? modeMap["T"]: 0;
+            let numeroMenos = modeMap["-"] ? modeMap["-"]: 0;
+
+            let respuesta = new myObjectSegundaGrafica(posicion, numeroA / tamanoArreglo, numeroC / tamanoArreglo, numeroG / tamanoArreglo, numeroT / tamanoArreglo, numeroMenos / tamanoArreglo);
+
+            return respuesta;
+        }
+
         d3.text(cancer).then(data => {
             let resultadoPrimeraGrafica = [];
             let resultadoSegundaGrafica = [];
+            let resultadoGraficaPruebas = [];
             let arreglosIniciales = data.split(">");
             let respuesta = [];
             let nombres = [];
@@ -59,9 +89,10 @@ class App extends Component {
 
             let posPromedio = 0;
             let valPromedio = 0;
+            let correccionSalto = 0;
 
             for (let index = 0; index < respuesta[respuesta.length - 1].length; index++) {
-                let correccionSalto = 0;
+                
                 let componentes = []
 
                 for (let indexInterno = 0; indexInterno < respuesta.length; indexInterno++) {
@@ -110,9 +141,33 @@ class App extends Component {
                 resultadoSegundaGrafica.push(res);
             }
 
+            //GRAFICA DE PRUEBAS LULWAYNE BRUH
+
+            let objetoPosicion = null;
+            let corrimiento = 0;
+
+            for (let index = 0; index < respuesta[respuesta.length - 1].length; index++) {
+                let componentes = []
+                
+
+                for (let indexInterno = 0; indexInterno < respuesta.length; indexInterno++) {
+                    componentes.push(respuesta[indexInterno].charAt(index));
+                }
+
+                if (componentes.some(v => v !== "-" && v !== "A" && v !== "T" && v !== "C" && v !== "G")) {
+                    corrimiento++;
+                    continue;
+                }
+
+                objetoPosicion = objetoSegundaGrafica(componentes, (index + 1 - corrimiento));
+
+                resultadoGraficaPruebas.push(objetoPosicion);
+            }
+
             this.setState({
                 datosPrimerGrafica: resultadoPrimeraGrafica,
                 datosSegundaGrafica: resultadoSegundaGrafica,
+                datosGraficaPruebas: resultadoGraficaPruebas,
                 nombresGenes: nombres
             })
         })
@@ -121,8 +176,10 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                {/* {this.state.datosSegundaGrafica.length > 0 && this.state.nombresGenes.length > 0 ? <AppSecondGraph datosSegundaGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} /> : <h2>Loading...</h2>} */}
-                {this.state.datosPrimerGrafica.length > 0 ? <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} /> : <h2>Loading...</h2>}
+                {/* {this.state.datosSegundaGrafica.length > 0 && this.state.nombresGenes.length > 0 ? <AppTrue datosSegundaGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} /> : <h2>Loading...</h2>} */}
+                {/* {this.state.datosPrimerGrafica.length > 0 ? <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} /> : <h2>Loading...</h2>} */}
+                {/* {this.state.datosGraficaPruebas.length > 0 && this.state.nombresGenes.length > 0 ? <Pruebas datosGraficaPruebas={this.state.datosGraficaPruebas.splice(0,20)} nombresGenes={this.state.nombresGenes}/> : <h2>Loading...</h2>} */}
+                {this.state.datosGraficaPruebas.length > 0 && this.state.nombresGenes.length > 0 ? <AppTrue datosGraficaPruebas={this.state.datosGraficaPruebas.splice(0,20)} nombresGenes={this.state.nombresGenes}/> : <h2>Loading...</h2>}
             </div>
         );
     }
@@ -132,6 +189,17 @@ class myObject {
     constructor(posicion, porcentaje) {
         this.posicion = posicion;
         this.porcentaje = porcentaje;
+    }
+}
+
+class myObjectSegundaGrafica {
+    constructor(posicion, porcentajea, porcentajec, porcentajeg, porcentajet, porcentajemenos) {
+        this.posicion = posicion;
+        this.porcentajea = porcentajea;
+        this.porcentajec = porcentajec;
+        this.porcentajeg = porcentajeg;
+        this.porcentajet = porcentajet;
+        this.porcentajemenos = porcentajemenos;
     }
 }
 

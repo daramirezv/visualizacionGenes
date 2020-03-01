@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
-import './AppK2.css';
+import './Pruebas.css';
 import cancer from './cars.csv';
 
-class AppK2 extends Component {
+class Pruebas extends Component {
 
     constructor(props) {
         super(props);
@@ -13,192 +13,208 @@ class AppK2 extends Component {
 
     componentDidMount() {
 
-        d3.csv(cancer).then(d => chart(d))
+        // d3.csv(cancer).then(d => chart(d))
 
-        function chart(data) {
+        // var nombresGenes = this.props.nombresGenes;
+        // var datosGraph = this.props.datosGraficaPruebas;
 
-            var keys = data.columns.slice(1);
+        // function chart(data) {
 
-            var parseTime = d3.timeParse("%Y%m%d"),
-                formatDate = d3.timeFormat("%Y-%m-%d"),
-                bisectDate = d3.bisector(d => d.date).left,
-                formatValue = d3.format(",.0f");
+            let data = []
+            let ordinals = []
 
-            data.forEach(function (d) {
-                d.date = parseTime(d.date);
-                return d;
-            })
-
-            var svg = d3.select("#chart"),
-                margin = { top: 15, right: 35, bottom: 15, left: 35 },
-                width = +svg.attr("width") - margin.left - margin.right,
-                height = +svg.attr("height") - margin.top - margin.bottom;
-
-            var x = d3.scaleTime()
-                .rangeRound([margin.left, width - margin.right])
-                .domain(d3.extent(data, d => d.date))
-
-            var y = d3.scaleLinear()
-                .rangeRound([height - margin.bottom, margin.top]);
-
-            var z = d3.scaleOrdinal(d3.schemeCategory10);
-
-            var line = d3.line()
-                .curve(d3.curveCardinal)
-                .x(d => x(d.date))
-                .y(d => y(d.degrees));
-
-            svg.append("g")
-                .attr("class", "x-axis")
-                .attr("transform", "translate(0," + (height - margin.bottom) + ")")
-                .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%b")));
-
-            svg.append("g")
-                .attr("class", "y-axis")
-                .attr("transform", "translate(" + margin.left + ",0)");
-
-            var focus = svg.append("g")
-                .attr("class", "focus")
-                .style("display", "none");
-
-            focus.append("line").attr("class", "lineHover")
-                .style("stroke", "#999")
-                .attr("stroke-width", 1)
-                .style("shape-rendering", "crispEdges")
-                .style("opacity", 0.5)
-                .attr("y1", -height)
-                .attr("y2", 0);
-
-            focus.append("text").attr("class", "lineHoverDate")
-                .attr("text-anchor", "middle")
-                .attr("font-size", 12);
-
-            var overlay = svg.append("rect")
-                .attr("class", "overlay")
-                .attr("x", margin.left)
-                .attr("width", width - margin.right - margin.left)
-                .attr("height", height)
-
-            update(d3.select('#selectbox').property('value'), 0);
-
-            function update(input, speed) {
-
-                var copy = keys.filter(f => f.includes(input))
-                
-                var cities = copy.map(function (id) {
-                    return {
-                        id: id,
-                        values: data.map(d => { return { date: d.date, degrees: +d[id] } })
-                    };
-                });
-
-                y.domain([
-                    d3.min(cities, d => d3.min(d.values, c => c.degrees)),
-                    d3.max(cities, d => d3.max(d.values, c => c.degrees))
-                ]).nice();
-
-                svg.selectAll(".y-axis").transition()
-                    .duration(speed)
-                    .call(d3.axisLeft(y).tickSize(-width + margin.right + margin.left))
-
-                var city = svg.selectAll(".cities")
-                    .data(cities);
-
-                city.exit().remove();
-
-                city.enter().insert("g", ".focus").append("path")
-                    .attr("class", "line cities")
-                    .style("stroke", d => z(d.id))
-                    .merge(city)
-                    .transition().duration(speed)
-                    .attr("d", d => line(d.values))
-
-                tooltip(copy);
-            }
-
-            function tooltip(copy) {
-
-                var labels = focus.selectAll(".lineHoverText")
-                    .data(copy)
-
-                labels.enter().append("text")
-                    .attr("class", "lineHoverText")
-                    .style("fill", d => z(d))
-                    .attr("text-anchor", "start")
-                    .attr("font-size", 12)
-                    .attr("dy", (_, i) => 1 + i * 2 + "em")
-                    .merge(labels);
-
-                var circles = focus.selectAll(".hoverCircle")
-                    .data(copy)
-
-                circles.enter().append("circle")
-                    .attr("class", "hoverCircle")
-                    .style("fill", d => z(d))
-                    .attr("r", 2.5)
-                    .merge(circles);
-
-                svg.selectAll(".overlay")
-                    .on("mouseover", function () { focus.style("display", null); })
-                    .on("mouseout", function () { focus.style("display", "none"); })
-                    .on("mousemove", mousemove);
-
-                function mousemove() {
-
-                    var x0 = x.invert(d3.mouse(this)[0]),
-                        i = bisectDate(data, x0, 1),
-                        d0 = data[i - 1],
-                        d1 = data[i],
-                        d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-
-                    focus.select(".lineHover")
-                        .attr("transform", "translate(" + x(d.date) + "," + 0 + ")");
-
-                    focus.select(".lineHoverDate")
-                        .attr("transform",
-                            "translate(" + x(d.date) + "," + (height + margin.bottom) + ")")
-                        .text(formatDate(d.date));
-
-                    focus.selectAll(".hoverCircle")
-                        .attr("cy", e => y(d[e]))
-                        .attr("cx", x(d.date));
-
-                    focus.selectAll(".lineHoverText")
-                        .attr("transform",
-                            "translate(" + (x(d.date)) + "," + height / 2.5 + ")")
-                        .text(e => e + " " + "º" + formatValue(d[e]));
-
-                    x(d.date) > (width - width / 4)
-                        ? focus.selectAll("text.lineHoverText")
-                            .attr("text-anchor", "end")
-                            .attr("dx", -10)
-                        : focus.selectAll("text.lineHoverText")
-                            .attr("text-anchor", "start")
-                            .attr("dx", 10)
-                }
-            }
-
-            var selectbox = d3.select("#selectbox")
-                .on("change", function () {
-                    update(this.value, 750);
+            for (let i = 0; i < 10000; i++) {
+                data.push({
+                    value: Math.random() * 10,
+                    city: 'test' + i
                 })
-        }
 
+                ordinals.push('test' + i)
+            }
+
+            let margin = {
+                top: 50,
+                right: 100,
+                bottom: 50,
+                left: 100
+            },
+                width = 1000 - margin.left - margin.right,
+                height = 700 - margin.top - margin.bottom,
+                radius = (Math.min(width, height) / 2) - 10,
+                node
+
+
+            const svg = d3.select('svg')
+                .append('svg')
+                .attr('width', 960)
+                .attr('height', 700)
+                .append('g')
+                .attr('transform', `translate(${margin.left}, ${margin.top})`)
+                .call(
+                    d3.zoom()
+                        .translateExtent([[0, 0], [width, height]])
+                        .extent([[0, 0], [width, height]])
+                        .on('zoom', zoom)
+                )
+
+            // the scale
+            let x = d3.scaleLinear().range([0, width])
+            let y = d3.scaleLinear().range([height, 0])
+            let color = d3.scaleOrdinal(d3.schemeCategory10)
+            let xScale = x.domain([-1, ordinals.length])
+            let yScale = y.domain([0, d3.max(data, function (d) { return d.value })])
+            // for the width of rect
+            let xBand = d3.scaleBand().domain(d3.range(-1, ordinals.length)).range([0, width])
+
+            console.log(x.domain()[1])
+            console.log(xBand.domain())
+            // zoomable rect
+            svg.append('rect')
+                .attr('class', 'zoom-panel')
+                .attr('width', width)
+                .attr('height', height)
+
+            // x axis
+            let xAxis = svg.append('g')
+                .attr('class', 'xAxis')
+                .attr('transform', `translate(0, ${height})`)
+                .call(
+                    d3.axisBottom(xScale).tickFormat((d, e) => {
+                        return ordinals[d]
+                    })
+                )
+
+            // y axis
+            let yAxis = svg.append('g')
+                .attr('class', 'y axis')
+                .call(d3.axisLeft(yScale))
+
+            let bars = svg.append('g')
+                .attr('clip-path', 'url(#my-clip-path)')
+                .selectAll('.bar')
+                .data(data)
+                .enter()
+                .append('rect')
+                .attr('class', 'bar')
+                .attr('x', function (d, i) {
+                    return xScale(i) - xBand.bandwidth() * 0.9 / 2
+                })
+                .attr('y', function (d, i) {
+                    return yScale(d.value)
+                })
+                .attr('width', xBand.bandwidth() * 0.9)
+                .attr('height', function (d) {
+                    return height - yScale(d.value)
+                })
+
+            let defs = svg.append('defs')
+
+            // use clipPath
+            defs.append('clipPath')
+                .attr('id', 'my-clip-path')
+                .append('rect')
+                .attr('width', width)
+                .attr('height', height)
+
+            let hideTicksWithoutLabel = function () {
+                d3.selectAll('.xAxis .tick text').each(function (d) {
+                    if (this.innerHTML === '') {
+                        this.parentNode.style.display = 'none'
+                    }
+                })
+            }
+
+            function zoom() {
+                if (d3.event.transform.k < 1) {
+                    d3.event.transform.k = 1
+                    return
+                }
+
+                xAxis.call(
+                    d3.axisBottom(d3.event.transform.rescaleX(xScale)).tickFormat((d, e, target) => {
+                        // has bug when the scale is too big
+                        if (Math.floor(d) === d3.format(".1f")(d)) return ordinals[Math.floor(d)]
+                        return ordinals[d]
+                    })
+                )
+
+                hideTicksWithoutLabel()
+
+                // the bars transform
+                bars.attr("transform", "translate(" + d3.event.transform.x + ",0)scale(" + d3.event.transform.k + ",1)")
+            }
+            // var data = [
+            //     {month: "Q1-2016", apples: 3840, bananas: 1920, cherries: 1960, dates: 400},
+            //     {month: "Q2-2016", apples: 1600, bananas: 1440, cherries: 960, dates: 400},
+            //     {month: "Q3-2016", apples:  640, bananas:  960, cherries: 640, dates: 600},
+            //     {month: "Q4-2016", apples:  320, bananas:  480, cherries: 640, dates: 400}
+            //   ];
+
+            // var data = datosGraph;
+
+            // var series = d3.stack()
+            //     // .keys(nombresGenes)
+            //     .keys(["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"])
+            //     .offset(d3.stackOffsetDiverging)
+            //     (data);
+
+            // var svg = d3.select("svg"),
+            //     margin = { top: 20, right: 30, bottom: 30, left: 60 },
+            //     width = +svg.attr("width"),
+            //     height = +svg.attr("height");
+
+            // var x = d3.scaleBand()
+            //     .domain(data.map(function (d) { return d.posicion; }))
+            //     .rangeRound([margin.left, width - margin.right])
+            //     .padding(0.1);
+
+            // var y = d3.scaleLinear()
+            //     .domain([d3.min(series, stackMin), d3.max(series, stackMax)])
+            //     .rangeRound([height - margin.bottom, margin.top]);
+
+            // var z = d3.scaleOrdinal(d3.schemeCategory10);
+
+            // svg.append("g")
+            //     .selectAll("g")
+            //     .data(series)
+            //     .enter().append("g")
+            //     .attr("fill", function (d) { return z(d.key); })
+            //     .selectAll("rect")
+            //     .data(function (d) { return d; })
+            //     .enter().append("rect")
+            //     .attr("width", x.bandwidth)
+            //     .attr("x", function (d) { return x(d.data.posicion); })
+            //     .attr("y", function (d) { return y(d[1]); })
+            //     .attr("height", function (d) { return y(d[0]) - y(d[1]); })
+
+            // svg.append("g")
+            //     .attr("transform", "translate(0," + y(0) + ")")
+            //     .call(d3.axisBottom(x));
+
+            // svg.append("g")
+            //     .attr("transform", "translate(" + margin.left + ",0)")
+            //     .call(d3.axisLeft(y));
+
+            // function stackMin(serie) {
+            //     return d3.min(serie, function (d) { return d[0]; });
+            // }
+
+            // function stackMax(serie) {
+            //     return d3.max(serie, function (d) { return d[1]; });
+            // }
+
+        // }
     }
 
 
     render() {
         return (
-            <div className="App">
-                <select id="selectbox">
-                    <option value="_1">Fahrenheit</option>
-                    <option value="_2">Celsius</option>
-                </select>
-                <svg id="chart" width="850" height="410"></svg>
+            <div id="my_dataviz">
+                <svg width="960" height="500"></svg>
             </div>
         );
     }
 }
 
 
-export default AppK2;
+export default Pruebas;
