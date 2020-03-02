@@ -11,11 +11,11 @@ class AppTrue extends Component {
 
     componentDidMount() {
 
-        var nombresGenes = this.props.nombresGenes;
+        var nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
         var data = this.props.datosGraficaPruebas;
 
         var series = d3.stack()
-            .keys(["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"])
+            .keys(nombreNucleotidos)
             .offset(d3.stackOffsetDiverging)(data);
 
         var svg = d3.select("svg");
@@ -30,7 +30,7 @@ class AppTrue extends Component {
             x2 = d3.scaleLinear().range([0, width]),
             y = d3.scaleLinear().range([height, 0]),
             y2 = d3.scaleLinear().range([height2, 0]),
-            color = d3.scaleOrdinal().range(d3.schemeCategory10),
+            color = d3.scaleOrdinal().range(["#d62728", "#2ca02c", "#1f77b4", "#bcbd22", "#8c564b"]),
             xBand = d3.scaleBand().range([0, width])
 
         var xAxis = d3.axisBottom(x),
@@ -73,8 +73,7 @@ class AppTrue extends Component {
         y.domain([d3.min(series, stackMin), d3.max(series, stackMax)])
         x2.domain(x.domain());
         y2.domain(y.domain());
-        xBand.domain(d3.range(x.domain()[0], x.domain()[1]))
-        color.domain(nombresGenes);
+        xBand.domain(d3.range(x.domain()[0], x.domain()[1]));
 
         focus.append("g")
             .attr("class", "axis axis--x")
@@ -97,25 +96,25 @@ class AppTrue extends Component {
         Line_chart.selectAll("g")
             .data(series)
             .join("g")
-            .attr("fill", (d, i) => color(d))
+            .attr("fill", (d, i) => color(i))
             .selectAll("rect")
             .data(d => d)
             .join("rect")
-            .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth()*0.9 / 2 })
+            .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
             .attr("y", function (d) { return y(d[1]); })
-            .attr("width", xBand.bandwidth()*0.9)
+            .attr("width", xBand.bandwidth() * 0.9)
             .attr("height", function (d) { return y(d[0]) - y(d[1]); })
 
         context.selectAll("g")
             .data(series)
             .join("g")
-            .attr("fill", (d, i) => color(d))
+            .attr("fill", (d, i) => color(i))
             .selectAll("rect")
             .data(d => d)
             .join("rect")
-            .attr('x', function (d) { return x2(d.data.posicion) - xBand.bandwidth()*0.9 / 2 })
+            .attr('x', function (d) { return x2(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
             .attr("y", function (d) { return y2(d[1]); })
-            .attr("width", xBand.bandwidth()*0.9)
+            .attr("width", xBand.bandwidth() * 0.9)
             .attr("height", function (d) { return y2(d[0]) - y2(d[1]); })
 
         context.append("g")
@@ -135,15 +134,36 @@ class AppTrue extends Component {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .call(zoom);
 
+        var svgLegend = d3.select("#legend");
+
+        svgLegend.attr("height", 150 + margin.top);
+
+        svgLegend.selectAll("mylabels")
+            .data(nombreNucleotidos)
+            .enter()
+            .append("text")
+            .attr("x", function (d, i) { return margin.left + 415 + i * 75 })
+            .attr("y", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+            .text(function (d) { return mapeoLetras(d) })
+            .attr("text-anchor", "left")
+            .style("alignment-baseline", "middle")
+            .style("font-size", "15px")
+
+        svgLegend.selectAll("mydots")
+            .data(nombreNucleotidos)
+            .enter()
+            .append("circle")
+            .attr("cx", function (d, i) { return margin.left + 400 + i * 75 })
+            .attr("cy", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("r", 7)
+            .style("fill", (d, i) => color(i))
+
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
             var s = d3.event.selection || x2.range();
             x.domain(s.map(x2.invert, x2));
             Line_chart.selectAll("rect")
-                .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth()*0.9 / 2 })
-                .attr("y", function (d) { return y(d[1]); })
-                .attr("width", xBand.bandwidth()*0.9)
-                .attr("height", function (d) { return y(d[0]) - y(d[1]); })
+                .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
             focus.select(".axis--x").call(xAxis);
             svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
                 .scale(width / (s[1] - s[0]))
@@ -151,16 +171,13 @@ class AppTrue extends Component {
         }
 
         function zoomed() {
-            xBand.domain(d3.range(x.domain()[0], x.domain()[1]))
-
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+            xBand.domain(d3.range(x.domain()[0], x.domain()[1]));
             var t = d3.event.transform;
             x.domain(t.rescaleX(x2).domain());
             Line_chart.selectAll("rect")
-                .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth()*0.9 / 2 })
-                .attr("y", function (d) { return y(d[1]); })
-                .attr("width", xBand.bandwidth()*0.9)
-                .attr("height", function (d) { return y(d[0]) - y(d[1]); })
+                .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
+                .attr("width", xBand.bandwidth() * 0.9)
             focus.select(".axis--x").call(xAxis);
             context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
         }
@@ -172,12 +189,28 @@ class AppTrue extends Component {
         function stackMax(serie) {
             return d3.max(serie, function (d) { return d[1]; });
         }
+
+        function mapeoLetras(d) {
+            switch (d) {
+                case "porcentajea":
+                    return "A";
+                case "porcentajeg":
+                    return "G";
+                case "porcentajec":
+                    return "C";
+                case "porcentajet":
+                    return "T";
+                default:
+                    return "Gap";
+            }
+        }
     }
 
     render() {
         return (
             <div className="App centrar">
                 <svg className="segundaGrafica" width="1200" height="500"></svg>
+                <svg className="segundaGrafica" width="1200" id="legend"></svg>
             </div>
         );
     }

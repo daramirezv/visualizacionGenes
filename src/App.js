@@ -179,7 +179,7 @@ class App extends Component {
                 {/* {this.state.datosSegundaGrafica.length > 0 && this.state.nombresGenes.length > 0 ? <AppTrue datosSegundaGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} /> : <h2>Loading...</h2>} */}
                 {/* {this.state.datosPrimerGrafica.length > 0 ? <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} /> : <h2>Loading...</h2>} */}
                 {/* {this.state.datosGraficaPruebas.length > 0 && this.state.nombresGenes.length > 0 ? <Pruebas datosGraficaPruebas={this.state.datosGraficaPruebas.splice(0,20)} nombresGenes={this.state.nombresGenes}/> : <h2>Loading...</h2>} */}
-                {this.state.datosGraficaPruebas.length > 0 && this.state.nombresGenes.length > 0 ? <AppTrue datosGraficaPruebas={this.state.datosGraficaPruebas.splice(0,20)} nombresGenes={this.state.nombresGenes}/> : <h2>Loading...</h2>}
+                {this.state.datosGraficaPruebas.length > 0 && this.state.nombresGenes.length > 0 ? <AppTrue datosGraficaPruebas={this.state.datosGraficaPruebas.splice(0,100)} nombresGenes={this.state.nombresGenes}/> : <h2>Loading...</h2>}
             </div>
         );
     }
