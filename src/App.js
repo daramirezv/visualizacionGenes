@@ -2,15 +2,18 @@ import React, { Component } from "react";
 import * as d3 from "d3";
 import './App.css';
 import AppFirstGraph from './AppFirstGraph';
-import Pruebas from './Pruebas';
-import AppTrue from './AppTrue';
-import cancer from './cancer.txt';
+import AppSecondGraph from './AppSecondGraph';
+import AppThirdGraph from './AppThirdGraph';
+// import cancer from './cancer.txt';
+import cancer from './archivoJorge.txt';
 
 class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { datosPrimerGrafica: [], datosSegundaGrafica: [], nombresGenes: [], datosGraficaPruebas: [] };
+        this.state = { datosPrimerGrafica: [], datosSegundaGrafica: [], nombresGenes: [], datosGraficaPruebas: [], primerValorFiltro: 0, segundoValorFiltro: 100 };
+        this.selecciones = this.selecciones.bind(this);
+        this.filtroAppJS = this.filtroAppJS.bind(this);
     }
 
     componentDidMount() {
@@ -58,11 +61,11 @@ class App extends Component {
             }
 
             let tamanoArreglo = array.length;
-            let numeroA = modeMap["A"] ? modeMap["A"]: 0;
-            let numeroC = modeMap["C"] ? modeMap["C"]: 0;
-            let numeroG = modeMap["G"] ? modeMap["G"]: 0;
-            let numeroT = modeMap["T"] ? modeMap["T"]: 0;
-            let numeroMenos = modeMap["-"] ? modeMap["-"]: 0;
+            let numeroA = modeMap["A"] ? modeMap["A"] : 0;
+            let numeroC = modeMap["C"] ? modeMap["C"] : 0;
+            let numeroG = modeMap["G"] ? modeMap["G"] : 0;
+            let numeroT = modeMap["T"] ? modeMap["T"] : 0;
+            let numeroMenos = modeMap["-"] ? modeMap["-"] : 0;
 
             let respuesta = new myObjectSegundaGrafica(posicion, numeroA / tamanoArreglo, numeroC / tamanoArreglo, numeroG / tamanoArreglo, numeroT / tamanoArreglo, numeroMenos / tamanoArreglo);
 
@@ -92,7 +95,7 @@ class App extends Component {
             let correccionSalto = 0;
 
             for (let index = 0; index < respuesta[respuesta.length - 1].length; index++) {
-                
+
                 let componentes = []
 
                 for (let indexInterno = 0; indexInterno < respuesta.length; indexInterno++) {
@@ -118,6 +121,8 @@ class App extends Component {
 
             }
 
+            correccionSalto = 0;
+
             for (let index = 0; index < respuesta[respuesta.length - 1].length; index++) {
                 let componentes = [];
 
@@ -126,17 +131,18 @@ class App extends Component {
                 }
 
                 if (componentes.some(v => v !== "-" && v !== "A" && v !== "T" && v !== "C" && v !== "G")) {
+                    correccionSalto++;
                     continue;
                 }
 
-                let objetoTemp = "{ \"posicion\":" + (index + 1) + "";
+                let objetoTemp = "{\"posicion\":" + (index + 1 - correccionSalto) + "";
 
                 for (let pos = 0; pos < componentes.length; pos++) {
-
-                    objetoTemp += ", \"" + nombres[pos] + "\":\"" + respuesta[pos][index] + "\"";
+                    objetoTemp += ",\"" + nombres[pos] + "\":\"" + respuesta[pos][index] + "\"";
                 }
 
                 objetoTemp += "}";
+                objetoTemp = objetoTemp.replace( /[\r\n]+/gm, "" );
                 let res = JSON.parse(objetoTemp)
                 resultadoSegundaGrafica.push(res);
             }
@@ -144,23 +150,22 @@ class App extends Component {
             //GRAFICA DE PRUEBAS LULWAYNE BRUH
 
             let objetoPosicion = null;
-            let corrimiento = 0;
+            correccionSalto = 0;
 
             for (let index = 0; index < respuesta[respuesta.length - 1].length; index++) {
                 let componentes = []
-                
+
 
                 for (let indexInterno = 0; indexInterno < respuesta.length; indexInterno++) {
                     componentes.push(respuesta[indexInterno].charAt(index));
                 }
 
                 if (componentes.some(v => v !== "-" && v !== "A" && v !== "T" && v !== "C" && v !== "G")) {
-                    corrimiento++;
+                    correccionSalto++;
                     continue;
                 }
 
-                objetoPosicion = objetoSegundaGrafica(componentes, (index + 1 - corrimiento));
-
+                objetoPosicion = objetoSegundaGrafica(componentes, (index + 1 - correccionSalto));
                 resultadoGraficaPruebas.push(objetoPosicion);
             }
 
@@ -168,18 +173,61 @@ class App extends Component {
                 datosPrimerGrafica: resultadoPrimeraGrafica,
                 datosSegundaGrafica: resultadoSegundaGrafica,
                 datosGraficaPruebas: resultadoGraficaPruebas,
+                primerValorFiltro: 1,
+                segundoValorFiltro: 100,
                 nombresGenes: nombres
             })
         })
     }
 
+    filtroAppJS(event) {
+        let primerValor = parseInt(event.target.value.split(" - ")[0]);
+        let segundoValor = parseInt(event.target.value.split(" - ")[1]);
+        this.setState({
+            segundoValorFiltro: segundoValor, primerValorFiltro: primerValor
+        });
+    }
+
+    selecciones() {
+        let tamanoTotal = this.state.datosSegundaGrafica.length;
+        let numerosSobrantes = tamanoTotal % 100;
+        let arregloMapeo = []
+
+        for (let index = 0; index < tamanoTotal - numerosSobrantes; index += 100) {
+            arregloMapeo.push((index + 1) + " - " + (index + 100));
+        }
+
+        if((tamanoTotal - numerosSobrantes) != 0)
+        {
+            arregloMapeo.push((tamanoTotal - numerosSobrantes + 1) + " - " + tamanoTotal);
+        }
+
+        return (
+            arregloMapeo.map(function (item, i) {
+                return <option value={item} key={i}>{item}</option>
+            }))
+    }
+
     render() {
         return (
             <div className="App">
-                {/* {this.state.datosSegundaGrafica.length > 0 && this.state.nombresGenes.length > 0 ? <AppTrue datosSegundaGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} /> : <h2>Loading...</h2>} */}
-                {/* {this.state.datosPrimerGrafica.length > 0 ? <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} /> : <h2>Loading...</h2>} */}
-                {/* {this.state.datosGraficaPruebas.length > 0 && this.state.nombresGenes.length > 0 ? <Pruebas datosGraficaPruebas={this.state.datosGraficaPruebas.splice(0,20)} nombresGenes={this.state.nombresGenes}/> : <h2>Loading...</h2>} */}
-                {this.state.datosGraficaPruebas.length > 0 && this.state.nombresGenes.length > 0 ? <AppTrue datosGraficaPruebas={this.state.datosGraficaPruebas.splice(0,100)} nombresGenes={this.state.nombresGenes}/> : <h2>Loading...</h2>}
+                {this.state.datosSegundaGrafica.length > 0 ?
+                    <div>
+                        <div className="container">
+                            <div className="row">
+                                <div className="col-md">
+                                    <form>
+                                        <select width="500" className="form-control" onChange={this.filtroAppJS}>
+                                            {this.selecciones()}
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <AppThirdGraph datosSegundaGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
+                        {/* <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} /> */}
+                        {/* <AppSecondGraph datosGraficaPruebas={this.state.datosGraficaPruebas} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro}/> */}
+                    </div> : <h2>Loading...</h2>}
             </div>
         );
     }

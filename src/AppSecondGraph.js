@@ -7,18 +7,21 @@ class AppSecondGraph extends Component {
     constructor(props) {
         super(props);
         this.state = { filtro: "All Genes" };
-        this.filtroSegundaGrafica = this.filtroSegundaGrafica.bind(this);
-        this.selecciones = this.selecciones.bind(this);
     }
 
     componentDidMount() {
 
-        var nombresGenes = this.props.nombresGenes;
-        var datosSegundaGrafica = this.props.datosSegundaGrafica;
+        var nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
+        var data = this.props.datosGraficaPruebas;
+        var segundoValor = this.props.segundoValor;
+        var primerValor = this.props.primerValor;
+        data = data.slice(primerValor-1, segundoValor);
+
+        var series = d3.stack()
+            .keys(nombreNucleotidos)
+            .offset(d3.stackOffsetDiverging)(data);
 
         var svg = d3.select("svg");
-        // var ancho = window.innerWidth;
-        // svg.attr("width", ancho*0.8);
 
         var margin = { top: 20, right: 20, bottom: 110, left: 40 },
             margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
@@ -28,9 +31,10 @@ class AppSecondGraph extends Component {
 
         var x = d3.scaleLinear().range([0, width]),
             x2 = d3.scaleLinear().range([0, width]),
-            y = d3.scaleBand().range([height, 0]),
-            y2 = d3.scaleBand().range([height2, 0]),
-            color = d3.scaleOrdinal().range(d3.schemeCategory10);
+            y = d3.scaleLinear().range([height, 0]),
+            y2 = d3.scaleLinear().range([height2, 0]),
+            color = d3.scaleOrdinal().range(["#d62728", "#2ca02c", "#1f77b4", "#bcbd22", "#8c564b"]),
+            xBand = d3.scaleBand().range([0, width])
 
         var xAxis = d3.axisBottom(x),
             xAxis2 = d3.axisBottom(x2),
@@ -46,19 +50,9 @@ class AppSecondGraph extends Component {
             .extent([[0, 0], [width, height]])
             .on("zoom", zoomed);
 
-        var line = d3.line()
-            .curve(d3.curveLinear)
-            .x(function (d) { return x(d["posicion"]); })
-            .y(function (d) { return y(d["nucleotido"]); });
-
-        var line2 = d3.line()
-            .curve(d3.curveLinear)
-            .x(function (d) { return x2(d["posicion"]); })
-            .y(function (d) { return y2(d["nucleotido"]); });
-
-        var clip = svg.append("defs").append("svg:clipPath")
+        var clip = svg.append("defs").append("clipPath")
             .attr("id", "clip")
-            .append("svg:rect")
+            .append("rect")
             .attr("width", width)
             .attr("height", height)
             .attr("x", 0)
@@ -66,7 +60,7 @@ class AppSecondGraph extends Component {
 
         var Line_chart = svg.append("g")
             .attr("class", "focus")
-            .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .attr("clip-path", "url(#clip)");
 
         var focus = svg.append("g")
@@ -75,22 +69,14 @@ class AppSecondGraph extends Component {
 
         var context = svg.append("g")
             .attr("class", "context")
-            .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+            .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
+            .attr("clip-path", "url(#clip)");
 
-        var concentrations = nombresGenes.map(function (category2) {
-            return {
-                category: category2,
-                datapoints: datosSegundaGrafica.map(function (d) {
-                    return { posicion: d.posicion, nucleotido: d[category2] };
-                })
-            };
-        });
-
-        x.domain(d3.extent(datosSegundaGrafica, function (d) { return d.posicion; }));
-        y.domain(["-", "G", "T", "C", "A"]);
+        x.domain(d3.extent(data, function (d) { return d.posicion; }));
+        y.domain([d3.min(series, stackMin), d3.max(series, stackMax)])
         x2.domain(x.domain());
         y2.domain(y.domain());
-        color.domain(nombresGenes);
+        xBand.domain(d3.range(x.domain()[0], x.domain()[1]));
 
         focus.append("g")
             .attr("class", "axis axis--x")
@@ -105,30 +91,34 @@ class AppSecondGraph extends Component {
                 .attr("stroke-opacity", 0.1))
             .call(g => g.select(".tick:last-of-type text").clone()
                 .attr("x", 5)
-                .attr("y", -margin.top)
+                .attr("y", -8)
                 .attr("text-anchor", "start")
                 .attr("font-weight", "bold")
-                .text("Nucleotide"));
+                .text("Percentage"));
 
-        var Line_chartGroup = Line_chart.selectAll("g")
-            .data(concentrations)
-            .enter()
-            .append("g");
+        Line_chart.selectAll("g")
+            .data(series)
+            .join("g")
+            .attr("fill", (d, i) => color(i))
+            .selectAll("rect")
+            .data(d => d)
+            .join("rect")
+            .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
+            .attr("y", function (d) { return y(d[1]); })
+            .attr("width", xBand.bandwidth() * 0.9)
+            .attr("height", function (d) { return y(d[0]) - y(d[1]); })
 
-        Line_chartGroup.append("path")
-            .attr("class", "line")
-            .attr("d", function (d) { return line(d.datapoints); })
-            .style("stroke", function (d) { return color(d.category); })
-
-        var ContextGroup = context.selectAll("g")
-            .data(concentrations)
-            .enter()
-            .append("g");
-
-        ContextGroup.append("path")
-            .attr("class", "line")
-            .attr("d", function (d) { return line2(d.datapoints); })
-            .style("stroke", function (d) { return color(d.category); })
+        context.selectAll("g")
+            .data(series)
+            .join("g")
+            .attr("fill", (d, i) => color(i))
+            .selectAll("rect")
+            .data(d => d)
+            .join("rect")
+            .attr('x', function (d) { return x2(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
+            .attr("y", function (d) { return y2(d[1]); })
+            .attr("width", xBand.bandwidth() * 0.9)
+            .attr("height", function (d) { return y2(d[0]) - y2(d[1]); })
 
         context.append("g")
             .attr("class", "axis axis--x")
@@ -147,11 +137,36 @@ class AppSecondGraph extends Component {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .call(zoom);
 
+        var svgLegend = d3.select("#legend");
+
+        svgLegend.attr("height", 150 + margin.top);
+
+        svgLegend.selectAll("mylabels")
+            .data(nombreNucleotidos)
+            .enter()
+            .append("text")
+            .attr("x", function (d, i) { return margin.left + 415 + i * 75 })
+            .attr("y", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+            .text(function (d) { return mapeoLetras(d) })
+            .attr("text-anchor", "left")
+            .style("alignment-baseline", "middle")
+            .style("font-size", "15px")
+
+        svgLegend.selectAll("mydots")
+            .data(nombreNucleotidos)
+            .enter()
+            .append("circle")
+            .attr("cx", function (d, i) { return margin.left + 400 + i * 75 })
+            .attr("cy", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("r", 7)
+            .style("fill", (d, i) => color(i))
+
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
             var s = d3.event.selection || x2.range();
             x.domain(s.map(x2.invert, x2));
-            Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
+            Line_chart.selectAll("rect")
+                .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
             focus.select(".axis--x").call(xAxis);
             svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
                 .scale(width / (s[1] - s[0]))
@@ -160,56 +175,59 @@ class AppSecondGraph extends Component {
 
         function zoomed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+            xBand.domain(d3.range(x.domain()[0], x.domain()[1]));
             var t = d3.event.transform;
             x.domain(t.rescaleX(x2).domain());
-            Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
+            Line_chart.selectAll("rect")
+                .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
+                .attr("width", xBand.bandwidth() * 0.9)
             focus.select(".axis--x").call(xAxis);
             context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
         }
 
-        var svgLegend = d3.select("#legend");
+        function stackMin(serie) {
+            return d3.min(serie, function (d) { return d[0]; });
+        }
 
-        svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
+        function stackMax(serie) {
+            return d3.max(serie, function (d) { return d[1]; });
+        }
 
-        svgLegend.selectAll("mydots")
-            .data(nombresGenes)
-            .enter()
-            .append("circle")
-            .attr("cx", margin.left)
-            .attr("cy", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
-            .attr("r", 7)
-            .style("fill", function (d) { return color(d) })
-
-        svgLegend.selectAll("mylabels")
-            .data(nombresGenes)
-            .enter()
-            .append("text")
-            .attr("x", margin.left + 20)
-            .attr("y", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
-            .text(function (d) { return d })
-            .attr("text-anchor", "left")
-            .style("alignment-baseline", "middle")
-            .style("font-size", "15px")
+        function mapeoLetras(d) {
+            switch (d) {
+                case "porcentajea":
+                    return "A";
+                case "porcentajeg":
+                    return "G";
+                case "porcentajec":
+                    return "C";
+                case "porcentajet":
+                    return "T";
+                default:
+                    return "Gap";
+            }
+        }
     }
 
     componentDidUpdate() {
 
-        let nombresGenes = []
-
-        if (this.state.filtro === "All Genes") {
-            nombresGenes = this.props.nombresGenes
-        }
-        else {
-            nombresGenes = [];
-            nombresGenes.push(this.state.filtro);
-        }
-
-        var datosSegundaGrafica = this.props.datosSegundaGrafica;
+        console.log("wtf");
 
         d3.selectAll("svg > *").remove();
 
-        var svg = d3.select("svg"),
-            margin = { top: 20, right: 20, bottom: 110, left: 40 },
+        var nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
+        var data = this.props.datosGraficaPruebas;
+        var segundoValor = this.props.segundoValor;
+        var primerValor = this.props.primerValor;
+        data = data.slice(primerValor-1, segundoValor);
+
+        var series = d3.stack()
+            .keys(nombreNucleotidos)
+            .offset(d3.stackOffsetDiverging)(data);
+
+        var svg = d3.select("svg");
+
+        var margin = { top: 20, right: 20, bottom: 110, left: 40 },
             margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
@@ -217,9 +235,10 @@ class AppSecondGraph extends Component {
 
         var x = d3.scaleLinear().range([0, width]),
             x2 = d3.scaleLinear().range([0, width]),
-            y = d3.scaleBand().range([height, 0]),
-            y2 = d3.scaleBand().range([height2, 0]),
-            color = d3.scaleOrdinal().range(d3.schemeCategory10);
+            y = d3.scaleLinear().range([height, 0]),
+            y2 = d3.scaleLinear().range([height2, 0]),
+            color = d3.scaleOrdinal().range(["#d62728", "#2ca02c", "#1f77b4", "#bcbd22", "#8c564b"]),
+            xBand = d3.scaleBand().range([0, width])
 
         var xAxis = d3.axisBottom(x),
             xAxis2 = d3.axisBottom(x2),
@@ -235,19 +254,9 @@ class AppSecondGraph extends Component {
             .extent([[0, 0], [width, height]])
             .on("zoom", zoomed);
 
-        var line = d3.line()
-            .curve(d3.curveLinear)
-            .x(function (d) { return x(d["posicion"]); })
-            .y(function (d) { return y(d["nucleotido"]); });
-
-        var line2 = d3.line()
-            .curve(d3.curveLinear)
-            .x(function (d) { return x2(d["posicion"]); })
-            .y(function (d) { return y2(d["nucleotido"]); });
-
-        var clip = svg.append("defs").append("svg:clipPath")
+        var clip = svg.append("defs").append("clipPath")
             .attr("id", "clip")
-            .append("svg:rect")
+            .append("rect")
             .attr("width", width)
             .attr("height", height)
             .attr("x", 0)
@@ -255,7 +264,7 @@ class AppSecondGraph extends Component {
 
         var Line_chart = svg.append("g")
             .attr("class", "focus")
-            .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .attr("clip-path", "url(#clip)");
 
         var focus = svg.append("g")
@@ -264,22 +273,14 @@ class AppSecondGraph extends Component {
 
         var context = svg.append("g")
             .attr("class", "context")
-            .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+            .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
+            .attr("clip-path", "url(#clip)");
 
-        var concentrations = nombresGenes.map(function (category2) {
-            return {
-                category: category2,
-                datapoints: datosSegundaGrafica.map(function (d) {
-                    return { posicion: d.posicion, nucleotido: d[category2] };
-                })
-            };
-        });
-
-        x.domain(d3.extent(datosSegundaGrafica, function (d) { return d.posicion; }));
-        y.domain(["-", "G", "T", "C", "A"]);
+        x.domain(d3.extent(data, function (d) { return d.posicion; }));
+        y.domain([d3.min(series, stackMin), d3.max(series, stackMax)])
         x2.domain(x.domain());
         y2.domain(y.domain());
-        color.domain(nombresGenes);
+        xBand.domain(d3.range(x.domain()[0], x.domain()[1]));
 
         focus.append("g")
             .attr("class", "axis axis--x")
@@ -294,30 +295,34 @@ class AppSecondGraph extends Component {
                 .attr("stroke-opacity", 0.1))
             .call(g => g.select(".tick:last-of-type text").clone()
                 .attr("x", 5)
-                .attr("y", -margin.top)
+                .attr("y", -8)
                 .attr("text-anchor", "start")
                 .attr("font-weight", "bold")
-                .text("Nucleotide"));
+                .text("Percentage"));
 
-        var Line_chartGroup = Line_chart.selectAll("g")
-            .data(concentrations)
-            .enter()
-            .append("g");
+        Line_chart.selectAll("g")
+            .data(series)
+            .join("g")
+            .attr("fill", (d, i) => color(i))
+            .selectAll("rect")
+            .data(d => d)
+            .join("rect")
+            .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
+            .attr("y", function (d) { return y(d[1]); })
+            .attr("width", xBand.bandwidth() * 0.9)
+            .attr("height", function (d) { return y(d[0]) - y(d[1]); })
 
-        Line_chartGroup.append("path")
-            .attr("class", "line")
-            .attr("d", function (d) { return line(d.datapoints); })
-            .style("stroke", function (d) { return color(d.category); })
-
-        var ContextGroup = context.selectAll("g")
-            .data(concentrations)
-            .enter()
-            .append("g");
-
-        ContextGroup.append("path")
-            .attr("class", "line")
-            .attr("d", function (d) { return line2(d.datapoints); })
-            .style("stroke", function (d) { return color(d.category); })
+        context.selectAll("g")
+            .data(series)
+            .join("g")
+            .attr("fill", (d, i) => color(i))
+            .selectAll("rect")
+            .data(d => d)
+            .join("rect")
+            .attr('x', function (d) { return x2(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
+            .attr("y", function (d) { return y2(d[1]); })
+            .attr("width", xBand.bandwidth() * 0.9)
+            .attr("height", function (d) { return y2(d[0]) - y2(d[1]); })
 
         context.append("g")
             .attr("class", "axis axis--x")
@@ -336,11 +341,36 @@ class AppSecondGraph extends Component {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .call(zoom);
 
+        var svgLegend = d3.select("#legend");
+
+        svgLegend.attr("height", 150 + margin.top);
+
+        svgLegend.selectAll("mylabels")
+            .data(nombreNucleotidos)
+            .enter()
+            .append("text")
+            .attr("x", function (d, i) { return margin.left + 415 + i * 75 })
+            .attr("y", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+            .text(function (d) { return mapeoLetras(d) })
+            .attr("text-anchor", "left")
+            .style("alignment-baseline", "middle")
+            .style("font-size", "15px")
+
+        svgLegend.selectAll("mydots")
+            .data(nombreNucleotidos)
+            .enter()
+            .append("circle")
+            .attr("cx", function (d, i) { return margin.left + 400 + i * 75 })
+            .attr("cy", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("r", 7)
+            .style("fill", (d, i) => color(i))
+
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
             var s = d3.event.selection || x2.range();
             x.domain(s.map(x2.invert, x2));
-            Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
+            Line_chart.selectAll("rect")
+                .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
             focus.select(".axis--x").call(xAxis);
             svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
                 .scale(width / (s[1] - s[0]))
@@ -349,50 +379,38 @@ class AppSecondGraph extends Component {
 
         function zoomed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+            xBand.domain(d3.range(x.domain()[0], x.domain()[1]));
             var t = d3.event.transform;
             x.domain(t.rescaleX(x2).domain());
-            Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
+            Line_chart.selectAll("rect")
+                .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
+                .attr("width", xBand.bandwidth() * 0.9)
             focus.select(".axis--x").call(xAxis);
             context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
         }
 
-        var svgLegend = d3.select("#legend");
+        function stackMin(serie) {
+            return d3.min(serie, function (d) { return d[0]; });
+        }
 
-        svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
+        function stackMax(serie) {
+            return d3.max(serie, function (d) { return d[1]; });
+        }
 
-        svgLegend.selectAll("mydots")
-            .data(nombresGenes)
-            .enter()
-            .append("circle")
-            .attr("cx", margin.left)
-            .attr("cy", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
-            .attr("r", 7)
-            .style("fill", function (d) { return color(d) })
-
-        svgLegend.selectAll("mylabels")
-            .data(nombresGenes)
-            .enter()
-            .append("text")
-            .attr("x", margin.left + 20)
-            .attr("y", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
-            .text(function (d) { return d })
-            .attr("text-anchor", "left")
-            .style("alignment-baseline", "middle")
-            .style("font-size", "15px")
-    }
-
-    filtroSegundaGrafica(event) {
-        this.setState({
-            filtro: event.target.value
-        });
-    }
-
-    selecciones() {
-        var nombres = this.props.nombresGenes;
-        return (
-            nombres.map(function (item, i) {
-                return <option value={item} key={i}>{item}</option>
-            }))
+        function mapeoLetras(d) {
+            switch (d) {
+                case "porcentajea":
+                    return "A";
+                case "porcentajeg":
+                    return "G";
+                case "porcentajec":
+                    return "C";
+                case "porcentajet":
+                    return "T";
+                default:
+                    return "Gap";
+            }
+        }
     }
 
     render() {
@@ -400,18 +418,6 @@ class AppSecondGraph extends Component {
             <div className="App centrar">
                 <svg className="segundaGrafica" width="1200" height="500"></svg>
                 <svg className="segundaGrafica" width="1200" id="legend"></svg>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md">
-                            <form>
-                                <select width="500" className="form-control" onChange={this.filtroSegundaGrafica}>
-                                    <option defaultValue>All Genes</option>
-                                    {this.selecciones()}
-                                </select>
-                            </form>
-                        </div>
-                    </div>
-                </div>
             </div>
         );
     }
