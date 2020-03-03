@@ -4,6 +4,7 @@ import './App.css';
 import AppFirstGraph from './AppFirstGraph';
 import AppSecondGraph from './AppSecondGraph';
 import AppThirdGraph from './AppThirdGraph';
+import AppFourthGraph from './AppFourthGraph';
 // import cancer from './cancer.txt';
 import cancer from './archivoJorge.txt';
 
@@ -227,8 +228,9 @@ class App extends Component {
                             </div>
                         </div>
                         {/* <AppThirdGraph datosSegundaGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} /> */}
-                        <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} />
+                        {/* <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} /> */}
                         {/* <AppSecondGraph datosGraficaPruebas={this.state.datosGraficaPruebas} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro}/> */}
+                        <AppFourthGraph nombresGenes={this.state.nombresGenes} datosSegundaGrafica={this.state.datosSegundaGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro}/>
                     </div> : <h2>Loading...</h2>}
             </div>
         );

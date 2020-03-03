@@ -1,0 +1,31 @@
+.tabla-vertical{
+  overflow: auto;
+  height: 750px
+}
+
+.stickyhead {
+  background: white;
+  position: sticky;
+  top: 0;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
+.A{
+  color: #d62728;
+}
+
+.G{
+  color: #1f77b4;
+}
+
+.C{
+  color: #2ca02c;
+}
+
+.T{
+  color: #bcbd22;
+}
+
+.gap{
+    color: #8c564b;
+}
