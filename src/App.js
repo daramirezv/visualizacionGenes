@@ -11,7 +11,7 @@ class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { datosPrimerGrafica: [], datosSegundaGrafica: [], nombresGenes: [], datosGraficaPruebas: [], primerValorFiltro: 0, segundoValorFiltro: 100 };
+        this.state = { datosPrimerGrafica: [], datosSegundaGrafica: [], nombresGenes: [], datosGraficaPruebas: [], primerValorFiltro: 0, segundoValorFiltro: 0 };
         this.selecciones = this.selecciones.bind(this);
         this.filtroAppJS = this.filtroAppJS.bind(this);
     }
@@ -174,7 +174,7 @@ class App extends Component {
                 datosSegundaGrafica: resultadoSegundaGrafica,
                 datosGraficaPruebas: resultadoGraficaPruebas,
                 primerValorFiltro: 1,
-                segundoValorFiltro: 100,
+                segundoValorFiltro: resultadoSegundaGrafica.length,
                 nombresGenes: nombres
             })
         })
@@ -192,6 +192,8 @@ class App extends Component {
         let tamanoTotal = this.state.datosSegundaGrafica.length;
         let numerosSobrantes = tamanoTotal % 100;
         let arregloMapeo = []
+
+        arregloMapeo.push(1 + " - " + tamanoTotal);
 
         for (let index = 0; index < tamanoTotal - numerosSobrantes; index += 100) {
             arregloMapeo.push((index + 1) + " - " + (index + 100));
@@ -224,8 +226,8 @@ class App extends Component {
                                 </div>
                             </div>
                         </div>
-                        <AppThirdGraph datosSegundaGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
-                        {/* <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} /> */}
+                        {/* <AppThirdGraph datosSegundaGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} /> */}
+                        <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} />
                         {/* <AppSecondGraph datosGraficaPruebas={this.state.datosGraficaPruebas} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro}/> */}
                     </div> : <h2>Loading...</h2>}
             </div>

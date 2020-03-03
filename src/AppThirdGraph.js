@@ -6,17 +6,29 @@ class AppThirdGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { filtro: "All Genes" };
-        this.filtroSegundaGrafica = this.filtroSegundaGrafica.bind(this);
+        this.state = { primerFiltro: "", segundoFiltro: "" };
+        this.primerFiltroSegundaGrafica = this.primerFiltroSegundaGrafica.bind(this);
+        this.segundoFiltroSegundaGrafica = this.segundoFiltroSegundaGrafica.bind(this);
         this.selecciones = this.selecciones.bind(this);
+        this.primerselectref = React.createRef();
+        this.segundoselectref = React.createRef();
     }
     componentDidMount() {
 
-        var nombresGenes = this.props.nombresGenes;
+        var nombreTodosGenes = this.props.nombresGenes;
+
+        let nombresGenes = []
+        nombresGenes.push(nombreTodosGenes[0]);
+        nombresGenes.push(nombreTodosGenes[1]);
+        var primerSelect = this.primerselectref.current;
+        primerSelect.selectedIndex = 0;
+        var segundoSelect = this.segundoselectref.current;
+        segundoSelect.selectedIndex = 1;
+
         var datosSegundaGrafica = this.props.datosSegundaGrafica;
         var segundoValor = this.props.segundoValor;
         var primerValor = this.props.primerValor;
-        datosSegundaGrafica = datosSegundaGrafica.slice(primerValor-1, segundoValor);
+        datosSegundaGrafica = datosSegundaGrafica.slice(primerValor - 1, segundoValor);
 
         var svg = d3.select("svg");
 
@@ -29,8 +41,8 @@ class AppThirdGraph extends Component {
         var x = d3.scaleLinear().range([0, width]),
             x2 = d3.scaleLinear().range([0, width]),
             y = d3.scaleBand().range([height, 0]),
-            y2 = d3.scaleBand().range([height2, 0]);
-            //color = d3.scaleOrdinal().range(d3.schemeCategory10);
+            y2 = d3.scaleBand().range([height2, 0]),
+            color = d3.scaleOrdinal().range(d3.schemeCategory10);
 
         var xAxis = d3.axisBottom(x),
             xAxis2 = d3.axisBottom(x2),
@@ -81,7 +93,7 @@ class AppThirdGraph extends Component {
             return {
                 category: category2,
                 datapoints: datosSegundaGrafica.map(function (d) {
-                    return { posicion: d.posicion, nucleotido: d[category2.replace( /[\r\n]+/gm, "" )] };
+                    return { posicion: d.posicion, nucleotido: d[category2.replace(/[\r\n]+/gm, "")] };
                 })
             };
         });
@@ -90,7 +102,7 @@ class AppThirdGraph extends Component {
         y.domain(["-", "G", "T", "C", "A"]);
         x2.domain(x.domain());
         y2.domain(y.domain());
-        //color.domain(nombresGenes);
+        color.domain(nombresGenes);
 
         focus.append("g")
             .attr("class", "axis axis--x")
@@ -118,8 +130,7 @@ class AppThirdGraph extends Component {
         Line_chartGroup.append("path")
             .attr("class", "line")
             .attr("d", function (d) { return line(d.datapoints); })
-            //.style("stroke", function (d) { return color(d.category); })
-            .style("stroke", "steelblue" )
+            .style("stroke", function (d) { return color(d.category); })
 
         var ContextGroup = context.selectAll("g")
             .data(concentrations)
@@ -129,8 +140,7 @@ class AppThirdGraph extends Component {
         ContextGroup.append("path")
             .attr("class", "line")
             .attr("d", function (d) { return line2(d.datapoints); })
-            //.style("stroke", function (d) { return color(d.category); })
-            .style("stroke", "steelblue")
+            .style("stroke", function (d) { return color(d.category); })
 
         context.append("g")
             .attr("class", "axis axis--x")
@@ -171,45 +181,45 @@ class AppThirdGraph extends Component {
 
         var svgLegend = d3.select("#legend");
 
-        // svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
+        svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
 
-        // svgLegend.selectAll("mydots")
-        //     .data(nombresGenes)
-        //     .enter()
-        //     .append("circle")
-        //     .attr("cx", margin.left)
-        //     .attr("cy", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
-        //     .attr("r", 7)
-        //     .style("fill", function (d) { return color(d) })
+        svgLegend.selectAll("mydots")
+            .data(nombresGenes)
+            .enter()
+            .append("circle")
+            .attr("cx", margin.left)
+            .attr("cy", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("r", 7)
+            .style("fill", function (d) { return color(d) })
 
-        // svgLegend.selectAll("mylabels")
-        //     .data(nombresGenes)
-        //     .enter()
-        //     .append("text")
-        //     .attr("x", margin.left + 20)
-        //     .attr("y", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
-        //     .text(function (d) { return d })
-        //     .attr("text-anchor", "left")
-        //     .style("alignment-baseline", "middle")
-        //     .style("font-size", "15px")
+        svgLegend.selectAll("mylabels")
+            .data(nombresGenes)
+            .enter()
+            .append("text")
+            .attr("x", margin.left + 20)
+            .attr("y", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .text(function (d) { return d })
+            .attr("text-anchor", "left")
+            .style("alignment-baseline", "middle")
+            .style("font-size", "15px")
     }
 
     componentDidUpdate() {
 
-        let nombresGenes = []
+        let nombresGenes = [];
+        const valorPrimerSelect = this.primerselectref.current.value;
+        const valorSegundoSelect = this.segundoselectref.current.value;
 
-        if (this.state.filtro === "All Genes") {
-            nombresGenes = this.props.nombresGenes
-        }
-        else {
-            nombresGenes = [];
-            nombresGenes.push(this.state.filtro);
+        nombresGenes.push(valorPrimerSelect);
+        
+        if(valorSegundoSelect !== valorPrimerSelect){
+            nombresGenes.push(valorSegundoSelect);
         }
 
         var datosSegundaGrafica = this.props.datosSegundaGrafica;
         var segundoValor = this.props.segundoValor;
         var primerValor = this.props.primerValor;
-        datosSegundaGrafica = datosSegundaGrafica.slice(primerValor-1, segundoValor);
+        datosSegundaGrafica = datosSegundaGrafica.slice(primerValor - 1, segundoValor);
 
         d3.selectAll("svg > *").remove();
 
@@ -223,8 +233,8 @@ class AppThirdGraph extends Component {
         var x = d3.scaleLinear().range([0, width]),
             x2 = d3.scaleLinear().range([0, width]),
             y = d3.scaleBand().range([height, 0]),
-            y2 = d3.scaleBand().range([height2, 0]);
-            //color = d3.scaleOrdinal().range(d3.schemeCategory10);
+            y2 = d3.scaleBand().range([height2, 0]),
+            color = d3.scaleOrdinal().range(d3.schemeCategory10);
 
         var xAxis = d3.axisBottom(x),
             xAxis2 = d3.axisBottom(x2),
@@ -275,7 +285,7 @@ class AppThirdGraph extends Component {
             return {
                 category: category2,
                 datapoints: datosSegundaGrafica.map(function (d) {
-                    return { posicion: d.posicion, nucleotido: d[category2.replace( /[\r\n]+/gm, "" )] };
+                    return { posicion: d.posicion, nucleotido: d[category2.replace(/[\r\n]+/gm, "")] };
                 })
             };
         });
@@ -284,7 +294,7 @@ class AppThirdGraph extends Component {
         y.domain(["-", "G", "T", "C", "A"]);
         x2.domain(x.domain());
         y2.domain(y.domain());
-        //color.domain(nombresGenes);
+        color.domain(nombresGenes);
 
         focus.append("g")
             .attr("class", "axis axis--x")
@@ -312,8 +322,7 @@ class AppThirdGraph extends Component {
         Line_chartGroup.append("path")
             .attr("class", "line")
             .attr("d", function (d) { return line(d.datapoints); })
-            //.style("stroke", function (d) { return color(d.category); })
-            .style("stroke", "steelblue")
+            .style("stroke", function (d) { return color(d.category); })
 
         var ContextGroup = context.selectAll("g")
             .data(concentrations)
@@ -323,8 +332,7 @@ class AppThirdGraph extends Component {
         ContextGroup.append("path")
             .attr("class", "line")
             .attr("d", function (d) { return line2(d.datapoints); })
-            //.style("stroke", function (d) { return color(d.category); })      
-            .style("stroke", "steelblue")
+            .style("stroke", function (d) { return color(d.category); })
 
         context.append("g")
             .attr("class", "axis axis--x")
@@ -365,32 +373,38 @@ class AppThirdGraph extends Component {
 
         var svgLegend = d3.select("#legend");
 
-        // svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
+        svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
 
-        // svgLegend.selectAll("mydots")
-        //     .data(nombresGenes)
-        //     .enter()
-        //     .append("circle")
-        //     .attr("cx", margin.left)
-        //     .attr("cy", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
-        //     .attr("r", 7)
-        //     .style("fill", function (d) { return color(d) })
+        svgLegend.selectAll("mydots")
+            .data(nombresGenes)
+            .enter()
+            .append("circle")
+            .attr("cx", margin.left)
+            .attr("cy", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("r", 7)
+            .style("fill", function (d) { return color(d) })
 
-        // svgLegend.selectAll("mylabels")
-        //     .data(nombresGenes)
-        //     .enter()
-        //     .append("text")
-        //     .attr("x", margin.left + 20)
-        //     .attr("y", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
-        //     .text(function (d) { return d })
-        //     .attr("text-anchor", "left")
-        //     .style("alignment-baseline", "middle")
-        //     .style("font-size", "15px")
+        svgLegend.selectAll("mylabels")
+            .data(nombresGenes)
+            .enter()
+            .append("text")
+            .attr("x", margin.left + 20)
+            .attr("y", function (d, i) { return margin.top + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .text(function (d) { return d })
+            .attr("text-anchor", "left")
+            .style("alignment-baseline", "middle")
+            .style("font-size", "15px")
     }
 
-    filtroSegundaGrafica(event) {
+    primerFiltroSegundaGrafica(event) {
         this.setState({
-            filtro: event.target.value
+            primerFiltro: event.target.value
+        });
+    }
+
+    segundoFiltroSegundaGrafica(event) {
+        this.setState({
+            segundoFiltro: event.target.value
         });
     }
 
@@ -406,13 +420,19 @@ class AppThirdGraph extends Component {
         return (
             <div className="App centrar">
                 <svg className="segundaGrafica" width="1200" height="500"></svg>
-                {/* <svg className="segundaGrafica" width="1200" id="legend"></svg> */}
+                <svg className="segundaGrafica" width="1200" id="legend"></svg>
                 <div className="container">
                     <div className="row">
-                        <div className="col-md">
+                        <div className="col-md-6">
                             <form>
-                                <select width="500" className="form-control" onChange={this.filtroSegundaGrafica}>
-                                    <option defaultValue>All Genes</option>
+                                <select width="500" ref={this.primerselectref} className="form-control" onChange={this.primerFiltroSegundaGrafica}>
+                                    {this.selecciones()}
+                                </select>
+                            </form>
+                        </div>
+                        <div className="col-md-6">
+                            <form>
+                                <select width="500" ref={this.segundoselectref} className="form-control" onChange={this.segundoFiltroSegundaGrafica}>
                                     {this.selecciones()}
                                 </select>
                             </form>
