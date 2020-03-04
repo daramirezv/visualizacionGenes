@@ -1,6 +1,12 @@
 .tabla-vertical{
   overflow: auto;
-  height: 750px
+}
+
+.stickyleft {
+  background: white;
+  position: sticky;
+  left: 0;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 
 .stickyhead {
@@ -28,4 +34,18 @@
 
 .gap{
     color: #8c564b;
+}
+
+.espacioCheckbox{
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.btn{
+	margin: 1em;
+}
+
+.cuerpo{
+  font-family: 'Segoe UI', sans-serif;
+  font-size: small;
 }
