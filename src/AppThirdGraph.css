@@ -3,10 +3,6 @@
 	fill: none;
 	pointer-events: all;
 }
-
-body {
-	font: 10px sans-serif;
-}
   
 .axis path,
 .axis line {
@@ -19,32 +15,6 @@ body {
 	fill: none;
 	stroke: steelblue;
 	stroke-width: 2px;
-}
-  
-#chart {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-}
-
-
-.negro{
-	background-color: black;
-}
-
-.overlay {
-	fill: none;
-	pointer-events: all;
-}
-.lineHoverText {
-	text-shadow:
-	-2px -2px 0 #fff,
-	2px -2px 0 #fff,
-	-2px 2px 0 #fff,
-	2px 2px 0 #fff;
-}
-.hoverCircle {
-	opacity: .75;
 }
 
 .segundaGrafica{

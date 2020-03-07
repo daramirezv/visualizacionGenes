@@ -6,22 +6,22 @@ class AppFourthGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { boxesseleccionados: [] };
         this.posiciones = this.posiciones.bind(this);
-        this.anidada = this.anidada.bind(this);
-        this.checkboxes = this.checkboxes.bind(this);
-        this.filter = this.filter.bind(this);
-        this.selectAll = this.selectAll.bind(this);
-        this.deselectAll = this.deselectAll.bind(this);
-        this.tableref = React.createRef();
-    }
-
-    componentDidMount() {
-        this.selectAll();
+        this.caracteres = this.caracteres.bind(this);
+        this.nombres = this.nombres.bind(this);
     }
 
     componentDidUpdate() {
-        d3.selectAll(".tabla-vertical")
+        d3.selectAll(".tabla-table")
+            .style("height", null);
+        if (d3.selectAll(".tabla-vertical").node().offsetHeight > 750) {
+            d3.selectAll(".tabla-vertical")
+                .style("height", "750px");
+        }
+    }
+
+    componentDidMount() {
+        d3.selectAll(".tabla-table")
             .style("height", null);
         if (d3.selectAll(".tabla-vertical").node().offsetHeight > 750) {
             d3.selectAll(".tabla-vertical")
@@ -30,37 +30,36 @@ class AppFourthGraph extends Component {
     }
 
     posiciones() {
-        let primerValor = this.props.primerValor;
-        let segundoValor = this.props.segundoValor;
-        let datosSegundaGrafica = this.props.datosSegundaGrafica.slice(primerValor - 1, segundoValor);
-
+        const primerValor = this.props.primerValor;
+        const segundoValor = this.props.segundoValor;
+        const datosCuartaGrafica = this.props.datosCuartaGrafica.slice(primerValor - 1, segundoValor);
         return (
-            datosSegundaGrafica.map(function (item, i) {
+            datosCuartaGrafica.map(function (item, i) {
                 return <th scope="col" className="stickyhead" key={i}>{i + primerValor}</th>
             }))
     }
 
-    valores(anidada) {
-        let nombres = this.state.boxesseleccionados;
+    nombres(funcionCaracteres) {
+        const nombres = this.props.nombresGenes;
         return (
             nombres.map(function (item, i) {
                 return (
                     <tr key={i}>
                         <td scope="row" className="stickyleft" key={i}>{item}</td>
-                        {anidada(item)}
+                        {funcionCaracteres(item)}
                     </tr>)
             }))
     }
 
-    anidada(nombreGen) {
-
-        let primerValor = this.props.primerValor;
-        let segundoValor = this.props.segundoValor;
-        let datosSegundaGrafica = this.props.datosSegundaGrafica.slice(primerValor - 1, segundoValor);
+    caracteres(nombreGen) {
+        const primerValor = this.props.primerValor;
+        const segundoValor = this.props.segundoValor;
+        const datosCuartaGrafica = this.props.datosCuartaGrafica.slice(primerValor - 1, segundoValor);
+        let clase;
+        let caracter;
         return (
-            datosSegundaGrafica.map(function (item, i) {
-                let caracter = datosSegundaGrafica[i][nombreGen.replace(/[\r\n]+/gm, "")];
-                let clase = "";
+            datosCuartaGrafica.map(function (item, i) {
+                caracter = datosCuartaGrafica[i][nombreGen.replace(/[\r\n]+/gm, "")];
                 if (caracter === "-") {
                     clase = "gap"
                 }
@@ -71,55 +70,13 @@ class AppFourthGraph extends Component {
             }))
     }
 
-    checkboxes() {
-        let nombres = this.props.nombresGenes;
-        return (
-            nombres.map(function (item, i) {
-                return (<div className="form-check espacioCheckbox" key={i}>
-                    <input className="form-check-input" type="checkbox" id={i} value={item} />
-                    <label className="form-check-label" htmlFor={i}>{item}</label>
-                </div>)
-            }))
-    }
-
-    filter() {
-        let arregloNombres = [];
-
-        let boxes = d3.selectAll(".form-check-input").nodes()
-        boxes.map(function (item, i) {
-            if (item.checked === true) {
-                arregloNombres.push(item.value);
-            }
-        })
-
-        this.setState({
-            boxesseleccionados: arregloNombres
-        });
-    }
-
-    selectAll() {
-        let boxes = d3.selectAll(".form-check-input").nodes()
-        boxes.map(function (item, i) {
-            item.checked = true;
-        })
-        this.filter();
-    }
-
-    deselectAll() {
-        let boxes = d3.selectAll(".form-check-input").nodes()
-        boxes.map(function (item, i) {
-            item.checked = false;
-        })
-        this.filter();
-    }
-
     render() {
         return (
             <div className="cuerpo">
                 <div className="container">
                     <div className="row">
                         <div className="col-md">
-                            <div className="table-responsive tabla-vertical" ref={this.tableref}>
+                            <div className="table-responsive tabla-vertical">
                                 <table className="table table-striped table-bordered">
                                     <thead>
                                         <tr>
@@ -128,22 +85,10 @@ class AppFourthGraph extends Component {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {this.valores(this.anidada)}
+                                        {this.nombres(this.caracteres)}
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-md">
-                            <button className="btn btn-primary" type="submit" onClick={this.filter}>Filter</button>
-                            <button className="btn btn-primary" type="submit" onClick={this.selectAll}>Select All Genes</button>
-                            <button className="btn btn-primary" type="submit" onClick={this.deselectAll}>Deselect All Genes</button>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-md">
-                            {this.checkboxes()}
                         </div>
                     </div>
                 </div>

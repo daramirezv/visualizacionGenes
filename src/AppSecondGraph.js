@@ -11,46 +11,46 @@ class AppSecondGraph extends Component {
 
     componentDidMount() {
 
-        var nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
-        var data = this.props.datosGraficaPruebas;
-        var segundoValor = this.props.segundoValor;
-        var primerValor = this.props.primerValor;
+        const nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
+        let data = this.props.datosGraficaPruebas;
+        const segundoValor = this.props.segundoValor;
+        const primerValor = this.props.primerValor;
         data = data.slice(primerValor-1, segundoValor);
 
-        var series = d3.stack()
+        let series = d3.stack()
             .keys(nombreNucleotidos)
             .offset(d3.stackOffsetDiverging)(data);
 
-        var svg = d3.select("svg");
+        let svg = d3.select("svg");
 
-        var margin = { top: 20, right: 20, bottom: 110, left: 40 },
+        let margin = { top: 20, right: 20, bottom: 110, left: 40 },
             margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             height2 = +svg.attr("height") - margin2.top - margin2.bottom;
 
-        var x = d3.scaleLinear().range([0, width]),
+        let x = d3.scaleLinear().range([0, width]),
             x2 = d3.scaleLinear().range([0, width]),
             y = d3.scaleLinear().range([height, 0]),
             y2 = d3.scaleLinear().range([height2, 0]),
             color = d3.scaleOrdinal().range(["#d62728", "#2ca02c", "#1f77b4", "#bcbd22", "#8c564b"]),
             xBand = d3.scaleBand().range([0, width])
 
-        var xAxis = d3.axisBottom(x),
+        let xAxis = d3.axisBottom(x),
             xAxis2 = d3.axisBottom(x2),
             yAxis = d3.axisLeft(y);
 
-        var brush = d3.brushX()
+        let brush = d3.brushX()
             .extent([[0, 0], [width, height2]])
             .on("brush end", brushed);
 
-        var zoom = d3.zoom()
+        let zoom = d3.zoom()
             .scaleExtent([1, Infinity])
             .translateExtent([[0, 0], [width, height]])
             .extent([[0, 0], [width, height]])
             .on("zoom", zoomed);
 
-        var clip = svg.append("defs").append("clipPath")
+        svg.append("defs").append("clipPath")
             .attr("id", "clip")
             .append("rect")
             .attr("width", width)
@@ -58,16 +58,16 @@ class AppSecondGraph extends Component {
             .attr("x", 0)
             .attr("y", 0);
 
-        var Line_chart = svg.append("g")
+        let Line_chart = svg.append("g")
             .attr("class", "focus")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .attr("clip-path", "url(#clip)");
 
-        var focus = svg.append("g")
+        let focus = svg.append("g")
             .attr("class", "focus")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var context = svg.append("g")
+        let context = svg.append("g")
             .attr("class", "context")
             .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
             .attr("clip-path", "url(#clip)");
@@ -137,7 +137,7 @@ class AppSecondGraph extends Component {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .call(zoom);
 
-        var svgLegend = d3.select("#legend");
+        let svgLegend = d3.select("#legend");
 
         svgLegend.attr("height", 150 + margin.top);
 
@@ -163,7 +163,7 @@ class AppSecondGraph extends Component {
 
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-            var s = d3.event.selection || x2.range();
+            let s = d3.event.selection || x2.range();
             x.domain(s.map(x2.invert, x2));
             Line_chart.selectAll("rect")
                 .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
@@ -176,7 +176,7 @@ class AppSecondGraph extends Component {
         function zoomed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
             xBand.domain(d3.range(x.domain()[0], x.domain()[1]));
-            var t = d3.event.transform;
+            let t = d3.event.transform;
             x.domain(t.rescaleX(x2).domain());
             Line_chart.selectAll("rect")
                 .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
@@ -211,50 +211,48 @@ class AppSecondGraph extends Component {
 
     componentDidUpdate() {
 
-        console.log("wtf");
-
         d3.selectAll("svg > *").remove();
 
-        var nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
-        var data = this.props.datosGraficaPruebas;
-        var segundoValor = this.props.segundoValor;
-        var primerValor = this.props.primerValor;
+        const nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
+        let data = this.props.datosGraficaPruebas;
+        const segundoValor = this.props.segundoValor;
+        const primerValor = this.props.primerValor;
         data = data.slice(primerValor-1, segundoValor);
 
-        var series = d3.stack()
+        let series = d3.stack()
             .keys(nombreNucleotidos)
             .offset(d3.stackOffsetDiverging)(data);
 
-        var svg = d3.select("svg");
+        let svg = d3.select("svg");
 
-        var margin = { top: 20, right: 20, bottom: 110, left: 40 },
+        let margin = { top: 20, right: 20, bottom: 110, left: 40 },
             margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             height2 = +svg.attr("height") - margin2.top - margin2.bottom;
 
-        var x = d3.scaleLinear().range([0, width]),
+        let x = d3.scaleLinear().range([0, width]),
             x2 = d3.scaleLinear().range([0, width]),
             y = d3.scaleLinear().range([height, 0]),
             y2 = d3.scaleLinear().range([height2, 0]),
             color = d3.scaleOrdinal().range(["#d62728", "#2ca02c", "#1f77b4", "#bcbd22", "#8c564b"]),
             xBand = d3.scaleBand().range([0, width])
 
-        var xAxis = d3.axisBottom(x),
+        let xAxis = d3.axisBottom(x),
             xAxis2 = d3.axisBottom(x2),
             yAxis = d3.axisLeft(y);
 
-        var brush = d3.brushX()
+        let brush = d3.brushX()
             .extent([[0, 0], [width, height2]])
             .on("brush end", brushed);
 
-        var zoom = d3.zoom()
+        let zoom = d3.zoom()
             .scaleExtent([1, Infinity])
             .translateExtent([[0, 0], [width, height]])
             .extent([[0, 0], [width, height]])
             .on("zoom", zoomed);
 
-        var clip = svg.append("defs").append("clipPath")
+        svg.append("defs").append("clipPath")
             .attr("id", "clip")
             .append("rect")
             .attr("width", width)
@@ -262,16 +260,16 @@ class AppSecondGraph extends Component {
             .attr("x", 0)
             .attr("y", 0);
 
-        var Line_chart = svg.append("g")
+        let Line_chart = svg.append("g")
             .attr("class", "focus")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .attr("clip-path", "url(#clip)");
 
-        var focus = svg.append("g")
+        let focus = svg.append("g")
             .attr("class", "focus")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var context = svg.append("g")
+        let context = svg.append("g")
             .attr("class", "context")
             .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
             .attr("clip-path", "url(#clip)");
@@ -341,7 +339,7 @@ class AppSecondGraph extends Component {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .call(zoom);
 
-        var svgLegend = d3.select("#legend");
+        let svgLegend = d3.select("#legend");
 
         svgLegend.attr("height", 150 + margin.top);
 
@@ -367,7 +365,7 @@ class AppSecondGraph extends Component {
 
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-            var s = d3.event.selection || x2.range();
+            let s = d3.event.selection || x2.range();
             x.domain(s.map(x2.invert, x2));
             Line_chart.selectAll("rect")
                 .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })
@@ -380,7 +378,7 @@ class AppSecondGraph extends Component {
         function zoomed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
             xBand.domain(d3.range(x.domain()[0], x.domain()[1]));
-            var t = d3.event.transform;
+            let t = d3.event.transform;
             x.domain(t.rescaleX(x2).domain());
             Line_chart.selectAll("rect")
                 .attr('x', function (d) { return x(d.data.posicion) - xBand.bandwidth() * 0.9 / 2 })

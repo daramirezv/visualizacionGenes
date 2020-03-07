@@ -7,68 +7,66 @@ class AppThirdGraph extends Component {
     constructor(props) {
         super(props);
         this.state = { primerFiltro: "", segundoFiltro: "" };
-        this.primerFiltroSegundaGrafica = this.primerFiltroSegundaGrafica.bind(this);
-        this.segundoFiltroSegundaGrafica = this.segundoFiltroSegundaGrafica.bind(this);
+        this.primerFiltroTerceraGrafica = this.primerFiltroTerceraGrafica.bind(this);
+        this.segundoFiltroTerceraGrafica = this.segundoFiltroTerceraGrafica.bind(this);
         this.selecciones = this.selecciones.bind(this);
         this.primerselectref = React.createRef();
         this.segundoselectref = React.createRef();
     }
+
     componentDidMount() {
-
-        var nombreTodosGenes = this.props.nombresGenes;
-
-        let nombresGenes = []
+        const nombreTodosGenes = this.props.nombresGenes;
+        let nombresGenes = [];
         nombresGenes.push(nombreTodosGenes[0]);
         nombresGenes.push(nombreTodosGenes[1]);
-        var primerSelect = this.primerselectref.current;
+        const primerSelect = this.primerselectref.current;
         primerSelect.selectedIndex = 0;
-        var segundoSelect = this.segundoselectref.current;
+        const segundoSelect = this.segundoselectref.current;
         segundoSelect.selectedIndex = 1;
+        let datosTerceraGrafica = this.props.datosTerceraGrafica;
+        const segundoValor = this.props.segundoValor;
+        const primerValor = this.props.primerValor;
+        datosTerceraGrafica = datosTerceraGrafica.slice(primerValor - 1, segundoValor);
 
-        var datosSegundaGrafica = this.props.datosSegundaGrafica;
-        var segundoValor = this.props.segundoValor;
-        var primerValor = this.props.primerValor;
-        datosSegundaGrafica = datosSegundaGrafica.slice(primerValor - 1, segundoValor);
+        let svg = d3.select("svg");
 
-        var svg = d3.select("svg");
-
-        var margin = { top: 20, right: 20, bottom: 110, left: 40 },
+        let margin = { top: 20, right: 20, bottom: 110, left: 40 },
             margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             height2 = +svg.attr("height") - margin2.top - margin2.bottom;
 
-        var x = d3.scaleLinear().range([0, width]),
+        let x = d3.scaleLinear().range([0, width]),
             x2 = d3.scaleLinear().range([0, width]),
             y = d3.scaleBand().range([height, 0]),
             y2 = d3.scaleBand().range([height2, 0]),
             color = d3.scaleOrdinal().range(d3.schemeCategory10);
 
-        var xAxis = d3.axisBottom(x),
+        let xAxis = d3.axisBottom(x),
             xAxis2 = d3.axisBottom(x2),
             yAxis = d3.axisLeft(y);
 
-        var brush = d3.brushX()
+        let brush = d3.brushX()
             .extent([[0, 0], [width, height2]])
             .on("brush end", brushed);
 
-        var zoom = d3.zoom()
+        let zoom = d3.zoom()
             .scaleExtent([1, Infinity])
             .translateExtent([[0, 0], [width, height]])
             .extent([[0, 0], [width, height]])
             .on("zoom", zoomed);
 
-        var line = d3.line()
+        let line = d3.line()
             .curve(d3.curveLinear)
             .x(function (d) { return x(d["posicion"]); })
             .y(function (d) { return y(d["nucleotido"]); });
 
-        var line2 = d3.line()
+        let line2 = d3.line()
             .curve(d3.curveLinear)
             .x(function (d) { return x2(d["posicion"]); })
             .y(function (d) { return y2(d["nucleotido"]); });
 
-        var clip = svg.append("defs").append("svg:clipPath")
+        svg.append("defs").append("svg:clipPath")
             .attr("id", "clip")
             .append("svg:rect")
             .attr("width", width)
@@ -76,29 +74,29 @@ class AppThirdGraph extends Component {
             .attr("x", 0)
             .attr("y", 0);
 
-        var Line_chart = svg.append("g")
+        let Line_chart = svg.append("g")
             .attr("class", "focus")
             .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
             .attr("clip-path", "url(#clip)");
 
-        var focus = svg.append("g")
+        let focus = svg.append("g")
             .attr("class", "focus")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var context = svg.append("g")
+        let context = svg.append("g")
             .attr("class", "context")
             .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-        var concentrations = nombresGenes.map(function (category2) {
+        let concentrations = nombresGenes.map(function (category2) {
             return {
                 category: category2,
-                datapoints: datosSegundaGrafica.map(function (d) {
+                datapoints: datosTerceraGrafica.map(function (d) {
                     return { posicion: d.posicion, nucleotido: d[category2.replace(/[\r\n]+/gm, "")] };
                 })
             };
         });
 
-        x.domain(d3.extent(datosSegundaGrafica, function (d) { return d.posicion; }));
+        x.domain(d3.extent(datosTerceraGrafica, function (d) { return d.posicion; }));
         y.domain(["-", "G", "T", "C", "A"]);
         x2.domain(x.domain());
         y2.domain(y.domain());
@@ -122,7 +120,7 @@ class AppThirdGraph extends Component {
                 .attr("font-weight", "bold")
                 .text("Nucleotide"));
 
-        var Line_chartGroup = Line_chart.selectAll("g")
+        let Line_chartGroup = Line_chart.selectAll("g")
             .data(concentrations)
             .enter()
             .append("g");
@@ -132,7 +130,7 @@ class AppThirdGraph extends Component {
             .attr("d", function (d) { return line(d.datapoints); })
             .style("stroke", function (d) { return color(d.category); })
 
-        var ContextGroup = context.selectAll("g")
+        let ContextGroup = context.selectAll("g")
             .data(concentrations)
             .enter()
             .append("g");
@@ -161,7 +159,7 @@ class AppThirdGraph extends Component {
 
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-            var s = d3.event.selection || x2.range();
+            let s = d3.event.selection || x2.range();
             x.domain(s.map(x2.invert, x2));
             Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
             focus.select(".axis--x").call(xAxis);
@@ -172,14 +170,14 @@ class AppThirdGraph extends Component {
 
         function zoomed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
-            var t = d3.event.transform;
+            let t = d3.event.transform;
             x.domain(t.rescaleX(x2).domain());
             Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
             focus.select(".axis--x").call(xAxis);
             context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
         }
 
-        var svgLegend = d3.select("#legend");
+        let svgLegend = d3.select("#legend");
 
         svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
 
@@ -216,51 +214,51 @@ class AppThirdGraph extends Component {
             nombresGenes.push(valorSegundoSelect);
         }
 
-        var datosSegundaGrafica = this.props.datosSegundaGrafica;
-        var segundoValor = this.props.segundoValor;
-        var primerValor = this.props.primerValor;
-        datosSegundaGrafica = datosSegundaGrafica.slice(primerValor - 1, segundoValor);
+        let datosTerceraGrafica = this.props.datosTerceraGrafica;
+        const segundoValor = this.props.segundoValor;
+        const primerValor = this.props.primerValor;
+        datosTerceraGrafica = datosTerceraGrafica.slice(primerValor - 1, segundoValor);
 
         d3.selectAll("svg > *").remove();
 
-        var svg = d3.select("svg"),
+        let svg = d3.select("svg"),
             margin = { top: 20, right: 20, bottom: 110, left: 40 },
             margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             height2 = +svg.attr("height") - margin2.top - margin2.bottom;
 
-        var x = d3.scaleLinear().range([0, width]),
+        let x = d3.scaleLinear().range([0, width]),
             x2 = d3.scaleLinear().range([0, width]),
             y = d3.scaleBand().range([height, 0]),
             y2 = d3.scaleBand().range([height2, 0]),
             color = d3.scaleOrdinal().range(d3.schemeCategory10);
 
-        var xAxis = d3.axisBottom(x),
+        let xAxis = d3.axisBottom(x),
             xAxis2 = d3.axisBottom(x2),
             yAxis = d3.axisLeft(y);
 
-        var brush = d3.brushX()
+        let brush = d3.brushX()
             .extent([[0, 0], [width, height2]])
             .on("brush end", brushed);
 
-        var zoom = d3.zoom()
+        let zoom = d3.zoom()
             .scaleExtent([1, Infinity])
             .translateExtent([[0, 0], [width, height]])
             .extent([[0, 0], [width, height]])
             .on("zoom", zoomed);
 
-        var line = d3.line()
+        let line = d3.line()
             .curve(d3.curveLinear)
             .x(function (d) { return x(d["posicion"]); })
             .y(function (d) { return y(d["nucleotido"]); });
 
-        var line2 = d3.line()
+        let line2 = d3.line()
             .curve(d3.curveLinear)
             .x(function (d) { return x2(d["posicion"]); })
             .y(function (d) { return y2(d["nucleotido"]); });
 
-        var clip = svg.append("defs").append("svg:clipPath")
+        svg.append("defs").append("svg:clipPath")
             .attr("id", "clip")
             .append("svg:rect")
             .attr("width", width)
@@ -268,29 +266,29 @@ class AppThirdGraph extends Component {
             .attr("x", 0)
             .attr("y", 0);
 
-        var Line_chart = svg.append("g")
+        let Line_chart = svg.append("g")
             .attr("class", "focus")
             .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
             .attr("clip-path", "url(#clip)");
 
-        var focus = svg.append("g")
+        let focus = svg.append("g")
             .attr("class", "focus")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var context = svg.append("g")
+        let context = svg.append("g")
             .attr("class", "context")
             .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-        var concentrations = nombresGenes.map(function (category2) {
+        let concentrations = nombresGenes.map(function (category2) {
             return {
                 category: category2,
-                datapoints: datosSegundaGrafica.map(function (d) {
+                datapoints: datosTerceraGrafica.map(function (d) {
                     return { posicion: d.posicion, nucleotido: d[category2.replace(/[\r\n]+/gm, "")] };
                 })
             };
         });
 
-        x.domain(d3.extent(datosSegundaGrafica, function (d) { return d.posicion; }));
+        x.domain(d3.extent(datosTerceraGrafica, function (d) { return d.posicion; }));
         y.domain(["-", "G", "T", "C", "A"]);
         x2.domain(x.domain());
         y2.domain(y.domain());
@@ -314,7 +312,7 @@ class AppThirdGraph extends Component {
                 .attr("font-weight", "bold")
                 .text("Nucleotide"));
 
-        var Line_chartGroup = Line_chart.selectAll("g")
+        let Line_chartGroup = Line_chart.selectAll("g")
             .data(concentrations)
             .enter()
             .append("g");
@@ -324,7 +322,7 @@ class AppThirdGraph extends Component {
             .attr("d", function (d) { return line(d.datapoints); })
             .style("stroke", function (d) { return color(d.category); })
 
-        var ContextGroup = context.selectAll("g")
+        let ContextGroup = context.selectAll("g")
             .data(concentrations)
             .enter()
             .append("g");
@@ -353,7 +351,7 @@ class AppThirdGraph extends Component {
 
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-            var s = d3.event.selection || x2.range();
+            let s = d3.event.selection || x2.range();
             x.domain(s.map(x2.invert, x2));
             Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
             focus.select(".axis--x").call(xAxis);
@@ -364,14 +362,14 @@ class AppThirdGraph extends Component {
 
         function zoomed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
-            var t = d3.event.transform;
+            let t = d3.event.transform;
             x.domain(t.rescaleX(x2).domain());
             Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
             focus.select(".axis--x").call(xAxis);
             context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
         }
 
-        var svgLegend = d3.select("#legend");
+        let svgLegend = d3.select("#legend");
 
         svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
 
@@ -396,20 +394,20 @@ class AppThirdGraph extends Component {
             .style("font-size", "15px")
     }
 
-    primerFiltroSegundaGrafica(event) {
+    primerFiltroTerceraGrafica(event) {
         this.setState({
             primerFiltro: event.target.value
         });
     }
 
-    segundoFiltroSegundaGrafica(event) {
+    segundoFiltroTerceraGrafica(event) {
         this.setState({
             segundoFiltro: event.target.value
         });
     }
 
     selecciones() {
-        var nombres = this.props.nombresGenes;
+        let nombres = this.props.nombresGenes;
         return (
             nombres.map(function (item, i) {
                 return <option value={item} key={i}>{item}</option>
@@ -425,14 +423,14 @@ class AppThirdGraph extends Component {
                     <div className="row">
                         <div className="col-md-6">
                             <form>
-                                <select width="500" ref={this.primerselectref} className="form-control" onChange={this.primerFiltroSegundaGrafica}>
+                                <select width="500" ref={this.primerselectref} className="form-control" onChange={this.primerFiltroTerceraGrafica}>
                                     {this.selecciones()}
                                 </select>
                             </form>
                         </div>
                         <div className="col-md-6">
                             <form>
-                                <select width="500" ref={this.segundoselectref} className="form-control" onChange={this.segundoFiltroSegundaGrafica}>
+                                <select width="500" ref={this.segundoselectref} className="form-control" onChange={this.segundoFiltroTerceraGrafica}>
                                     {this.selecciones()}
                                 </select>
                             </form>
