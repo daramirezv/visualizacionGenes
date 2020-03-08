@@ -27,6 +27,7 @@ class AppThirdGraph extends Component {
         const segundoValor = this.props.segundoValor;
         const primerValor = this.props.primerValor;
         datosTerceraGrafica = datosTerceraGrafica.slice(primerValor - 1, segundoValor);
+        const esProteina = this.props.esProteina;
 
         let svg = d3.select("svg");
 
@@ -74,10 +75,19 @@ class AppThirdGraph extends Component {
             .attr("x", 0)
             .attr("y", 0);
 
-        let Line_chart = svg.append("g")
-            .attr("class", "focus")
-            .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
-            .attr("clip-path", "url(#clip)");
+        let Line_chart;
+
+        if (!esProteina) {
+            Line_chart = svg.append("g")
+                .attr("class", "focus")
+                .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
+                .attr("clip-path", "url(#clip)");
+        } else {
+            Line_chart = svg.append("g")
+                .attr("class", "focus")
+                .attr("transform", "translate(" + margin.left + "," + (1.4 * margin.top) + ")")
+                .attr("clip-path", "url(#clip)");
+        }
 
         let focus = svg.append("g")
             .attr("class", "focus")
@@ -97,7 +107,13 @@ class AppThirdGraph extends Component {
         });
 
         x.domain(d3.extent(datosTerceraGrafica, function (d) { return d.posicion; }));
-        y.domain(["-", "G", "T", "C", "A"]);
+        if (!esProteina) {
+            y.domain(["-", "G", "T", "C", "A"]);
+        }
+        else {
+            y.domain(["-", "G", "T", "C", "A", "R", "N", "D", "B", "E", "Q", "Z", "H", "I", "L", "K", "M", "F", "P", "S", "W", "Y", "V"]);
+        }
+        
         x2.domain(x.domain());
         y2.domain(y.domain());
         color.domain(nombresGenes);
@@ -207,10 +223,11 @@ class AppThirdGraph extends Component {
         let nombresGenes = [];
         const valorPrimerSelect = this.primerselectref.current.value;
         const valorSegundoSelect = this.segundoselectref.current.value;
+        const esProteina = this.props.esProteina;
 
         nombresGenes.push(valorPrimerSelect);
-        
-        if(valorSegundoSelect !== valorPrimerSelect){
+
+        if (valorSegundoSelect !== valorPrimerSelect) {
             nombresGenes.push(valorSegundoSelect);
         }
 
@@ -266,10 +283,18 @@ class AppThirdGraph extends Component {
             .attr("x", 0)
             .attr("y", 0);
 
-        let Line_chart = svg.append("g")
-            .attr("class", "focus")
-            .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
-            .attr("clip-path", "url(#clip)");
+        let Line_chart;
+        if (!esProteina) {
+            Line_chart = svg.append("g")
+                .attr("class", "focus")
+                .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
+                .attr("clip-path", "url(#clip)");
+        } else {
+            Line_chart = svg.append("g")
+                .attr("class", "focus")
+                .attr("transform", "translate(" + margin.left + "," + (1.4 * margin.top) + ")")
+                .attr("clip-path", "url(#clip)");
+        }
 
         let focus = svg.append("g")
             .attr("class", "focus")
@@ -289,7 +314,12 @@ class AppThirdGraph extends Component {
         });
 
         x.domain(d3.extent(datosTerceraGrafica, function (d) { return d.posicion; }));
-        y.domain(["-", "G", "T", "C", "A"]);
+        if (!esProteina) {
+            y.domain(["-", "G", "T", "C", "A"]);
+        }
+        else {
+            y.domain(["-", "G", "T", "C", "A", "R", "N", "D", "B", "E", "Q", "Z", "H", "I", "L", "K", "M", "F", "P", "S", "W", "Y", "V"]);
+        }
         x2.domain(x.domain());
         y2.domain(y.domain());
         color.domain(nombresGenes);

@@ -7,15 +7,27 @@ class AppSecondGraph extends Component {
     constructor(props) {
         super(props);
         this.state = { filtro: "All Genes" };
+        this.mapeoLetras = this.mapeoLetras.bind(this);
     }
 
     componentDidMount() {
 
-        const nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
+        const esProteina = this.props.esProteina;
+        let funcionMapeoLetras = this.mapeoLetras;
+        let nombreNucleotidos = [];
+
+        if (esProteina) {
+            nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajer", "porcentajen", "porcentajed", "porcentajeb",
+                "porcentajee", "porcentajeq", "porcentajez", "porcentajeh", "porcentajei", "porcentajel", "porcentajek", "porcentajem", "porcentajef",
+                "porcentajep", "porcentajes", "porcentajew", "porcentajey", "porcentajev", "porcentajemenos"];
+        } else {
+            nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
+        }
+
         let data = this.props.datosGraficaPruebas;
         const segundoValor = this.props.segundoValor;
         const primerValor = this.props.primerValor;
-        data = data.slice(primerValor-1, segundoValor);
+        data = data.slice(primerValor - 1, segundoValor);
 
         let series = d3.stack()
             .keys(nombreNucleotidos)
@@ -33,8 +45,17 @@ class AppSecondGraph extends Component {
             x2 = d3.scaleLinear().range([0, width]),
             y = d3.scaleLinear().range([height, 0]),
             y2 = d3.scaleLinear().range([height2, 0]),
-            color = d3.scaleOrdinal().range(["#d62728", "#2ca02c", "#1f77b4", "#bcbd22", "#8c564b"]),
             xBand = d3.scaleBand().range([0, width])
+
+        let color;
+
+        if (esProteina) {
+            color = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#F6EB61", "#B5CF61", "#FFAA52", "#FF82DB", "#A89E81",
+                "#696C71", "#9AFF1C", "#B88BB3", "#45B8AC", "#52703F", "#D7B7AA", "#7D303D", "#E25A06", "#3B4B87",
+                "#7B5EC6", "#CFB023", "#99D6EA", "#C800A1", "#212322", "#AA6B24"]);
+        } else {
+            color = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#F6EB61", "#AA6B24"]);
+        }
 
         let xAxis = d3.axisBottom(x),
             xAxis2 = d3.axisBottom(x2),
@@ -141,25 +162,48 @@ class AppSecondGraph extends Component {
 
         svgLegend.attr("height", 150 + margin.top);
 
-        svgLegend.selectAll("mylabels")
-            .data(nombreNucleotidos)
-            .enter()
-            .append("text")
-            .attr("x", function (d, i) { return margin.left + 415 + i * 75 })
-            .attr("y", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
-            .text(function (d) { return mapeoLetras(d) })
-            .attr("text-anchor", "left")
-            .style("alignment-baseline", "middle")
-            .style("font-size", "15px")
+        if (esProteina) {
+            svgLegend.selectAll("mylabels")
+                .data(nombreNucleotidos)
+                .enter()
+                .append("text")
+                .attr("x", function (d, i) { return margin.left + 15 + i * 50 })
+                .attr("y", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .text(function (d) { return funcionMapeoLetras(d) })
+                .attr("text-anchor", "left")
+                .style("alignment-baseline", "middle")
+                .style("font-size", "15px")
 
-        svgLegend.selectAll("mydots")
-            .data(nombreNucleotidos)
-            .enter()
-            .append("circle")
-            .attr("cx", function (d, i) { return margin.left + 400 + i * 75 })
-            .attr("cy", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
-            .attr("r", 7)
-            .style("fill", (d, i) => color(i))
+            svgLegend.selectAll("mydots")
+                .data(nombreNucleotidos)
+                .enter()
+                .append("circle")
+                .attr("cx", function (d, i) { return margin.left + i * 50 })
+                .attr("cy", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("r", 7)
+                .style("fill", (d, i) => color(i))
+        }
+        else {
+            svgLegend.selectAll("mylabels")
+                .data(nombreNucleotidos)
+                .enter()
+                .append("text")
+                .attr("x", function (d, i) { return margin.left + 415 + i * 75 })
+                .attr("y", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .text(function (d) { return funcionMapeoLetras(d) })
+                .attr("text-anchor", "left")
+                .style("alignment-baseline", "middle")
+                .style("font-size", "15px")
+
+            svgLegend.selectAll("mydots")
+                .data(nombreNucleotidos)
+                .enter()
+                .append("circle")
+                .attr("cx", function (d, i) { return margin.left + 400 + i * 75 })
+                .attr("cy", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("r", 7)
+                .style("fill", (d, i) => color(i))
+        }
 
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
@@ -191,21 +235,6 @@ class AppSecondGraph extends Component {
 
         function stackMax(serie) {
             return d3.max(serie, function (d) { return d[1]; });
-        }
-
-        function mapeoLetras(d) {
-            switch (d) {
-                case "porcentajea":
-                    return "A";
-                case "porcentajeg":
-                    return "G";
-                case "porcentajec":
-                    return "C";
-                case "porcentajet":
-                    return "T";
-                default:
-                    return "Gap";
-            }
         }
     }
 
@@ -213,11 +242,22 @@ class AppSecondGraph extends Component {
 
         d3.selectAll("svg > *").remove();
 
-        const nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
+        const esProteina = this.props.esProteina;
+        let funcionMapeoLetras = this.mapeoLetras;
+        let nombreNucleotidos = [];
+
+        if (esProteina) {
+            nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajer", "porcentajen", "porcentajed", "porcentajeb",
+                "porcentajee", "porcentajeq", "porcentajez", "porcentajeh", "porcentajei", "porcentajel", "porcentajek", "porcentajem", "porcentajef",
+                "porcentajep", "porcentajes", "porcentajew", "porcentajey", "porcentajev", "porcentajemenos"];
+        } else {
+            nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
+        }
+
         let data = this.props.datosGraficaPruebas;
         const segundoValor = this.props.segundoValor;
         const primerValor = this.props.primerValor;
-        data = data.slice(primerValor-1, segundoValor);
+        data = data.slice(primerValor - 1, segundoValor);
 
         let series = d3.stack()
             .keys(nombreNucleotidos)
@@ -235,8 +275,17 @@ class AppSecondGraph extends Component {
             x2 = d3.scaleLinear().range([0, width]),
             y = d3.scaleLinear().range([height, 0]),
             y2 = d3.scaleLinear().range([height2, 0]),
-            color = d3.scaleOrdinal().range(["#d62728", "#2ca02c", "#1f77b4", "#bcbd22", "#8c564b"]),
-            xBand = d3.scaleBand().range([0, width])
+            xBand = d3.scaleBand().range([0, width]);
+
+        let color;
+
+        if (esProteina) {
+            color = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#F6EB61", "#B5CF61", "#FFAA52", "#FF82DB", "#A89E81",
+                "#696C71", "#9AFF1C", "#B88BB3", "#45B8AC", "#52703F", "#D7B7AA", "#7D303D", "#E25A06", "#3B4B87",
+                "#7B5EC6", "#CFB023", "#99D6EA", "#C800A1", "#212322", "#AA6B24"]);
+        } else {
+            color = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#F6EB61", "#AA6B24"]);
+        }
 
         let xAxis = d3.axisBottom(x),
             xAxis2 = d3.axisBottom(x2),
@@ -343,25 +392,48 @@ class AppSecondGraph extends Component {
 
         svgLegend.attr("height", 150 + margin.top);
 
-        svgLegend.selectAll("mylabels")
-            .data(nombreNucleotidos)
-            .enter()
-            .append("text")
-            .attr("x", function (d, i) { return margin.left + 415 + i * 75 })
-            .attr("y", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
-            .text(function (d) { return mapeoLetras(d) })
-            .attr("text-anchor", "left")
-            .style("alignment-baseline", "middle")
-            .style("font-size", "15px")
+        if (esProteina) {
+            svgLegend.selectAll("mylabels")
+                .data(nombreNucleotidos)
+                .enter()
+                .append("text")
+                .attr("x", function (d, i) { return margin.left + 15 + i * 50 })
+                .attr("y", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .text(function (d) { return funcionMapeoLetras(d) })
+                .attr("text-anchor", "left")
+                .style("alignment-baseline", "middle")
+                .style("font-size", "15px")
 
-        svgLegend.selectAll("mydots")
-            .data(nombreNucleotidos)
-            .enter()
-            .append("circle")
-            .attr("cx", function (d, i) { return margin.left + 400 + i * 75 })
-            .attr("cy", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
-            .attr("r", 7)
-            .style("fill", (d, i) => color(i))
+            svgLegend.selectAll("mydots")
+                .data(nombreNucleotidos)
+                .enter()
+                .append("circle")
+                .attr("cx", function (d, i) { return margin.left + i * 50 })
+                .attr("cy", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("r", 7)
+                .style("fill", (d, i) => color(i))
+        }
+        else {
+            svgLegend.selectAll("mylabels")
+                .data(nombreNucleotidos)
+                .enter()
+                .append("text")
+                .attr("x", function (d, i) { return margin.left + 415 + i * 75 })
+                .attr("y", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .text(function (d) { return funcionMapeoLetras(d) })
+                .attr("text-anchor", "left")
+                .style("alignment-baseline", "middle")
+                .style("font-size", "15px")
+
+            svgLegend.selectAll("mydots")
+                .data(nombreNucleotidos)
+                .enter()
+                .append("circle")
+                .attr("cx", function (d, i) { return margin.left + 400 + i * 75 })
+                .attr("cy", margin.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("r", 7)
+                .style("fill", (d, i) => color(i))
+        }
 
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
@@ -394,20 +466,56 @@ class AppSecondGraph extends Component {
         function stackMax(serie) {
             return d3.max(serie, function (d) { return d[1]; });
         }
+    }
 
-        function mapeoLetras(d) {
-            switch (d) {
-                case "porcentajea":
-                    return "A";
-                case "porcentajeg":
-                    return "G";
-                case "porcentajec":
-                    return "C";
-                case "porcentajet":
-                    return "T";
-                default:
-                    return "Gap";
-            }
+    mapeoLetras(d) {
+        switch (d) {
+            case "porcentajea":
+                return "A";
+            case "porcentajeg":
+                return "G";
+            case "porcentajec":
+                return "C";
+            case "porcentajet":
+                return "T";
+            case "porcentajer":
+                return "R";
+            case "porcentajen":
+                return "N";
+            case "porcentajed":
+                return "D";
+            case "porcentajeb":
+                return "B";
+            case "porcentajee":
+                return "E";
+            case "porcentajeq":
+                return "Q";
+            case "porcentajez":
+                return "Z";
+            case "porcentajeh":
+                return "H";
+            case "porcentajei":
+                return "I";
+            case "porcentajel":
+                return "L";
+            case "porcentajek":
+                return "K";
+            case "porcentajem":
+                return "M";
+            case "porcentajef":
+                return "F";
+            case "porcentajep":
+                return "P";
+            case "porcentajes":
+                return "S";
+            case "porcentajew":
+                return "W";
+            case "porcentajey":
+                return "Y";
+            case "porcentajev":
+                return "V";
+            default:
+                return "Gap";
         }
     }
 

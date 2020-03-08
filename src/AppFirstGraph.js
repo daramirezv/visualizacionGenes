@@ -10,7 +10,14 @@ class AppFirstGraph extends Component {
 
     componentDidMount() {
 
-        const resultadofinal = this.props.datosPrimerGrafica;
+        let resultadofinal = this.props.datosPrimerGrafica;
+        const segundoValor = this.props.segundoValor;
+        const primerValor = this.props.primerValor;
+
+        resultadofinal = resultadofinal.filter(function (element) {
+            return element.posicion >= (primerValor - 1) && element.posicion <= (segundoValor);
+        });
+
 
         let svg = d3.select("svg"),
             margin = { top: 20, right: 20, bottom: 110, left: 40 },
@@ -139,7 +146,13 @@ class AppFirstGraph extends Component {
 
         d3.selectAll("svg > *").remove();
 
-        const resultadofinal = this.props.datosPrimerGrafica;
+        let resultadofinal = this.props.datosPrimerGrafica;
+        const segundoValor = this.props.segundoValor;
+        const primerValor = this.props.primerValor;
+
+        resultadofinal = resultadofinal.filter(function (element) {
+            return element.posicion >= (primerValor - 1) && element.posicion <= (segundoValor);
+        });
 
         let svg = d3.select("svg"),
             margin = { top: 20, right: 20, bottom: 110, left: 40 },
