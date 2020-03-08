@@ -5,8 +5,9 @@ import AppFirstGraph from './AppFirstGraph';
 import AppSecondGraph from './AppSecondGraph';
 import AppThirdGraph from './AppThirdGraph';
 import AppFourthGraph from './AppFourthGraph';
-//import cancer from './archivoJorge.txt';
-import cancer from './proteinasfasta.txt';
+import AppFifthGraph from './AppFifthGraph';
+import cancer from './archivoJorge.txt';
+//import cancer from './proteinasfasta.txt';
 
 class App extends Component {
 
@@ -270,10 +271,29 @@ class App extends Component {
                 }
             }
 
+            //QUINTA GRAFICA
+            let resultadoQuintaGrafica = [];
+            let llaves = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet"];
+            let nombreMayor;
+            let valorMayor;
+
+            resultadoSegundaGrafica.map(function (item, i) {
+                nombreMayor = null;
+                valorMayor = 0;
+                llaves.forEach(element => {
+                    if(item[element] > valorMayor){
+                        nombreMayor = element;
+                        valorMayor = item[element];
+                    } 
+                });
+                resultadoQuintaGrafica.push(new myObjectQuintaGrafica(i+1, nombreMayor))
+            })
+
             this.setState({
                 datosPrimerGrafica: resultadoPrimeraGrafica,
                 datosSegundaGrafica: resultadoTerceraGrafica,
                 datosGraficaPruebas: resultadoSegundaGrafica,
+                datosQuintaGrafica: resultadoQuintaGrafica,
                 primerValorFiltro: 1,
                 boxesseleccionados: nombres,
                 segundoValorFiltro: resultadoTerceraGrafica.length,
@@ -431,13 +451,15 @@ class App extends Component {
             }
         }
 
+        console.log(resultadoSegundaGrafica);
+
         this.setState({
             boxesseleccionados: arregloNombres,
             datosGraficaPruebas: resultadoSegundaGrafica,
             datosPrimerGrafica: resultadoPrimeraGrafica
         });
 
-        
+
     }
 
     selectAll() {
@@ -485,9 +507,10 @@ class App extends Component {
                             </div>
                         </div>
                         {/* <AppThirdGraph esProteina={this.state.esProteina} datosTerceraGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} /> */}
-                        <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro}/>
+                        {/* <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro}/> */}
                         {/* <AppSecondGraph esProteina={this.state.esProteina} datosGraficaPruebas={this.state.datosGraficaPruebas} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} /> */}
                         {/* <AppFourthGraph nombresGenes={this.state.boxesseleccionados} datosCuartaGrafica={this.state.datosSegundaGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} /> */}
+                        <AppFifthGraph datosQuintaGrafica={this.state.datosQuintaGrafica} />
                     </div> : <h2>Loading...</h2>}
             </div>
         );
@@ -509,6 +532,13 @@ class myObjectSegundaGrafica {
         this.porcentajeg = porcentajeg;
         this.porcentajet = porcentajet;
         this.porcentajemenos = porcentajemenos;
+    }
+}
+
+class myObjectQuintaGrafica {
+    constructor(posicion, letra) {
+        this.posicion = posicion;
+        this.letra = letra;
     }
 }
 
