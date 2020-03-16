@@ -7,7 +7,7 @@ import AppThirdGraph from './AppThirdGraph';
 import AppFourthGraph from './AppFourthGraph';
 import AppFifthGraph from './AppFifthGraph';
 import cancer from './archivoJorge.txt';
-//import cancer from './proteinasfasta.txt';
+// import cancer from './proteinasfasta.txt';
 
 class App extends Component {
 
@@ -510,7 +510,7 @@ class App extends Component {
                         {/* <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro}/> */}
                         {/* <AppSecondGraph esProteina={this.state.esProteina} datosGraficaPruebas={this.state.datosGraficaPruebas} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} /> */}
                         {/* <AppFourthGraph nombresGenes={this.state.boxesseleccionados} datosCuartaGrafica={this.state.datosSegundaGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} /> */}
-                        <AppFifthGraph datosQuintaGrafica={this.state.datosQuintaGrafica} />
+                        {!this.state.esProteina ? <AppFifthGraph datosQuintaGrafica={this.state.datosQuintaGrafica} />:<p></p>}
                     </div> : <h2>Loading...</h2>}
             </div>
         );

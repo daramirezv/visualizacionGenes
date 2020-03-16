@@ -1,15 +1,17 @@
 import React, { Component } from "react";
-import * as d3 from "d3";
 import './AppFifthGraph.css';
 
 class AppFifthGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { solucion1: [], solucion2: [], solucion3: [] };
+        this.state = { solucion1: [], solucion2: [], solucion3: [], cadenaOriginal: [] };
         this.posiciones = this.posiciones.bind(this);
         this.valores = this.valores.bind(this);
         this.mapeocaracteres = this.mapeocaracteres.bind(this);
+        this.original = this.original.bind(this);
+        this.ultimaPosicion = this.ultimaPosicion.bind(this);
+        this.download = this.download.bind(this);
     }
 
     componentDidMount() {
@@ -50,8 +52,8 @@ class AppFifthGraph extends Component {
 
         diccionario["UAU"] = "T";
         diccionario["UAC"] = "T";
-        diccionario["UAA"] = "Stop";
-        diccionario["UAG"] = "Stop";
+        diccionario["UAA"] = "stop";
+        diccionario["UAG"] = "stop";
         diccionario["CAU"] = "H";
         diccionario["CAC"] = "H";
         diccionario["CAA"] = "Q";
@@ -67,7 +69,7 @@ class AppFifthGraph extends Component {
 
         diccionario["UGU"] = "C";
         diccionario["UGC"] = "C";
-        diccionario["UGA"] = "Stop";
+        diccionario["UGA"] = "stop";
         diccionario["UGG"] = "W";
         diccionario["CGU"] = "R";
         diccionario["CGC"] = "R";
@@ -85,12 +87,17 @@ class AppFifthGraph extends Component {
         const datos = this.props.datosQuintaGrafica;
         let codon;
         let traduccion;
+        let cadenaOriginal = [];
         let solucion1 = [];
         let solucion2 = [];
         let solucion3 = [];
         let valor1;
         let valor2;
         let valor3;
+
+        for (let index = 0; index < datos.length; index++) {
+            cadenaOriginal.push(this.mapeocaracteres(datos[index].letra));
+        }
 
         for (let index = 0; index + 2 < datos.length; index += 3) {
 
@@ -121,8 +128,9 @@ class AppFifthGraph extends Component {
             traduccion = diccionario[codon];
             solucion3.push(traduccion);
         }
-        
+
         this.setState({
+            cadenaOriginal: cadenaOriginal,
             solucion1: solucion1,
             solucion2: solucion2,
             solucion3: solucion3
@@ -130,9 +138,9 @@ class AppFifthGraph extends Component {
     }
 
     posiciones() {
-        const primerArreglo = this.state.solucion1;
+        const cadenaOriginal = this.state.cadenaOriginal;
         return (
-            primerArreglo.map(function (item, i) {
+            cadenaOriginal.map(function (item, i) {
                 return <th scope="col" className="tableheadleft" key={i}>{i + 1}</th>
             }))
     }
@@ -152,7 +160,49 @@ class AppFifthGraph extends Component {
         }
         return (
             arreglo.map(function (item, i) {
-                return (<td className={arreglo[i] + "tabla"} key={i}><b>{arreglo[i]}</b></td>)
+                return (<td className={arreglo[i] + "tabla"} key={i} colSpan="3"><b>{arreglo[i]}</b></td>)
+            }))
+    }
+
+    ultimaPosicion(numeroSolucion) {
+        let sobrante;
+        let totalSolucion;
+        let total = this.state.cadenaOriginal.length;
+        switch (numeroSolucion) {
+            case 1:
+                totalSolucion = 3 * this.state.solucion1.length;
+                sobrante = total - totalSolucion;
+                break;
+            case 2:
+                totalSolucion = 3 * this.state.solucion2.length;
+                sobrante = total - totalSolucion + 1;
+                break;
+            default:
+                totalSolucion = 3 * this.state.solucion3.length;
+                sobrante = total - totalSolucion + 2;
+                break;
+        }
+        if (sobrante !== 0) {
+            return <td colSpan={sobrante}></td>
+        }
+    }
+
+    original() {
+        let cadenaOriginal = this.state.cadenaOriginal;
+        let clase;
+        return (
+            cadenaOriginal.map(function (item, i) {
+                if (item === "-") {
+                    clase = "gap";
+                }
+                if (item === "U") {
+                    item = "T";
+                    clase = "T";
+                }
+                else {
+                    clase = item;
+                }
+                return (<td className={clase} key={i}><b>{item}</b></td>)
             }))
     }
 
@@ -167,6 +217,44 @@ class AppFifthGraph extends Component {
             default:
                 return "C"
         }
+    }
+
+    download() {
+        let element = document.createElement('a');
+        const solucion1 = this.state.solucion1;
+        const solucion2 = this.state.solucion2;
+        const solucion3 = this.state.solucion3;
+
+        let texto = ">First Solution\n";
+
+        for (let index = 0; index < solucion1.length; index++) {
+            if(index % 60 === 0 && index !== 0){
+                texto += "\n";
+            }
+            texto += solucion1[index];
+        }
+
+        texto += "\n>Second Solution\n";
+
+        for (let index = 0; index < solucion2.length; index++) {
+            if(index % 60 === 0 && index !== 0){
+                texto += "\n";
+            }
+            texto += solucion2[index];
+        }
+
+        texto += "\n>Third Solution\n";
+
+        for (let index = 0; index < solucion3.length; index++) {
+            if(index % 60 === 0 && index !== 0){
+                texto += "\n";
+            }
+            texto += solucion3[index];
+        }
+
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(texto));
+        element.setAttribute('download', "hello.txt");
+        element.click();
     }
 
     render() {
@@ -187,18 +275,32 @@ class AppFifthGraph extends Component {
                                         <tr>
                                             <td scope="row" className="tableheadleft"><b>1</b></td>
                                             {this.valores(1)}
+                                            {this.ultimaPosicion(1)}
                                         </tr>
                                         <tr>
                                             <td scope="row" className="tableheadleft"><b>2</b></td>
+                                            <td></td>
                                             {this.valores(2)}
+                                            {this.ultimaPosicion(2)}
                                         </tr>
                                         <tr>
                                             <td scope="row" className="tableheadleft"><b>3</b></td>
+                                            <td colSpan="2"></td>
                                             {this.valores(3)}
+                                            {this.ultimaPosicion(3)}
+                                        </tr>
+                                        <tr>
+                                            <td scope="row" className="tableheadleft"><b>Nucleotides</b></td>
+                                            {this.original()}
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md">
+                            <button className="btn btn-primary" type="submit" onClick={this.download}>Download Table</button>
                         </div>
                     </div>
                 </div>
