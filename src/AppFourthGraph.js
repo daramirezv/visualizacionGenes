@@ -72,7 +72,7 @@ class AppFourthGraph extends Component {
 
     render() {
         return (
-            <div className="cuerpo">
+            <div className="cuerpo cuartaGraficaMargen">
                 <div className="container">
                     <div className="row">
                         <div className="col-md">

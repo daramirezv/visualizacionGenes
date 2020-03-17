@@ -17,7 +17,7 @@
 	stroke-width: 2px;
 }
 
-.segundaGrafica{
+.terceraGraficaBlock{
 	display: block
 }
 
@@ -25,4 +25,8 @@
 	position: absolute;
 	left: 50%;
 	transform: translate(-50%, 0);
+}
+
+.terceraGraficaMargen{
+	margin-top: 1300px;
 }

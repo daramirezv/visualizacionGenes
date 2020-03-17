@@ -33,7 +33,7 @@ class AppSecondGraph extends Component {
             .keys(nombreNucleotidos)
             .offset(d3.stackOffsetDiverging)(data);
 
-        let svg = d3.select("svg");
+        let svg = d3.select("#svg2");
 
         let margin = { top: 20, right: 20, bottom: 110, left: 40 },
             margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
@@ -158,7 +158,7 @@ class AppSecondGraph extends Component {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .call(zoom);
 
-        let svgLegend = d3.select("#legend");
+        let svgLegend = d3.select("#legend2");
 
         svgLegend.attr("height", 150 + margin.top);
 
@@ -240,7 +240,8 @@ class AppSecondGraph extends Component {
 
     componentDidUpdate() {
 
-        d3.selectAll("svg > *").remove();
+        d3.selectAll("#svg2 > *").remove();
+        d3.selectAll("#legend2 > *").remove();
 
         const esProteina = this.props.esProteina;
         let funcionMapeoLetras = this.mapeoLetras;
@@ -263,7 +264,7 @@ class AppSecondGraph extends Component {
             .keys(nombreNucleotidos)
             .offset(d3.stackOffsetDiverging)(data);
 
-        let svg = d3.select("svg");
+        let svg = d3.select("#svg2");
 
         let margin = { top: 20, right: 20, bottom: 110, left: 40 },
             margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
@@ -388,7 +389,7 @@ class AppSecondGraph extends Component {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .call(zoom);
 
-        let svgLegend = d3.select("#legend");
+        let svgLegend = d3.select("#legend2");
 
         svgLegend.attr("height", 150 + margin.top);
 
@@ -521,9 +522,9 @@ class AppSecondGraph extends Component {
 
     render() {
         return (
-            <div className="App centrar">
-                <svg className="segundaGrafica" width="1200" height="500"></svg>
-                <svg className="segundaGrafica" width="1200" id="legend"></svg>
+            <div className="App centrar segundaGraficaMargen">
+                <svg id="svg2" className="segundaGraficaBlock" width="1200" height="500"></svg>
+                <svg id="legend2" className="segundaGraficaBlock" width="1200"></svg>
             </div>
         );
     }

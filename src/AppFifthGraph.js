@@ -259,11 +259,11 @@ class AppFifthGraph extends Component {
 
     render() {
         return (
-            <div className="cuerpo">
+            <div className="cuerpo quintaGraficaMargen">
                 <div className="container">
                     <div className="row">
                         <div className="col-md">
-                            <div className="table-responsive tabla-vertical">
+                            <div className="table-responsive">
                                 <table className="table table-striped table-bordered">
                                     <thead>
                                         <tr>

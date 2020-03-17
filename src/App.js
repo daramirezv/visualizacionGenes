@@ -23,6 +23,7 @@ class App extends Component {
         this.shannon = this.shannon.bind(this);
         this.objetoSegundaGrafica = this.objetoSegundaGrafica.bind(this);
         this.objetoSegundaGraficaProteinas = this.objetoSegundaGraficaProteinas.bind(this);
+        this.handleFile = this.handleFile.bind(this);
         this.tableref = React.createRef();
     }
 
@@ -128,9 +129,11 @@ class App extends Component {
         return respuesta;
     }
 
-    componentDidMount() {
+    handleFile(e) {
 
-        d3.text(cancer).then(data => {
+        let reader = new FileReader();
+        reader.onload = function () {
+            const data = reader.result;
             let resultadoPrimeraGrafica = [];
             let resultadoTerceraGrafica = [];
             let resultadoSegundaGrafica = [];
@@ -281,12 +284,12 @@ class App extends Component {
                 nombreMayor = null;
                 valorMayor = 0;
                 llaves.forEach(element => {
-                    if(item[element] > valorMayor){
+                    if (item[element] > valorMayor) {
                         nombreMayor = element;
                         valorMayor = item[element];
-                    } 
+                    }
                 });
-                resultadoQuintaGrafica.push(new myObjectQuintaGrafica(i+1, nombreMayor))
+                resultadoQuintaGrafica.push(new myObjectQuintaGrafica(i + 1, nombreMayor))
             })
 
             this.setState({
@@ -311,7 +314,9 @@ class App extends Component {
                     .style("height", null)
                     .style("overflow", "auto");
             }
-        })
+        }.bind(this);
+
+        reader.readAsText(e);
     }
 
     filtroAppJS(event) {
@@ -506,12 +511,25 @@ class App extends Component {
                                 </div>
                             </div>
                         </div>
-                        {/* <AppThirdGraph esProteina={this.state.esProteina} datosTerceraGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} /> */}
-                        {/* <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro}/> */}
-                        {/* <AppSecondGraph esProteina={this.state.esProteina} datosGraficaPruebas={this.state.datosGraficaPruebas} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} /> */}
-                        {/* <AppFourthGraph nombresGenes={this.state.boxesseleccionados} datosCuartaGrafica={this.state.datosSegundaGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} /> */}
-                        {!this.state.esProteina ? <AppFifthGraph datosQuintaGrafica={this.state.datosQuintaGrafica} />:<p></p>}
-                    </div> : <h2>Loading...</h2>}
+                        {!this.state.esProteina ? <AppFifthGraph datosQuintaGrafica={this.state.datosQuintaGrafica} /> : <p></p>}
+                        <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
+                        <AppSecondGraph esProteina={this.state.esProteina} datosGraficaPruebas={this.state.datosGraficaPruebas} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
+                        <AppThirdGraph esProteina={this.state.esProteina} datosTerceraGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
+                        <AppFourthGraph nombresGenes={this.state.boxesseleccionados} datosCuartaGrafica={this.state.datosSegundaGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
+                    </div> : <div className="cuerpo">
+                        <div className="container">
+                            <div className="row">
+                                <div className="col-md">
+                                    <form>
+                                        <div className="form-group">
+                                            <label htmlFor="exampleFormControlFile1">Example file input</label>
+                                            <input type="file" className="form-control-file" id="exampleFormControlFile1" onChange={e => this.handleFile(e.target.files[0])} />
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>}
             </div>
         );
     }

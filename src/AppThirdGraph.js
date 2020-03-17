@@ -29,7 +29,7 @@ class AppThirdGraph extends Component {
         datosTerceraGrafica = datosTerceraGrafica.slice(primerValor - 1, segundoValor);
         const esProteina = this.props.esProteina;
 
-        let svg = d3.select("svg");
+        let svg = d3.select("#svg3");
 
         let margin = { top: 20, right: 20, bottom: 110, left: 40 },
             margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
@@ -193,7 +193,7 @@ class AppThirdGraph extends Component {
             context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
         }
 
-        let svgLegend = d3.select("#legend");
+        let svgLegend = d3.select("#legend3");
 
         svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
 
@@ -236,9 +236,10 @@ class AppThirdGraph extends Component {
         const primerValor = this.props.primerValor;
         datosTerceraGrafica = datosTerceraGrafica.slice(primerValor - 1, segundoValor);
 
-        d3.selectAll("svg > *").remove();
+        d3.selectAll("#svg3 > *").remove();
+        d3.selectAll("#legend3 > *").remove();
 
-        let svg = d3.select("svg"),
+        let svg = d3.select("#svg3"),
             margin = { top: 20, right: 20, bottom: 110, left: 40 },
             margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
             width = +svg.attr("width") - margin.left - margin.right,
@@ -399,7 +400,7 @@ class AppThirdGraph extends Component {
             context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
         }
 
-        let svgLegend = d3.select("#legend");
+        let svgLegend = d3.select("#legend3");
 
         svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
 
@@ -446,9 +447,9 @@ class AppThirdGraph extends Component {
 
     render() {
         return (
-            <div className="App centrar">
-                <svg className="segundaGrafica" width="1200" height="500"></svg>
-                <svg className="segundaGrafica" width="1200" id="legend"></svg>
+            <div className="App centrar terceraGraficaMargen">
+                <svg id="svg3" className="terceraGraficaBlock" width="1200" height="500"></svg>
+                <svg id="legend3" className="terceraGraficaBlock" width="1200"></svg>
                 <div className="container">
                     <div className="row">
                         <div className="col-md-6">
