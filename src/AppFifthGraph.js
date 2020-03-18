@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+import Tooltip from './Tooltip';
 import './AppFifthGraph.css';
 
 class AppFifthGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { solucion1: [], solucion2: [], solucion3: [], cadenaOriginal: [] };
+        this.state = { solucion1: [], solucion2: [], solucion3: [], cadenaOriginal: [], informacion5: "Hola5" };
         this.posiciones = this.posiciones.bind(this);
         this.valores = this.valores.bind(this);
         this.mapeocaracteres = this.mapeocaracteres.bind(this);
@@ -228,7 +229,7 @@ class AppFifthGraph extends Component {
         let texto = ">First Solution\n";
 
         for (let index = 0; index < solucion1.length; index++) {
-            if(index % 60 === 0 && index !== 0){
+            if (index % 60 === 0 && index !== 0) {
                 texto += "\n";
             }
             texto += solucion1[index];
@@ -237,7 +238,7 @@ class AppFifthGraph extends Component {
         texto += "\n>Second Solution\n";
 
         for (let index = 0; index < solucion2.length; index++) {
-            if(index % 60 === 0 && index !== 0){
+            if (index % 60 === 0 && index !== 0) {
                 texto += "\n";
             }
             texto += solucion2[index];
@@ -246,7 +247,7 @@ class AppFifthGraph extends Component {
         texto += "\n>Third Solution\n";
 
         for (let index = 0; index < solucion3.length; index++) {
-            if(index % 60 === 0 && index !== 0){
+            if (index % 60 === 0 && index !== 0) {
                 texto += "\n";
             }
             texto += solucion3[index];
@@ -260,6 +261,7 @@ class AppFifthGraph extends Component {
     render() {
         return (
             <div className="cuerpo quintaGraficaMargen">
+                <h1 className="margentitulo5">Translation to Amino Acids <Tooltip placement="right" trigger="click" tooltip={this.state.informacion5}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
                 <div className="container">
                     <div className="row">
                         <div className="col-md">
@@ -300,7 +302,7 @@ class AppFifthGraph extends Component {
                     </div>
                     <div className="row">
                         <div className="col-md">
-                            <button className="btn btn-primary" type="submit" onClick={this.download}>Download Table</button>
+                            <button className="btn btn-dark" type="submit" onClick={this.download}>Download Table</button>
                         </div>
                     </div>
                 </div>
@@ -310,3 +312,24 @@ class AppFifthGraph extends Component {
 }
 
 export default AppFifthGraph;
+
+class VirtualReference {
+    getBoundingClientRect() {
+        return {
+            top: 10,
+            left: 10,
+            bottom: 20,
+            right: 100,
+            width: 90,
+            height: 10,
+        };
+    }
+
+    get clientWidth() {
+        return this.getBoundingClientRect().width;
+    }
+
+    get clientHeight() {
+        return this.getBoundingClientRect().height;
+    }
+}

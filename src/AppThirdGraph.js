@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Tooltip from './Tooltip';
 import * as d3 from "d3";
 import './AppThirdGraph.css';
 
@@ -6,7 +7,7 @@ class AppThirdGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { primerFiltro: "", segundoFiltro: "" };
+        this.state = { primerFiltro: "", segundoFiltro: "", informacion3: "Hola3" };
         this.primerFiltroTerceraGrafica = this.primerFiltroTerceraGrafica.bind(this);
         this.segundoFiltroTerceraGrafica = this.segundoFiltroTerceraGrafica.bind(this);
         this.selecciones = this.selecciones.bind(this);
@@ -113,7 +114,7 @@ class AppThirdGraph extends Component {
         else {
             y.domain(["-", "G", "T", "C", "A", "R", "N", "D", "B", "E", "Q", "Z", "H", "I", "L", "K", "M", "F", "P", "S", "W", "Y", "V"]);
         }
-        
+
         x2.domain(x.domain());
         y2.domain(y.domain());
         color.domain(nombresGenes);
@@ -448,6 +449,7 @@ class AppThirdGraph extends Component {
     render() {
         return (
             <div className="App centrar terceraGraficaMargen">
+                <h1>Sequence Comparison <Tooltip placement="right" trigger="click" tooltip={this.state.informacion3}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
                 <svg id="svg3" className="terceraGraficaBlock" width="1200" height="500"></svg>
                 <svg id="legend3" className="terceraGraficaBlock" width="1200"></svg>
                 <div className="container">

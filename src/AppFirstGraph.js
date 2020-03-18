@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Tooltip from './Tooltip';
 import * as d3 from "d3";
 import './AppFirstGraph.css';
 
@@ -6,6 +7,7 @@ class AppFirstGraph extends Component {
 
     constructor(props) {
         super(props);
+        this.state = { informacion1: "Hola1" };
     }
 
     componentDidMount() {
@@ -280,6 +282,7 @@ class AppFirstGraph extends Component {
     render() {
         return (
             <div className="App centrar primeraGraficaMargen">
+                <h1>Entropy <Tooltip placement="right" trigger="click" tooltip={this.state.informacion1}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
                 <svg id="svg1" width="1200" height="500"></svg>
             </div>
         );

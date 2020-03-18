@@ -24,3 +24,16 @@
 .App {
     text-align: center;
   }
+
+.margentitulo0{
+      margin-top: 20px;
+      margin-bottom: 20px;
+}
+
+  .centroCarga{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -100px;
+    margin-left: -200px;
+  }

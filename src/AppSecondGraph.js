@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Tooltip from './Tooltip';
 import * as d3 from "d3";
 import './AppSecondGraph.css';
 
@@ -6,7 +7,7 @@ class AppSecondGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { filtro: "All Genes" };
+        this.state = { filtro: "All Genes", informacion2: "Hola2" };
         this.mapeoLetras = this.mapeoLetras.bind(this);
     }
 
@@ -523,6 +524,7 @@ class AppSecondGraph extends Component {
     render() {
         return (
             <div className="App centrar segundaGraficaMargen">
+                <h1>Profile Weight Matrix <Tooltip placement="right" trigger="click" tooltip={this.state.informacion2}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
                 <svg id="svg2" className="segundaGraficaBlock" width="1200" height="500"></svg>
                 <svg id="legend2" className="segundaGraficaBlock" width="1200"></svg>
             </div>

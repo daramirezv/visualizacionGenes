@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Tooltip from './Tooltip';
 import * as d3 from "d3";
 import './AppFourthGraph.css';
 
@@ -6,26 +7,31 @@ class AppFourthGraph extends Component {
 
     constructor(props) {
         super(props);
+        this.state = { informacion4: "Hola4" };
         this.posiciones = this.posiciones.bind(this);
         this.caracteres = this.caracteres.bind(this);
         this.nombres = this.nombres.bind(this);
     }
 
     componentDidUpdate() {
-        d3.selectAll(".tabla-table")
-            .style("height", null);
         if (d3.selectAll(".tabla-vertical").node().offsetHeight > 750) {
             d3.selectAll(".tabla-vertical")
-                .style("height", "750px");
+                .style("height", "750px")
+        }
+        else {
+            d3.selectAll(".tabla-vertical")
+                .style("height", null);
         }
     }
 
     componentDidMount() {
-        d3.selectAll(".tabla-table")
-            .style("height", null);
         if (d3.selectAll(".tabla-vertical").node().offsetHeight > 750) {
             d3.selectAll(".tabla-vertical")
                 .style("height", "750px");
+        }
+        else {
+            d3.selectAll(".tabla-vertical")
+                .style("height", null);
         }
     }
 
@@ -73,6 +79,7 @@ class AppFourthGraph extends Component {
     render() {
         return (
             <div className="cuerpo cuartaGraficaMargen">
+                <h1 className="margentitulo4">Sequence Matrix <Tooltip placement="right" trigger="click" tooltip={this.state.informacion4}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
                 <div className="container">
                     <div className="row">
                         <div className="col-md">

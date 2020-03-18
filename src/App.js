@@ -6,6 +6,7 @@ import AppSecondGraph from './AppSecondGraph';
 import AppThirdGraph from './AppThirdGraph';
 import AppFourthGraph from './AppFourthGraph';
 import AppFifthGraph from './AppFifthGraph';
+import Tooltip from './Tooltip';
 import cancer from './archivoJorge.txt';
 // import cancer from './proteinasfasta.txt';
 
@@ -13,7 +14,7 @@ class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { esProteina: false, respuesta: [], datosPrimerGrafica: [], datosSegundaGrafica: [], nombresGenes: [], datosGraficaPruebas: [], primerValorFiltro: 0, segundoValorFiltro: 0, boxesseleccionados: [] };
+        this.state = { esProteina: false, respuesta: [], datosPrimerGrafica: [], datosSegundaGrafica: [], nombresGenes: [], datosGraficaPruebas: [], primerValorFiltro: 0, segundoValorFiltro: 0, boxesseleccionados: [], informacion0: "hola0" };
         this.selecciones = this.selecciones.bind(this);
         this.filtroAppJS = this.filtroAppJS.bind(this);
         this.checkboxes = this.checkboxes.bind(this);
@@ -488,12 +489,14 @@ class App extends Component {
             <div className="App">
                 {this.state.datosSegundaGrafica.length > 0 ?
                     <div>
+                        {!this.state.esProteina ? <AppFifthGraph datosQuintaGrafica={this.state.datosQuintaGrafica} /> : <p></p>}
+                        <h1 className="margentitulo0">Table Filters <Tooltip placement="right" trigger="click" tooltip={this.state.informacion0}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
                         <div className="container">
                             <div className="row">
                                 <div className="col-md">
-                                    <button className="btn btn-primary" type="submit" onClick={this.filter}>Filter</button>
-                                    <button className="btn btn-primary" type="submit" onClick={this.selectAll}>Select All Genes</button>
-                                    <button className="btn btn-primary" type="submit" onClick={this.deselectAll}>Deselect All Genes</button>
+                                    <button className="btn btn-dark" type="submit" onClick={this.filter}>Filter</button>
+                                    <button className="btn btn-dark" type="submit" onClick={this.selectAll}>Select All Genes</button>
+                                    <button className="btn btn-dark" type="submit" onClick={this.deselectAll}>Deselect All Genes</button>
                                 </div>
                             </div>
                             <div className="row table-check" ref={this.tableref}>
@@ -511,12 +514,11 @@ class App extends Component {
                                 </div>
                             </div>
                         </div>
-                        {!this.state.esProteina ? <AppFifthGraph datosQuintaGrafica={this.state.datosQuintaGrafica} /> : <p></p>}
                         <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
                         <AppSecondGraph esProteina={this.state.esProteina} datosGraficaPruebas={this.state.datosGraficaPruebas} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
                         <AppThirdGraph esProteina={this.state.esProteina} datosTerceraGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
                         <AppFourthGraph nombresGenes={this.state.boxesseleccionados} datosCuartaGrafica={this.state.datosSegundaGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
-                    </div> : <div className="cuerpo">
+                    </div> : <div className="cuerpo centroCarga">
                         <div className="container">
                             <div className="row">
                                 <div className="col-md">
