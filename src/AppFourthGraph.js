@@ -7,7 +7,7 @@ class AppFourthGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { informacion4: "Hola4" };
+        this.state = { informacion4: "The table shows the values of all selected sequences." };
         this.posiciones = this.posiciones.bind(this);
         this.caracteres = this.caracteres.bind(this);
         this.nombres = this.nombres.bind(this);

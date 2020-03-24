@@ -1,39 +1,48 @@
-#barraNumero{
-    margin-top: 2em;
-    margin-bottom: 2em;
+#barraNumero {
+  margin-top: 2em;
+  margin-bottom: 2em;
 }
 
-.btn{
-	margin: 1em;
+.btn {
+  margin: 1em;
 }
 
-.cuerpo{
-    font-family: 'Segoe UI', sans-serif;
-    font-size: small;
+.cuerpo {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: small;
 }
 
-.espacioCheckbox{
-	margin-top: 1em;
-	margin-bottom: 1em;
+.espacioCheckbox {
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
-.table-check{
-	margin: 0 auto;
+.table-check {
+  margin: 0 auto;
 }
 
 .App {
-    text-align: center;
-  }
-
-.margentitulo0{
-      margin-top: 20px;
-      margin-bottom: 20px;
+  text-align: center;
 }
 
-  .centroCarga{
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    margin-top: -100px;
-    margin-left: -200px;
-  }
+.margentitulo0 {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.centroCarga {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.anchoCard {
+  width: 1000px;
+}
+
+.hoverHand {
+  cursor: pointer;
+}

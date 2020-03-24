@@ -1,4 +1,4 @@
-.tabla-vertical{
+.tabla-vertical {
   overflow: auto;
 }
 
@@ -16,81 +16,103 @@
   box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 
-.cuartaGraficaMargen{
+.cuartaGraficaMargen {
   margin-top: 1950px;
   margin-bottom: 100px;
 }
 
-.margentitulo4{
+.margentitulo4 {
   margin-bottom: 40px;
 }
 
-.A{
+.A {
   color: #D90025;
 }
-.C{
+
+.C {
   color: #3BD23D;
 }
-.G{
+
+.G {
   color: #0082B4;
 }
-.T{
+
+.T {
   color: #F6EB61;
 }
-.R{
+
+.R {
   color: #B5CF61;
 }
-.N{
+
+.N {
   color: #FFAA52;
 }
-.D{
+
+.D {
   color: #FF82DB;
 }
-.B{
+
+.B {
   color: #A89E81;
 }
-.E{
+
+.E {
   color: #696C71;
 }
-.Q{
+
+.Q {
   color: #9AFF1C;
 }
-.Z{
+
+.Z {
   color: #B88BB3;
 }
-.H{
+
+.H {
   color: #45B8AC;
 }
-.I{
+
+.I {
   color: #52703F;
 }
-.L{
+
+.L {
   color: #D7B7AA;
 }
-.K{
+
+.K {
   color: #7D303D;
 }
-.M{
+
+.M {
   color: #E25A06;
 }
-.F{
+
+.F {
   color: #3B4B87;
 }
-.P{
+
+.P {
   color: #7B5EC6;
 }
-.S{
+
+.S {
   color: #CFB023;
 }
-.W{
+
+.W {
   color: #99D6EA;
 }
-.Y{
+
+.Y {
   color: #C800A1;
 }
-.V{
+
+.V {
   color: #212322;
 }
-.gap{
-    color: #AA6B24;
+
+.gap {
+  color: #AA6B24;
 }

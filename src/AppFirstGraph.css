@@ -9,12 +9,12 @@
   pointer-events: all;
 }
 
-.centrar{
-	position: absolute;
-	left: 50%;
-	transform: translate(-50%, 0);
+.centrar {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 
-.primeraGraficaMargen{
+.primeraGraficaMargen {
   margin-top: 10px;
 }

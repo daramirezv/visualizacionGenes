@@ -7,20 +7,21 @@ import AppThirdGraph from './AppThirdGraph';
 import AppFourthGraph from './AppFourthGraph';
 import AppFifthGraph from './AppFifthGraph';
 import Tooltip from './Tooltip';
-import cancer from './archivoJorge.txt';
-// import cancer from './proteinasfasta.txt';
+import ejemploGenes from './archivoJorge.txt';
+import ejemploProteinas from './proteinasfasta.txt';
 
 class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { esProteina: false, respuesta: [], datosPrimerGrafica: [], datosSegundaGrafica: [], nombresGenes: [], datosGraficaPruebas: [], primerValorFiltro: 0, segundoValorFiltro: 0, boxesseleccionados: [], informacion0: "hola0" };
+        this.state = { archivoMalo: false, loading: false, ejemploArchivoProteinas: [], ejemploArchivoGenes: [], esProteina: false, respuesta: [], datosPrimerGrafica: [], datosSegundaGrafica: [], nombresGenes: [], datosGraficaPruebas: [], primerValorFiltro: 0, segundoValorFiltro: 0, boxesseleccionados: [], informacion0: "The filters changes what sequences the graphs will use." };
         this.selecciones = this.selecciones.bind(this);
         this.filtroAppJS = this.filtroAppJS.bind(this);
         this.checkboxes = this.checkboxes.bind(this);
         this.filter = this.filter.bind(this);
         this.selectAll = this.selectAll.bind(this);
         this.deselectAll = this.deselectAll.bind(this);
+        this.botonesIniciales = this.botonesIniciales.bind(this);
         this.shannon = this.shannon.bind(this);
         this.objetoSegundaGrafica = this.objetoSegundaGrafica.bind(this);
         this.objetoSegundaGraficaProteinas = this.objetoSegundaGraficaProteinas.bind(this);
@@ -83,6 +84,21 @@ class App extends Component {
         return respuesta;
     }
 
+    componentDidMount() {
+        let ejemplo1;
+        let ejemplo2;
+        d3.text(ejemploProteinas).then(data => {
+            ejemplo1 = new File([data], "proteinasfasta.txt", { type: "text/plain", });
+            d3.text(ejemploGenes).then(data => {
+                ejemplo2 = new File([data], "archivoJorge.txt", { type: "text/plain", });
+                this.setState({
+                    ejemploArchivoProteinas: ejemplo1,
+                    ejemploArchivoGenes: ejemplo2
+                })
+            })
+        })
+    }
+
     objetoSegundaGraficaProteinas = (array, posicion) => {
         if (array.length === 0)
             return new myObjectSegundaGraficaProteinas(posicion, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -131,6 +147,19 @@ class App extends Component {
     }
 
     handleFile(e) {
+        this.setState({
+            loading: true
+        })
+        var archivo;
+        if (e === "proteinExample") {
+            archivo = this.state.ejemploArchivoProteinas;
+        }
+        else if (e === "geneExample") {
+            archivo = this.state.ejemploArchivoGenes;
+        }
+        else {
+            archivo = e;
+        }
 
         let reader = new FileReader();
         reader.onload = function () {
@@ -154,6 +183,22 @@ class App extends Component {
                 respuesta.push(myString);
             }
 
+            if (respuesta.length === 0) {
+                this.setState({
+                    archivoMalo: true
+                })
+                return;
+            }
+
+            let suma = 0;
+            respuesta.map(x => suma += x.length);
+            if (suma !== (respuesta[0].length * respuesta.length) - 2) {
+                this.setState({
+                    archivoMalo: true
+                })
+                return;
+            }
+
             const letrasSoloProteinas = ["R", "N", "D", "B", "E", "Q", "Z", "H", "I", "L", "K", "M", "F", "P", "S", "W", "Y", "V"];
             if (letrasSoloProteinas.some(el => respuesta[0].includes(el))) {
                 esProteina = true;
@@ -166,7 +211,7 @@ class App extends Component {
 
             for (let index = 0; index < respuesta[respuesta.length - 1].length; index++) {
 
-                componentes = []
+                componentes = [];
 
                 for (let indexInterno = 0; indexInterno < respuesta.length; indexInterno++) {
                     componentes.push(respuesta[indexInterno].charAt(index));
@@ -303,7 +348,8 @@ class App extends Component {
                 segundoValorFiltro: resultadoTerceraGrafica.length,
                 nombresGenes: nombres,
                 respuesta: respuesta,
-                esProteina: esProteina
+                esProteina: esProteina,
+                loading: false
             })
 
             if (this.tableref.current.offsetHeight > 300) {
@@ -317,7 +363,7 @@ class App extends Component {
             }
         }.bind(this);
 
-        reader.readAsText(e);
+        reader.readAsText(archivo);
     }
 
     filtroAppJS(event) {
@@ -457,8 +503,6 @@ class App extends Component {
             }
         }
 
-        console.log(resultadoSegundaGrafica);
-
         this.setState({
             boxesseleccionados: arregloNombres,
             datosGraficaPruebas: resultadoSegundaGrafica,
@@ -484,11 +528,63 @@ class App extends Component {
         this.filter();
     }
 
+    botonesIniciales() {
+        if (this.state.loading && !this.state.archivoMalo) {
+            return <h1 className="centroCarga">Loading</h1>;
+        }
+        else if (this.state.archivoMalo) {
+            return (<div className="cuerpo centroCarga">
+                <h1>File Error</h1>
+                <button className="btn btn-dark btn-lg" onClick={() => window.location.reload()}>Load new file</button></div>);
+        }
+        else {
+            return (<div className="cuerpo centroCarga">
+                <div className="container">
+                    <div className="row">
+                        <div className="col-md">
+                            <div className="card border-primary mb-3 anchoCard">
+                                <div className="card-header">Upload a File</div>
+                                <div className="card-body text-dark">
+                                    <form>
+                                        <div className="form-group">
+                                            <input type="file" className="hoverHand form-control-file" onChange={e => this.handleFile(e.target.files[0])} />
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md">
+                            <div className="hoverHand card border-dark mb-3 anchoCard" onClick={proteinExample => this.handleFile("proteinExample")}>
+                                <div className="card-header">Example protein sequence</div>
+                                <div className="card-body text-dark">
+                                    <p className="card-text">Use an example which contains 3 protein sequences.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md">
+                            <div className="hoverHand card border-dark mb-3 anchoCard" onClick={geneExample => this.handleFile("geneExample")}>
+                                <div className="card-header">Example gene sequence</div>
+                                <div className="card-body text-dark">
+                                    <p className="card-text">Use an example which contains 45 gene sequences.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>)
+        }
+    }
+
     render() {
         return (
             <div className="App">
                 {this.state.datosSegundaGrafica.length > 0 ?
                     <div>
+                        <button className="btn btn-dark btn-lg" onClick={() => window.location.reload()}>Load new file</button>
                         {!this.state.esProteina ? <AppFifthGraph datosQuintaGrafica={this.state.datosQuintaGrafica} /> : <p></p>}
                         <h1 className="margentitulo0">Table Filters <Tooltip placement="right" trigger="click" tooltip={this.state.informacion0}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
                         <div className="container">
@@ -518,20 +614,7 @@ class App extends Component {
                         <AppSecondGraph esProteina={this.state.esProteina} datosGraficaPruebas={this.state.datosGraficaPruebas} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
                         <AppThirdGraph esProteina={this.state.esProteina} datosTerceraGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
                         <AppFourthGraph nombresGenes={this.state.boxesseleccionados} datosCuartaGrafica={this.state.datosSegundaGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
-                    </div> : <div className="cuerpo centroCarga">
-                        <div className="container">
-                            <div className="row">
-                                <div className="col-md">
-                                    <form>
-                                        <div className="form-group">
-                                            <label htmlFor="exampleFormControlFile1">Example file input</label>
-                                            <input type="file" className="form-control-file" id="exampleFormControlFile1" onChange={e => this.handleFile(e.target.files[0])} />
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>}
+                    </div> : <div>{this.botonesIniciales()}</div>}
             </div>
         );
     }

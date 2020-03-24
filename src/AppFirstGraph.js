@@ -7,7 +7,7 @@ class AppFirstGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { informacion1: "Hola1" };
+        this.state = { informacion1: "The graph shows the entropy between all selected sequences for each position." };
     }
 
     componentDidMount() {

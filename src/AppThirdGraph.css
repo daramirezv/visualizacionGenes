@@ -3,30 +3,29 @@
 	fill: none;
 	pointer-events: all;
 }
-  
-.axis path,
-.axis line {
+
+.axis path, .axis line {
 	fill: none;
 	stroke: #000;
 	shape-rendering: crispEdges;
 }
-  
+
 .line {
 	fill: none;
 	stroke: steelblue;
 	stroke-width: 2px;
 }
 
-.terceraGraficaBlock{
+.terceraGraficaBlock {
 	display: block
 }
 
-.centrar{
+.centrar {
 	position: absolute;
 	left: 50%;
 	transform: translate(-50%, 0);
 }
 
-.terceraGraficaMargen{
+.terceraGraficaMargen {
 	margin-top: 1225px;
 }

@@ -3,24 +3,23 @@
 	fill: none;
 	pointer-events: all;
 }
-  
-.axis path,
-.axis line {
+
+.axis path, .axis line {
 	fill: none;
 	stroke: #000;
 	shape-rendering: crispEdges;
 }
 
-.segundaGraficaBlock{
+.segundaGraficaBlock {
 	display: block
 }
 
-.centrar{
+.centrar {
 	position: absolute;
 	left: 50%;
 	transform: translate(-50%, 0);
 }
 
-.segundaGraficaMargen{
+.segundaGraficaMargen {
 	margin-top: 600px;
 }

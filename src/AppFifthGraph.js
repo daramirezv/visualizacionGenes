@@ -6,7 +6,7 @@ class AppFifthGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { solucion1: [], solucion2: [], solucion3: [], cadenaOriginal: [], informacion5: "Hola5" };
+        this.state = { solucion1: [], solucion2: [], solucion3: [], cadenaOriginal: [], informacion5: "The table shows the possible translations to amino acids of the loaded genes." };
         this.posiciones = this.posiciones.bind(this);
         this.valores = this.valores.bind(this);
         this.mapeocaracteres = this.mapeocaracteres.bind(this);

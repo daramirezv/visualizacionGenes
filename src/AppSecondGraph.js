@@ -7,7 +7,7 @@ class AppSecondGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { filtro: "All Genes", informacion2: "Hola2" };
+        this.state = { filtro: "All Genes", informacion2: "The graph shows the percentage of each different value per position for all selected sequences." };
         this.mapeoLetras = this.mapeoLetras.bind(this);
     }
 

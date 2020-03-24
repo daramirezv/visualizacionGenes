@@ -7,7 +7,7 @@ class AppThirdGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { primerFiltro: "", segundoFiltro: "", informacion3: "Hola3" };
+        this.state = { primerFiltro: "", segundoFiltro: "", informacion3: "The graph compares the values of two sequences." };
         this.primerFiltroTerceraGrafica = this.primerFiltroTerceraGrafica.bind(this);
         this.segundoFiltroTerceraGrafica = this.segundoFiltroTerceraGrafica.bind(this);
         this.selecciones = this.selecciones.bind(this);
