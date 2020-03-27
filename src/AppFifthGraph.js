@@ -254,7 +254,7 @@ class AppFifthGraph extends Component {
         }
 
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(texto));
-        element.setAttribute('download', "hello.txt");
+        element.setAttribute('download', "Translation.txt");
         element.click();
     }
 

@@ -25,7 +25,7 @@ class AppSecondGraph extends Component {
             nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
         }
 
-        let data = this.props.datosGraficaPruebas;
+        let data = this.props.datosGraficaDos;
         const segundoValor = this.props.segundoValor;
         const primerValor = this.props.primerValor;
         data = data.slice(primerValor - 1, segundoValor);
@@ -256,7 +256,7 @@ class AppSecondGraph extends Component {
             nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
         }
 
-        let data = this.props.datosGraficaPruebas;
+        let data = this.props.datosGraficaDos;
         const segundoValor = this.props.segundoValor;
         const primerValor = this.props.primerValor;
         data = data.slice(primerValor - 1, segundoValor);

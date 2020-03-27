@@ -7,14 +7,14 @@ import AppThirdGraph from './AppThirdGraph';
 import AppFourthGraph from './AppFourthGraph';
 import AppFifthGraph from './AppFifthGraph';
 import Tooltip from './Tooltip';
-import ejemploGenes from './archivoJorge.txt';
+import ejemploGenes from './genefasta.txt';
 import ejemploProteinas from './proteinasfasta.txt';
 
 class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { archivoMalo: false, loading: false, ejemploArchivoProteinas: [], ejemploArchivoGenes: [], esProteina: false, respuesta: [], datosPrimerGrafica: [], datosSegundaGrafica: [], nombresGenes: [], datosGraficaPruebas: [], primerValorFiltro: 0, segundoValorFiltro: 0, boxesseleccionados: [], informacion0: "The filters changes what sequences the graphs will use." };
+        this.state = { archivoMalo: false, loading: false, ejemploArchivoProteinas: [], ejemploArchivoGenes: [], esProteina: false, respuesta: [], datosPrimerGrafica: [], datosTerceraGrafica: [], nombresGenes: [], datosSegundaGrafica: [], primerValorFiltro: 0, segundoValorFiltro: 0, boxesseleccionados: [], informacion0: "The filters changes what sequences the graphs will use." };
         this.selecciones = this.selecciones.bind(this);
         this.filtroAppJS = this.filtroAppJS.bind(this);
         this.checkboxes = this.checkboxes.bind(this);
@@ -90,7 +90,7 @@ class App extends Component {
         d3.text(ejemploProteinas).then(data => {
             ejemplo1 = new File([data], "proteinasfasta.txt", { type: "text/plain", });
             d3.text(ejemploGenes).then(data => {
-                ejemplo2 = new File([data], "archivoJorge.txt", { type: "text/plain", });
+                ejemplo2 = new File([data], "genefasta.txt", { type: "text/plain", });
                 this.setState({
                     ejemploArchivoProteinas: ejemplo1,
                     ejemploArchivoGenes: ejemplo2
@@ -307,7 +307,7 @@ class App extends Component {
                     resultadoSegundaGrafica.push(objetoPosicion);
                 }
                 else {
-                    //FALTAN
+                    
                     if (componentes.some(v => v !== "-" && v !== "A" && v !== "T" && v !== "C" && v !== "G" && v !== "R" && v !== "N" && v !== "D"
                         && v !== "B" && v !== "E" && v !== "Q" && v !== "Z" && v !== "H" && v !== "I" && v !== "L" && v !== "K" && v !== "M" && v !== "F"
                         && v !== "P" && v !== "S" && v !== "W" && v !== "Y" && v !== "V")) {
@@ -340,8 +340,8 @@ class App extends Component {
 
             this.setState({
                 datosPrimerGrafica: resultadoPrimeraGrafica,
-                datosSegundaGrafica: resultadoTerceraGrafica,
-                datosGraficaPruebas: resultadoSegundaGrafica,
+                datosTerceraGrafica: resultadoTerceraGrafica,
+                datosSegundaGrafica: resultadoSegundaGrafica,
                 datosQuintaGrafica: resultadoQuintaGrafica,
                 primerValorFiltro: 1,
                 boxesseleccionados: nombres,
@@ -375,7 +375,7 @@ class App extends Component {
     }
 
     selecciones() {
-        const tamanoTotal = this.state.datosSegundaGrafica.length;
+        const tamanoTotal = this.state.datosTerceraGrafica.length;
         const numerosSobrantes = tamanoTotal % 100;
         let arregloMapeo = []
 
@@ -505,7 +505,7 @@ class App extends Component {
 
         this.setState({
             boxesseleccionados: arregloNombres,
-            datosGraficaPruebas: resultadoSegundaGrafica,
+            datosSegundaGrafica: resultadoSegundaGrafica,
             datosPrimerGrafica: resultadoPrimeraGrafica
         });
 
@@ -582,7 +582,7 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                {this.state.datosSegundaGrafica.length > 0 ?
+                {this.state.datosTerceraGrafica.length > 0 ?
                     <div>
                         <button className="btn btn-dark btn-lg" onClick={() => window.location.reload()}>Load new file</button>
                         {!this.state.esProteina ? <AppFifthGraph datosQuintaGrafica={this.state.datosQuintaGrafica} /> : <p></p>}
@@ -611,9 +611,9 @@ class App extends Component {
                             </div>
                         </div>
                         <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
-                        <AppSecondGraph esProteina={this.state.esProteina} datosGraficaPruebas={this.state.datosGraficaPruebas} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
-                        <AppThirdGraph esProteina={this.state.esProteina} datosTerceraGrafica={this.state.datosSegundaGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
-                        <AppFourthGraph nombresGenes={this.state.boxesseleccionados} datosCuartaGrafica={this.state.datosSegundaGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
+                        <AppSecondGraph esProteina={this.state.esProteina} datosGraficaDos={this.state.datosSegundaGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
+                        <AppThirdGraph esProteina={this.state.esProteina} datosTerceraGrafica={this.state.datosTerceraGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
+                        <AppFourthGraph nombresGenes={this.state.boxesseleccionados} datosCuartaGrafica={this.state.datosTerceraGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
                     </div> : <div>{this.botonesIniciales()}</div>}
             </div>
         );
