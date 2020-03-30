@@ -7,10 +7,10 @@ class AppFourthGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { informacion4: "The table shows the values of all selected sequences." };
-        this.posiciones = this.posiciones.bind(this);
-        this.caracteres = this.caracteres.bind(this);
-        this.nombres = this.nombres.bind(this);
+        this.state = { information4: "The table shows the values of all selected sequences." };
+        this.positions = this.positions.bind(this);
+        this.characters = this.characters.bind(this);
+        this.names = this.names.bind(this);
     }
 
     componentDidUpdate() {
@@ -35,51 +35,51 @@ class AppFourthGraph extends Component {
         }
     }
 
-    posiciones() {
-        const primerValor = this.props.primerValor;
-        const segundoValor = this.props.segundoValor;
-        const datosCuartaGrafica = this.props.datosCuartaGrafica.slice(primerValor - 1, segundoValor);
+    positions() {
+        const valueFirstFilter = this.props.valueFirstFilter;
+        const valueSecondFilter = this.props.valueSecondFilter;
+        const dataFourthGraph = this.props.dataFourthGraph.slice(valueFirstFilter - 1, valueSecondFilter);
         return (
-            datosCuartaGrafica.map(function (item, i) {
-                return <th scope="col" className="stickyhead" key={i}>{i + primerValor}</th>
+            dataFourthGraph.map(function (item, i) {
+                return <th scope="col" className="stickyhead" key={i}>{i + valueFirstFilter}</th>
             }))
     }
 
-    nombres(funcionCaracteres) {
-        const nombres = this.props.nombresGenes;
+    names(functionCharacters) {
+        const names = this.props.namesGenes;
         return (
-            nombres.map(function (item, i) {
+            names.map(function (item, i) {
                 return (
                     <tr key={i}>
                         <td scope="row" className="stickyleft" key={i}>{item}</td>
-                        {funcionCaracteres(item)}
+                        {functionCharacters(item)}
                     </tr>)
             }))
     }
 
-    caracteres(nombreGen) {
-        const primerValor = this.props.primerValor;
-        const segundoValor = this.props.segundoValor;
-        const datosCuartaGrafica = this.props.datosCuartaGrafica.slice(primerValor - 1, segundoValor);
-        let clase;
-        let caracter;
+    characters(geneName) {
+        const valueFirstFilter = this.props.valueFirstFilter;
+        const valueSecondFilter = this.props.valueSecondFilter;
+        const dataFourthGraph = this.props.dataFourthGraph.slice(valueFirstFilter - 1, valueSecondFilter);
+        let classColor;
+        let character;
         return (
-            datosCuartaGrafica.map(function (item, i) {
-                caracter = datosCuartaGrafica[i][nombreGen.replace(/[\r\n]+/gm, "")];
-                if (caracter === "-") {
-                    clase = "gap"
+            dataFourthGraph.map(function (item, i) {
+                character = dataFourthGraph[i][geneName.replace(/[\r\n]+/gm, "")];
+                if (character === "-") {
+                    classColor = "gap"
                 }
                 else {
-                    clase = caracter;
+                    classColor = character;
                 }
-                return <td className={clase} key={i}><b>{caracter}</b></td>
+                return <td className={classColor} key={i}><b>{character}</b></td>
             }))
     }
 
     render() {
         return (
-            <div className="cuerpo cuartaGraficaMargen">
-                <h1 className="margentitulo4">Sequence Matrix <Tooltip placement="right" trigger="click" tooltip={this.state.informacion4}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
+            <div className="cuerpo fourthGraphMargin">
+                <h1 className="margintitle4">Sequence Matrix <Tooltip placement="right" trigger="click" tooltip={this.state.information4}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
                 <div className="container">
                     <div className="row">
                         <div className="col-md">
@@ -88,11 +88,11 @@ class AppFourthGraph extends Component {
                                     <thead>
                                         <tr>
                                             <th className="stickyhead" scope="col"></th>
-                                            {this.posiciones()}
+                                            {this.positions()}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {this.nombres(this.caracteres)}
+                                        {this.names(this.characters)}
                                     </tbody>
                                 </table>
                             </div>

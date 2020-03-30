@@ -7,28 +7,28 @@ class AppThirdGraph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { primerFiltro: "", segundoFiltro: "", informacion3: "The graph compares the values of two sequences." };
-        this.primerFiltroTerceraGrafica = this.primerFiltroTerceraGrafica.bind(this);
-        this.segundoFiltroTerceraGrafica = this.segundoFiltroTerceraGrafica.bind(this);
-        this.selecciones = this.selecciones.bind(this);
-        this.primerselectref = React.createRef();
-        this.segundoselectref = React.createRef();
+        this.state = { firstFilter: "", secondFilter: "", information3: "The graph compares the values of two sequences." };
+        this.firstFilterThirdGraph = this.firstFilterThirdGraph.bind(this);
+        this.secondFilterThirdGraph = this.secondFilterThirdGraph.bind(this);
+        this.selections = this.selections.bind(this);
+        this.firstselectref = React.createRef();
+        this.secondselectref = React.createRef();
     }
 
     componentDidMount() {
-        const nombreTodosGenes = this.props.nombresGenes;
-        let nombresGenes = [];
-        nombresGenes.push(nombreTodosGenes[0]);
-        nombresGenes.push(nombreTodosGenes[1]);
-        const primerSelect = this.primerselectref.current;
-        primerSelect.selectedIndex = 0;
-        const segundoSelect = this.segundoselectref.current;
-        segundoSelect.selectedIndex = 1;
-        let datosTerceraGrafica = this.props.datosTerceraGrafica;
-        const segundoValor = this.props.segundoValor;
-        const primerValor = this.props.primerValor;
-        datosTerceraGrafica = datosTerceraGrafica.slice(primerValor - 1, segundoValor);
-        const esProteina = this.props.esProteina;
+        const namesAllGenes = this.props.namesGenes;
+        let namesGenes = [];
+        namesGenes.push(namesAllGenes[0]);
+        namesGenes.push(namesAllGenes[1]);
+        const firstSelect = this.firstselectref.current;
+        firstSelect.selectedIndex = 0;
+        const secondSelect = this.secondselectref.current;
+        secondSelect.selectedIndex = 1;
+        let dataThirdGraph = this.props.dataThirdGraph;
+        const valueSecondFilter = this.props.valueSecondFilter;
+        const valueFirstFilter = this.props.valueFirstFilter;
+        dataThirdGraph = dataThirdGraph.slice(valueFirstFilter - 1, valueSecondFilter);
+        const isProtein = this.props.isProtein;
 
         let svg = d3.select("#svg3");
 
@@ -60,13 +60,13 @@ class AppThirdGraph extends Component {
 
         let line = d3.line()
             .curve(d3.curveLinear)
-            .x(function (d) { return x(d["posicion"]); })
-            .y(function (d) { return y(d["nucleotido"]); });
+            .x(function (d) { return x(d["position"]); })
+            .y(function (d) { return y(d["nucleotide"]); });
 
         let line2 = d3.line()
             .curve(d3.curveLinear)
-            .x(function (d) { return x2(d["posicion"]); })
-            .y(function (d) { return y2(d["nucleotido"]); });
+            .x(function (d) { return x2(d["position"]); })
+            .y(function (d) { return y2(d["nucleotide"]); });
 
         svg.append("defs").append("svg:clipPath")
             .attr("id", "clip")
@@ -78,7 +78,7 @@ class AppThirdGraph extends Component {
 
         let Line_chart;
 
-        if (!esProteina) {
+        if (!isProtein) {
             Line_chart = svg.append("g")
                 .attr("class", "focus")
                 .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
@@ -98,17 +98,17 @@ class AppThirdGraph extends Component {
             .attr("class", "context")
             .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-        let concentrations = nombresGenes.map(function (category2) {
+        let concentrations = namesGenes.map(function (category2) {
             return {
                 category: category2,
-                datapoints: datosTerceraGrafica.map(function (d) {
-                    return { posicion: d.posicion, nucleotido: d[category2.replace(/[\r\n]+/gm, "")] };
+                datapoints: dataThirdGraph.map(function (d) {
+                    return { position: d.position, nucleotide: d[category2.replace(/[\r\n]+/gm, "")] };
                 })
             };
         });
 
-        x.domain(d3.extent(datosTerceraGrafica, function (d) { return d.posicion; }));
-        if (!esProteina) {
+        x.domain(d3.extent(dataThirdGraph, function (d) { return d.position; }));
+        if (!isProtein) {
             y.domain(["-", "G", "T", "C", "A"]);
         }
         else {
@@ -117,7 +117,7 @@ class AppThirdGraph extends Component {
 
         x2.domain(x.domain());
         y2.domain(y.domain());
-        color.domain(nombresGenes);
+        color.domain(namesGenes);
 
         focus.append("g")
             .attr("class", "axis axis--x")
@@ -196,10 +196,10 @@ class AppThirdGraph extends Component {
 
         let svgLegend = d3.select("#legend3");
 
-        svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
+        svgLegend.attr("height", namesGenes.length * 30 + margin.top);
 
         svgLegend.selectAll("mydots")
-            .data(nombresGenes)
+            .data(namesGenes)
             .enter()
             .append("circle")
             .attr("cx", margin.left)
@@ -208,7 +208,7 @@ class AppThirdGraph extends Component {
             .style("fill", function (d) { return color(d) })
 
         svgLegend.selectAll("mylabels")
-            .data(nombresGenes)
+            .data(namesGenes)
             .enter()
             .append("text")
             .attr("x", margin.left + 20)
@@ -221,21 +221,21 @@ class AppThirdGraph extends Component {
 
     componentDidUpdate() {
 
-        let nombresGenes = [];
-        const valorPrimerSelect = this.primerselectref.current.value;
-        const valorSegundoSelect = this.segundoselectref.current.value;
-        const esProteina = this.props.esProteina;
+        let namesGenes = [];
+        const valueFirstSelect = this.firstselectref.current.value;
+        const valueSecondSelect = this.secondselectref.current.value;
+        const isProtein = this.props.isProtein;
 
-        nombresGenes.push(valorPrimerSelect);
+        namesGenes.push(valueFirstSelect);
 
-        if (valorSegundoSelect !== valorPrimerSelect) {
-            nombresGenes.push(valorSegundoSelect);
+        if (valueSecondSelect !== valueFirstSelect) {
+            namesGenes.push(valueSecondSelect);
         }
 
-        let datosTerceraGrafica = this.props.datosTerceraGrafica;
-        const segundoValor = this.props.segundoValor;
-        const primerValor = this.props.primerValor;
-        datosTerceraGrafica = datosTerceraGrafica.slice(primerValor - 1, segundoValor);
+        let dataThirdGraph = this.props.dataThirdGraph;
+        const valueSecondFilter = this.props.valueSecondFilter;
+        const valueFirstFilter = this.props.valueFirstFilter;
+        dataThirdGraph = dataThirdGraph.slice(valueFirstFilter - 1, valueSecondFilter);
 
         d3.selectAll("#svg3 > *").remove();
         d3.selectAll("#legend3 > *").remove();
@@ -269,13 +269,13 @@ class AppThirdGraph extends Component {
 
         let line = d3.line()
             .curve(d3.curveLinear)
-            .x(function (d) { return x(d["posicion"]); })
-            .y(function (d) { return y(d["nucleotido"]); });
+            .x(function (d) { return x(d["position"]); })
+            .y(function (d) { return y(d["nucleotide"]); });
 
         let line2 = d3.line()
             .curve(d3.curveLinear)
-            .x(function (d) { return x2(d["posicion"]); })
-            .y(function (d) { return y2(d["nucleotido"]); });
+            .x(function (d) { return x2(d["position"]); })
+            .y(function (d) { return y2(d["nucleotide"]); });
 
         svg.append("defs").append("svg:clipPath")
             .attr("id", "clip")
@@ -286,7 +286,7 @@ class AppThirdGraph extends Component {
             .attr("y", 0);
 
         let Line_chart;
-        if (!esProteina) {
+        if (!isProtein) {
             Line_chart = svg.append("g")
                 .attr("class", "focus")
                 .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
@@ -306,17 +306,17 @@ class AppThirdGraph extends Component {
             .attr("class", "context")
             .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-        let concentrations = nombresGenes.map(function (category2) {
+        let concentrations = namesGenes.map(function (category2) {
             return {
                 category: category2,
-                datapoints: datosTerceraGrafica.map(function (d) {
-                    return { posicion: d.posicion, nucleotido: d[category2.replace(/[\r\n]+/gm, "")] };
+                datapoints: dataThirdGraph.map(function (d) {
+                    return { position: d.position, nucleotide: d[category2.replace(/[\r\n]+/gm, "")] };
                 })
             };
         });
 
-        x.domain(d3.extent(datosTerceraGrafica, function (d) { return d.posicion; }));
-        if (!esProteina) {
+        x.domain(d3.extent(dataThirdGraph, function (d) { return d.position; }));
+        if (!isProtein) {
             y.domain(["-", "G", "T", "C", "A"]);
         }
         else {
@@ -324,7 +324,7 @@ class AppThirdGraph extends Component {
         }
         x2.domain(x.domain());
         y2.domain(y.domain());
-        color.domain(nombresGenes);
+        color.domain(namesGenes);
 
         focus.append("g")
             .attr("class", "axis axis--x")
@@ -403,10 +403,10 @@ class AppThirdGraph extends Component {
 
         let svgLegend = d3.select("#legend3");
 
-        svgLegend.attr("height", nombresGenes.length * 30 + margin.top);
+        svgLegend.attr("height", namesGenes.length * 30 + margin.top);
 
         svgLegend.selectAll("mydots")
-            .data(nombresGenes)
+            .data(namesGenes)
             .enter()
             .append("circle")
             .attr("cx", margin.left)
@@ -415,7 +415,7 @@ class AppThirdGraph extends Component {
             .style("fill", function (d) { return color(d) })
 
         svgLegend.selectAll("mylabels")
-            .data(nombresGenes)
+            .data(namesGenes)
             .enter()
             .append("text")
             .attr("x", margin.left + 20)
@@ -426,20 +426,20 @@ class AppThirdGraph extends Component {
             .style("font-size", "15px")
     }
 
-    primerFiltroTerceraGrafica(event) {
+    firstFilterThirdGraph(event) {
         this.setState({
-            primerFiltro: event.target.value
+            firstFilter: event.target.value
         });
     }
 
-    segundoFiltroTerceraGrafica(event) {
+    secondFilterThirdGraph(event) {
         this.setState({
-            segundoFiltro: event.target.value
+            secondFilter: event.target.value
         });
     }
 
-    selecciones() {
-        let nombres = this.props.nombresGenes;
+    selections() {
+        let nombres = this.props.namesGenes;
         return (
             nombres.map(function (item, i) {
                 return <option value={item} key={i}>{item}</option>
@@ -448,23 +448,23 @@ class AppThirdGraph extends Component {
 
     render() {
         return (
-            <div className="App centrar terceraGraficaMargen">
-                <h1>Sequence Comparison <Tooltip placement="right" trigger="click" tooltip={this.state.informacion3}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
-                <svg id="svg3" className="terceraGraficaBlock" width="1200" height="500"></svg>
-                <svg id="legend3" className="terceraGraficaBlock" width="1200"></svg>
+            <div className="App center marginThirdGraph">
+                <h1>Sequence Comparison <Tooltip placement="right" trigger="click" tooltip={this.state.information3}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
+                <svg id="svg3" className="thirdGraphBlock" width="1200" height="500"></svg>
+                <svg id="legend3" className="thirdGraphBlock" width="1200"></svg>
                 <div className="container">
                     <div className="row">
                         <div className="col-md-6">
                             <form>
-                                <select width="500" ref={this.primerselectref} className="form-control" onChange={this.primerFiltroTerceraGrafica}>
-                                    {this.selecciones()}
+                                <select width="500" ref={this.firstselectref} className="form-control" onChange={this.firstFilterThirdGraph}>
+                                    {this.selections()}
                                 </select>
                             </form>
                         </div>
                         <div className="col-md-6">
                             <form>
-                                <select width="500" ref={this.segundoselectref} className="form-control" onChange={this.segundoFiltroTerceraGrafica}>
-                                    {this.selecciones()}
+                                <select width="500" ref={this.secondselectref} className="form-control" onChange={this.secondFilterThirdGraph}>
+                                    {this.selections()}
                                 </select>
                             </form>
                         </div>

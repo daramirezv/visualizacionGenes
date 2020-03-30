@@ -10,17 +10,17 @@
     shape-rendering: crispEdges;
 }
 
-.segundaGraficaBlock {
+.secondGraphBlock {
     display: block
 }
 
-.centrar {
+.center {
     position: absolute;
     left: 50%;
     transform: translate(-50%, 0);
 }
 
-.segundaGraficaMargen {
+.secondGraphMargin {
     margin-top: 600px;
 }
 
@@ -33,6 +33,6 @@
     clip-path: url(#clip);
 }
 
-.primeraGraficaMargen {
+.firstGraphMargin {
     margin-top: 10px;
 }

@@ -16,16 +16,16 @@
 	stroke-width: 2px;
 }
 
-.terceraGraficaBlock {
+.thirdGraphBlock {
 	display: block
 }
 
-.centrar {
+.center {
 	position: absolute;
 	left: 50%;
 	transform: translate(-50%, 0);
 }
 
-.terceraGraficaMargen {
+.marginThirdGraph {
 	margin-top: 1150px;
 }

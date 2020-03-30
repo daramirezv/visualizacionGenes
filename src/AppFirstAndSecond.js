@@ -7,34 +7,34 @@ class AppFusion extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { filtro: "All Genes", informacion2: "The graph shows the percentage of each different value per position for all selected sequences.", informacion1: "The graph shows the entropy between all selected sequences for each position." };
-        this.mapeoLetras = this.mapeoLetras.bind(this);
+        this.state = { information2: "The graph shows the percentage of each different value per position for all selected sequences.", information1: "The graph shows the entropy between all selected sequences for each position." };
+        this.letterMapping = this.letterMapping.bind(this);
     }
 
     componentDidMount() {
 
         //variables primera grafica
-        let resultadofinal = this.props.datosPrimerGrafica;
-        const segundoValor = this.props.segundoValor;
-        const primerValor = this.props.primerValor;
+        let resultFirstGraph = this.props.dataFirstGraph;
+        const valueSecondFilter = this.props.valueSecondFilter;
+        const valueFirstFilter = this.props.valueFirstFilter;
 
-        resultadofinal = resultadofinal.filter(function (element) {
-            return element.posicion >= (primerValor - 1) && element.posicion <= (segundoValor);
+        resultFirstGraph = resultFirstGraph.filter(function (element) {
+            return element.position >= (valueFirstFilter - 1) && element.position <= (valueSecondFilter);
         });
 
         //variables segunda grafica
-        const esProteina = this.props.esProteina;
-        let funcionMapeoLetras = this.mapeoLetras;
-        let nombreNucleotidos = [];
-        let dataSecond = this.props.datosGraficaDos;
-        dataSecond = dataSecond.slice(primerValor - 1, segundoValor);
+        const isProtein = this.props.isProtein;
+        let funcionMapeoLetras = this.letterMapping;
+        let nameNucleotide = [];
+        let dataSecond = this.props.dataSecondGraph;
+        dataSecond = dataSecond.slice(valueFirstFilter - 1, valueSecondFilter);
 
-        if (esProteina) {
-            nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajer", "porcentajen", "porcentajed", "porcentajeb",
-                "porcentajee", "porcentajeq", "porcentajez", "porcentajeh", "porcentajei", "porcentajel", "porcentajek", "porcentajem", "porcentajef",
-                "porcentajep", "porcentajes", "porcentajew", "porcentajey", "porcentajev", "porcentajemenos"];
+        if (isProtein) {
+            nameNucleotide = ["percentagea", "percentagec", "percentageg", "percentaget", "percentager", "percentagen", "percentaged", "percentageb",
+                "percentagee", "percentageq", "percentagez", "percentageh", "percentagei", "percentagel", "percentagek", "percentagem", "percentagef",
+                "percentagep", "percentages", "percentagew", "percentagey", "percentagev", "percentagedash"];
         } else {
-            nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
+            nameNucleotide = ["percentagea", "percentagec", "percentageg", "percentaget", "percentagedash"];
         }
 
         //primera grafica
@@ -58,15 +58,15 @@ class AppFusion extends Component {
 
         let areaFirst = d3.area()
             .curve(d3.curveMonotoneX)
-            .x(function (d) { return xFirst(d.posicion); })
+            .x(function (d) { return xFirst(d.position); })
             .y0(heightFirst)
-            .y1(function (d) { return yFirst(d.porcentaje); });
+            .y1(function (d) { return yFirst(d.percentage); });
 
         let area2First = d3.area()
             .curve(d3.curveMonotoneX)
-            .x(function (d) { return x2First(d.posicion); })
+            .x(function (d) { return x2First(d.position); })
             .y0(height2First)
-            .y1(function (d) { return y2First(d.porcentaje); });
+            .y1(function (d) { return y2First(d.percentage); });
 
         svgFirst.append("defs").append("clipPath")
             .attr("id", "clip")
@@ -82,13 +82,13 @@ class AppFusion extends Component {
             .attr("class", "context")
             .attr("transform", "translate(" + margin2First.left + "," + margin2First.top + ")");
 
-        xFirst.domain(d3.extent(resultadofinal, function (d) { return d.posicion; }));
-        yFirst.domain([0, d3.max(resultadofinal, function (d) { return d.porcentaje; })]);
+        xFirst.domain(d3.extent(resultFirstGraph, function (d) { return d.position; }));
+        yFirst.domain([0, d3.max(resultFirstGraph, function (d) { return d.percentage; })]);
         x2First.domain(xFirst.domain());
         y2First.domain(yFirst.domain());
 
         focusFirst.append("path")
-            .datum(resultadofinal)
+            .datum(resultFirstGraph)
             .attr("class", "area")
             .attr("d", areaFirst);
 
@@ -111,7 +111,7 @@ class AppFusion extends Component {
                 .text("Entropy"));
 
         contextFirst.append("path")
-            .datum(resultadofinal)
+            .datum(resultFirstGraph)
             .attr("class", "area")
             .attr("d", area2First);
 
@@ -122,7 +122,7 @@ class AppFusion extends Component {
 
         //SEGUNDA GRAFICA
         let seriesSecond = d3.stack()
-            .keys(nombreNucleotidos)
+            .keys(nameNucleotide)
             .offset(d3.stackOffsetDiverging)(dataSecond);
 
         let svgSecond = d3.select("#svg2");
@@ -141,7 +141,7 @@ class AppFusion extends Component {
 
         let colorSecond;
 
-        if (esProteina) {
+        if (isProtein) {
             colorSecond = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#F6EB61", "#B5CF61", "#FFAA52", "#FF82DB", "#A89E81",
                 "#696C71", "#9AFF1C", "#B88BB3", "#45B8AC", "#52703F", "#D7B7AA", "#7D303D", "#E25A06", "#3B4B87",
                 "#7B5EC6", "#CFB023", "#99D6EA", "#C800A1", "#212322", "#AA6B24"]);
@@ -169,7 +169,7 @@ class AppFusion extends Component {
             .attr("class", "focus")
             .attr("transform", "translate(" + marginSecond.left + "," + marginSecond.top + ")");
 
-        xSecond.domain(d3.extent(dataSecond, function (d) { return d.posicion; }));
+        xSecond.domain(d3.extent(dataSecond, function (d) { return d.position; }));
         ySecond.domain([d3.min(seriesSecond, stackMin), d3.max(seriesSecond, stackMax)])
         x2Second.domain(xSecond.domain());
         y2Second.domain(ySecond.domain());
@@ -200,7 +200,7 @@ class AppFusion extends Component {
             .selectAll("rect")
             .data(d => d)
             .join("rect")
-            .attr('x', function (d) { return xSecond(d.data.posicion) - xBandSecond.bandwidth() * 0.9 / 2 })
+            .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
             .attr("y", function (d) { return ySecond(d[1]); })
             .attr("width", xBandSecond.bandwidth() * 0.9)
             .attr("height", function (d) { return ySecond(d[0]) - ySecond(d[1]); })
@@ -209,9 +209,9 @@ class AppFusion extends Component {
 
         svgLegendSecond.attr("height", 150 + marginSecond.top);
 
-        if (esProteina) {
+        if (isProtein) {
             svgLegendSecond.selectAll("mylabels")
-                .data(nombreNucleotidos)
+                .data(nameNucleotide)
                 .enter()
                 .append("text")
                 .attr("x", function (d, i) { return marginSecond.left + 15 + i * 50 })
@@ -222,7 +222,7 @@ class AppFusion extends Component {
                 .style("font-size", "15px")
 
             svgLegendSecond.selectAll("mydots")
-                .data(nombreNucleotidos)
+                .data(nameNucleotide)
                 .enter()
                 .append("circle")
                 .attr("cx", function (d, i) { return marginSecond.left + i * 50 })
@@ -232,7 +232,7 @@ class AppFusion extends Component {
         }
         else {
             svgLegendSecond.selectAll("mylabels")
-                .data(nombreNucleotidos)
+                .data(nameNucleotide)
                 .enter()
                 .append("text")
                 .attr("x", function (d, i) { return marginSecond.left + 415 + i * 75 })
@@ -243,7 +243,7 @@ class AppFusion extends Component {
                 .style("font-size", "15px")
 
             svgLegendSecond.selectAll("mydots")
-                .data(nombreNucleotidos)
+                .data(nameNucleotide)
                 .enter()
                 .append("circle")
                 .attr("cx", function (d, i) { return marginSecond.left + 400 + i * 75 })
@@ -288,7 +288,7 @@ class AppFusion extends Component {
             //BRUSH SEGUNDA GRAFICA
             xSecond.domain(s.map(x2Second.invert, x2Second));
             Line_chartSecond.selectAll("rect")
-                .attr('x', function (d) { return xSecond(d.data.posicion) - xBandSecond.bandwidth() * 0.9 / 2 })
+                .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
             focusSecond.select(".axis--x").call(xAxisSecond);
             svgSecond.select(".zoom").call(zoom.transform, d3.zoomIdentity
                 .scale(widthSecond / (s[1] - s[0]))
@@ -307,7 +307,7 @@ class AppFusion extends Component {
             xBandSecond.domain(d3.range(xSecond.domain()[0], xSecond.domain()[1]));
             xSecond.domain(t.rescaleX(x2Second).domain());
             Line_chartSecond.selectAll("rect")
-                .attr('x', function (d) { return xSecond(d.data.posicion) - xBandSecond.bandwidth() * 0.9 / 2 })
+                .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
                 .attr("width", xBandSecond.bandwidth() * 0.9)
             focusSecond.select(".axis--x").call(xAxisSecond);
         }
@@ -328,27 +328,27 @@ class AppFusion extends Component {
         d3.selectAll("#legend2 > *").remove();
 
         //variables primera grafica
-        let resultadofinal = this.props.datosPrimerGrafica;
-        const segundoValor = this.props.segundoValor;
-        const primerValor = this.props.primerValor;
+        let resultFirstGraph = this.props.dataFirstGraph;
+        const valueSecondFilter = this.props.valueSecondFilter;
+        const valueFirstFilter = this.props.valueFirstFilter;
 
-        resultadofinal = resultadofinal.filter(function (element) {
-            return element.posicion >= (primerValor - 1) && element.posicion <= (segundoValor);
+        resultFirstGraph = resultFirstGraph.filter(function (element) {
+            return element.position >= (valueFirstFilter - 1) && element.position <= (valueSecondFilter);
         });
 
         //variables segunda grafica
-        const esProteina = this.props.esProteina;
-        let funcionMapeoLetras = this.mapeoLetras;
-        let nombreNucleotidos = [];
-        let dataSecond = this.props.datosGraficaDos;
-        dataSecond = dataSecond.slice(primerValor - 1, segundoValor);
+        const isProtein = this.props.isProtein;
+        let funcionMapeoLetras = this.letterMapping;
+        let nameNucleotide = [];
+        let dataSecond = this.props.dataSecondGraph;
+        dataSecond = dataSecond.slice(valueFirstFilter - 1, valueSecondFilter);
 
-        if (esProteina) {
-            nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajer", "porcentajen", "porcentajed", "porcentajeb",
-                "porcentajee", "porcentajeq", "porcentajez", "porcentajeh", "porcentajei", "porcentajel", "porcentajek", "porcentajem", "porcentajef",
-                "porcentajep", "porcentajes", "porcentajew", "porcentajey", "porcentajev", "porcentajemenos"];
+        if (isProtein) {
+            nameNucleotide = ["percentagea", "percentagec", "percentageg", "percentaget", "percentager", "percentagen", "percentaged", "percentageb",
+                "percentagee", "percentageq", "percentagez", "percentageh", "percentagei", "percentagel", "percentagek", "percentagem", "percentagef",
+                "percentagep", "percentages", "percentagew", "percentagey", "percentagev", "percentagedash"];
         } else {
-            nombreNucleotidos = ["porcentajea", "porcentajec", "porcentajeg", "porcentajet", "porcentajemenos"];
+            nameNucleotide = ["percentagea", "percentagec", "percentageg", "percentaget", "percentagedash"];
         }
 
         //Primera grafica
@@ -372,15 +372,15 @@ class AppFusion extends Component {
 
         let areaFirst = d3.area()
             .curve(d3.curveMonotoneX)
-            .x(function (d) { return xFirst(d.posicion); })
+            .x(function (d) { return xFirst(d.position); })
             .y0(heightFirst)
-            .y1(function (d) { return yFirst(d.porcentaje); });
+            .y1(function (d) { return yFirst(d.percentage); });
 
         let area2First = d3.area()
             .curve(d3.curveMonotoneX)
-            .x(function (d) { return x2First(d.posicion); })
+            .x(function (d) { return x2First(d.position); })
             .y0(height2First)
-            .y1(function (d) { return y2First(d.porcentaje); });
+            .y1(function (d) { return y2First(d.percentage); });
 
         svgFirst.append("defs").append("clipPath")
             .attr("id", "clip")
@@ -396,13 +396,13 @@ class AppFusion extends Component {
             .attr("class", "context")
             .attr("transform", "translate(" + margin2First.left + "," + margin2First.top + ")");
 
-        xFirst.domain(d3.extent(resultadofinal, function (d) { return d.posicion; }));
-        yFirst.domain([0, d3.max(resultadofinal, function (d) { return d.porcentaje; })]);
+        xFirst.domain(d3.extent(resultFirstGraph, function (d) { return d.position; }));
+        yFirst.domain([0, d3.max(resultFirstGraph, function (d) { return d.percentage; })]);
         x2First.domain(xFirst.domain());
         y2First.domain(yFirst.domain());
 
         focusFirst.append("path")
-            .datum(resultadofinal)
+            .datum(resultFirstGraph)
             .attr("class", "area")
             .attr("d", areaFirst);
 
@@ -425,7 +425,7 @@ class AppFusion extends Component {
                 .text("Entropy"));
 
         contextFirst.append("path")
-            .datum(resultadofinal)
+            .datum(resultFirstGraph)
             .attr("class", "area")
             .attr("d", area2First);
 
@@ -436,7 +436,7 @@ class AppFusion extends Component {
 
         //SEGUNDA GRAFICA
         let seriesSecond = d3.stack()
-            .keys(nombreNucleotidos)
+            .keys(nameNucleotide)
             .offset(d3.stackOffsetDiverging)(dataSecond);
 
         let svgSecond = d3.select("#svg2");
@@ -455,7 +455,7 @@ class AppFusion extends Component {
 
         let colorSecond;
 
-        if (esProteina) {
+        if (isProtein) {
             colorSecond = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#F6EB61", "#B5CF61", "#FFAA52", "#FF82DB", "#A89E81",
                 "#696C71", "#9AFF1C", "#B88BB3", "#45B8AC", "#52703F", "#D7B7AA", "#7D303D", "#E25A06", "#3B4B87",
                 "#7B5EC6", "#CFB023", "#99D6EA", "#C800A1", "#212322", "#AA6B24"]);
@@ -483,7 +483,7 @@ class AppFusion extends Component {
             .attr("class", "focus")
             .attr("transform", "translate(" + marginSecond.left + "," + marginSecond.top + ")");
 
-        xSecond.domain(d3.extent(dataSecond, function (d) { return d.posicion; }));
+        xSecond.domain(d3.extent(dataSecond, function (d) { return d.position; }));
         ySecond.domain([d3.min(seriesSecond, stackMin), d3.max(seriesSecond, stackMax)])
         x2Second.domain(xSecond.domain());
         y2Second.domain(ySecond.domain());
@@ -514,7 +514,7 @@ class AppFusion extends Component {
             .selectAll("rect")
             .data(d => d)
             .join("rect")
-            .attr('x', function (d) { return xSecond(d.data.posicion) - xBandSecond.bandwidth() * 0.9 / 2 })
+            .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
             .attr("y", function (d) { return ySecond(d[1]); })
             .attr("width", xBandSecond.bandwidth() * 0.9)
             .attr("height", function (d) { return ySecond(d[0]) - ySecond(d[1]); })
@@ -523,9 +523,9 @@ class AppFusion extends Component {
 
         svgLegendSecond.attr("height", 150 + marginSecond.top);
 
-        if (esProteina) {
+        if (isProtein) {
             svgLegendSecond.selectAll("mylabels")
-                .data(nombreNucleotidos)
+                .data(nameNucleotide)
                 .enter()
                 .append("text")
                 .attr("x", function (d, i) { return marginSecond.left + 15 + i * 50 })
@@ -536,7 +536,7 @@ class AppFusion extends Component {
                 .style("font-size", "15px")
 
             svgLegendSecond.selectAll("mydots")
-                .data(nombreNucleotidos)
+                .data(nameNucleotide)
                 .enter()
                 .append("circle")
                 .attr("cx", function (d, i) { return marginSecond.left + i * 50 })
@@ -546,7 +546,7 @@ class AppFusion extends Component {
         }
         else {
             svgLegendSecond.selectAll("mylabels")
-                .data(nombreNucleotidos)
+                .data(nameNucleotide)
                 .enter()
                 .append("text")
                 .attr("x", function (d, i) { return marginSecond.left + 415 + i * 75 })
@@ -557,7 +557,7 @@ class AppFusion extends Component {
                 .style("font-size", "15px")
 
             svgLegendSecond.selectAll("mydots")
-                .data(nombreNucleotidos)
+                .data(nameNucleotide)
                 .enter()
                 .append("circle")
                 .attr("cx", function (d, i) { return marginSecond.left + 400 + i * 75 })
@@ -602,7 +602,7 @@ class AppFusion extends Component {
             //BRUSH SEGUNDA GRAFICA
             xSecond.domain(s.map(x2Second.invert, x2Second));
             Line_chartSecond.selectAll("rect")
-                .attr('x', function (d) { return xSecond(d.data.posicion) - xBandSecond.bandwidth() * 0.9 / 2 })
+                .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
             focusSecond.select(".axis--x").call(xAxisSecond);
             svgSecond.select(".zoom").call(zoom.transform, d3.zoomIdentity
                 .scale(widthSecond / (s[1] - s[0]))
@@ -621,7 +621,7 @@ class AppFusion extends Component {
             xBandSecond.domain(d3.range(xSecond.domain()[0], xSecond.domain()[1]));
             xSecond.domain(t.rescaleX(x2Second).domain());
             Line_chartSecond.selectAll("rect")
-                .attr('x', function (d) { return xSecond(d.data.posicion) - xBandSecond.bandwidth() * 0.9 / 2 })
+                .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
                 .attr("width", xBandSecond.bandwidth() * 0.9)
             focusSecond.select(".axis--x").call(xAxisSecond);
         }
@@ -635,51 +635,51 @@ class AppFusion extends Component {
         }
     }
 
-    mapeoLetras(d) {
+    letterMapping(d) {
         switch (d) {
-            case "porcentajea":
+            case "percentagea":
                 return "A";
-            case "porcentajeg":
+            case "percentageg":
                 return "G";
-            case "porcentajec":
+            case "percentagec":
                 return "C";
-            case "porcentajet":
+            case "percentaget":
                 return "T";
-            case "porcentajer":
+            case "percentager":
                 return "R";
-            case "porcentajen":
+            case "percentagen":
                 return "N";
-            case "porcentajed":
+            case "percentaged":
                 return "D";
-            case "porcentajeb":
+            case "percentageb":
                 return "B";
-            case "porcentajee":
+            case "percentagee":
                 return "E";
-            case "porcentajeq":
+            case "percentageq":
                 return "Q";
-            case "porcentajez":
+            case "percentagez":
                 return "Z";
-            case "porcentajeh":
+            case "percentageh":
                 return "H";
-            case "porcentajei":
+            case "percentagei":
                 return "I";
-            case "porcentajel":
+            case "percentagel":
                 return "L";
-            case "porcentajek":
+            case "percentagek":
                 return "K";
-            case "porcentajem":
+            case "percentagem":
                 return "M";
-            case "porcentajef":
+            case "percentagef":
                 return "F";
-            case "porcentajep":
+            case "percentagep":
                 return "P";
-            case "porcentajes":
+            case "percentages":
                 return "S";
-            case "porcentajew":
+            case "percentagew":
                 return "W";
-            case "porcentajey":
+            case "percentagey":
                 return "Y";
-            case "porcentajev":
+            case "percentagev":
                 return "V";
             default:
                 return "Gap";
@@ -689,14 +689,14 @@ class AppFusion extends Component {
     render() {
         return (
             <div>
-                <div className="App centrar primeraGraficaMargen">
-                    <h1>Entropy <Tooltip placement="right" trigger="click" tooltip={this.state.informacion1}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
+                <div className="App center firstGraphMargin">
+                    <h1>Entropy <Tooltip placement="right" trigger="click" tooltip={this.state.information1}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
                     <svg id="svg1" width="1200" height="500"></svg>
                 </div>
-                <div className="App centrar segundaGraficaMargen">
-                    <h1>Profile Weight Matrix <Tooltip placement="right" trigger="click" tooltip={this.state.informacion2}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
-                    <svg id="svg2" className="segundaGraficaBlock" width="1200" height="500"></svg>
-                    <svg id="legend2" className="segundaGraficaBlock" width="1200"></svg>
+                <div className="App center secondGraphMargin">
+                    <h1>Profile Weight Matrix <Tooltip placement="right" trigger="click" tooltip={this.state.information2}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
+                    <svg id="svg2" className="secondGraphBlock" width="1200" height="500"></svg>
+                    <svg id="legend2" className="secondGraphBlock" width="1200"></svg>
                 </div>
             </div>
         );

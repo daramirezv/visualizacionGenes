@@ -1,4 +1,4 @@
-#barraNumero {
+#numberBar {
   margin-top: 2em;
   margin-bottom: 2em;
 }
@@ -7,12 +7,7 @@
   margin: 1em;
 }
 
-.cuerpo {
-  font-family: 'Segoe UI', sans-serif;
-  font-size: small;
-}
-
-.espacioCheckbox {
+.spaceCheckbox {
   margin-top: 1em;
   margin-bottom: 1em;
 }
@@ -25,12 +20,12 @@
   text-align: center;
 }
 
-.margentitulo0 {
+.marginTitle0 {
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
-.centroCarga {
+.innerLoad {
   margin: 0;
   position: absolute;
   top: 50%;
@@ -39,10 +34,22 @@
   transform: translate(-50%, -50%);
 }
 
-.anchoCard {
+.cardWidth {
   width: 1000px;
 }
 
 .hoverHand {
   cursor: pointer;
+}
+
+.body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: small;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
