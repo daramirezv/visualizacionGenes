@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
 import './App.css';
-import AppFirstGraph from './AppFirstGraph';
-import AppSecondGraph from './AppSecondGraph';
 import AppThirdGraph from './AppThirdGraph';
 import AppFourthGraph from './AppFourthGraph';
 import AppFifthGraph from './AppFifthGraph';
+import AppFusion from './AppFirstAndSecond';
 import Tooltip from './Tooltip';
 import ejemploGenes from './genefasta.txt';
 import ejemploProteinas from './proteinasfasta.txt';
@@ -610,8 +609,7 @@ class App extends Component {
                                 </div>
                             </div>
                         </div>
-                        <AppFirstGraph datosPrimerGrafica={this.state.datosPrimerGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
-                        <AppSecondGraph esProteina={this.state.esProteina} datosGraficaDos={this.state.datosSegundaGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
+                        <AppFusion esProteina={this.state.esProteina} datosGraficaDos={this.state.datosSegundaGrafica} datosPrimerGrafica={this.state.datosPrimerGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro}/>
                         <AppThirdGraph esProteina={this.state.esProteina} datosTerceraGrafica={this.state.datosTerceraGrafica} nombresGenes={this.state.nombresGenes} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
                         <AppFourthGraph nombresGenes={this.state.boxesseleccionados} datosCuartaGrafica={this.state.datosTerceraGrafica} primerValor={this.state.primerValorFiltro} segundoValor={this.state.segundoValorFiltro} />
                     </div> : <div>{this.botonesIniciales()}</div>}

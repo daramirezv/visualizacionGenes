@@ -1,0 +1,38 @@
+.zoom {
+    cursor: move;
+    fill: none;
+    pointer-events: all;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.segundaGraficaBlock {
+    display: block
+}
+
+.centrar {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.segundaGraficaMargen {
+    margin-top: 600px;
+}
+
+#legend2 {
+    margin-top: -75px;
+}
+
+.area {
+    fill: steelblue;
+    clip-path: url(#clip);
+}
+
+.primeraGraficaMargen {
+    margin-top: 10px;
+}
