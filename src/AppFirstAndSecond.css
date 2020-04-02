@@ -21,7 +21,7 @@
 }
 
 .secondGraphMargin {
-    margin-top: 600px;
+    margin-top: 465px;
 }
 
 #legend2 {
@@ -31,8 +31,4 @@
 .area {
     fill: steelblue;
     clip-path: url(#clip);
-}
-
-.firstGraphMargin {
-    margin-top: 10px;
 }

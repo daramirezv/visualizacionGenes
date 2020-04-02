@@ -9,11 +9,33 @@ import Tooltip from './Tooltip';
 import exampleGenes from './genefasta.txt';
 import exampleProteins from './proteinfasta.txt';
 
+/**
+ * This is the main class which will be rendered in index.js.
+ * App.js renders each of the graphs and tables used in the website.
+ */
 class App extends Component {
 
     constructor(props) {
         super(props);
+        /**
+         * The state are the variables used by the class.
+         * corruptFile - Tells if the file loaded by the user had a wrong format.
+         * loading - If true, means that the graphs are rendering and the user have to wait while it finishes.
+         * exampleProteinsFile - Where the example protein file will be stored.
+         * exampleGenesFile - Where the example gene file will be stored.
+         * isProtein - If the selected file is a protein alignment.
+         * answer - Where the raw sequences wil be stored after splitting them by name.
+         * dataFirstGraph - Data used by the first graph.
+         * dataThirdGraph - Data used by the third and fourth graph.
+         * namesGenes - Where the names of the sequences will be stored.
+         * dataSecondGraph - Data used by the second graph.
+         * valueFirstFilter - From what position sequences will be graphed.
+         * valueSecondFilter - Until what position sequences will be graphed.
+         * selectedBoxes - What sequences will be graphed.
+         * information0 - Informative message of what the fiters do.
+         */
         this.state = { corruptFile: false, loading: false, exampleProteinsFile: [], exampleGenesFile: [], isProtein: false, answer: [], dataFirstGraph: [], dataThirdGraph: [], namesGenes: [], dataSecondGraph: [], valueFirstFilter: 0, valueSecondFilter: 0, selectedBoxes: [], information0: "The filters changes what sequences the graphs will use." };
+        //The binding of "this" to all methods used by the class.
         this.selections = this.selections.bind(this);
         this.filterAppJS = this.filterAppJS.bind(this);
         this.checkboxes = this.checkboxes.bind(this);
@@ -25,9 +47,15 @@ class App extends Component {
         this.objectSecondGraph = this.objectSecondGraph.bind(this);
         this.objectSecondGraphProteins = this.objectSecondGraphProteins.bind(this);
         this.handleFile = this.handleFile.bind(this);
+        //The reference to the gene translation table.
         this.tableref = React.createRef();
     }
 
+    /**
+     * Function which calculates the shannon entropy.
+     * @param array Array of the values of all sequences at a certain position.
+     * @returns Integer repretenting the shannon entropy at a centain position.
+     */
     shannon = (array) => {
         if (array.length === 0)
             return 0;
@@ -55,9 +83,15 @@ class App extends Component {
         return result;
     }
 
+    /**
+     * Function which calculates the percentage of each value at a certain position for gene alignments.
+     * @param array Array of the values of all sequences at a certain position.
+     * @param position The position which percentages are being calculated.
+     * @returns An instance of the class myObjectSecondGraphGenes which have the percentages per letter.
+     */
     objectSecondGraph = (array, position) => {
         if (array.length === 0)
-            return new myObjectSegundaGrafica(position, 0, 0, 0, 0, 0);
+            return new myObjectSecondGraphGenes(position, 0, 0, 0, 0, 0);
 
         let modeMap = {};
         let el;
@@ -78,11 +112,15 @@ class App extends Component {
         let numberT = modeMap["T"] ? modeMap["T"] / arraySize : 0;
         let numberDash = modeMap["-"] ? modeMap["-"] / arraySize : 0;
 
-        let answer = new myObjectSegundaGrafica(position, numberA, numberC, numberG, numberT, numberDash);
+        let answer = new myObjectSecondGraphGenes(position, numberA, numberC, numberG, numberT, numberDash);
 
         return answer;
     }
 
+    /**
+     * Function called after the render function when the component is first build.
+     * It saves the values of the example files in the class variables.
+     */
     componentDidMount() {
         let example1;
         let example2;
@@ -98,9 +136,15 @@ class App extends Component {
         })
     }
 
+    /**
+     * Function which calculates the percentage of each value at a certain position for protein alignments.
+     * @param array Array of the values of all sequences at a certain position.
+     * @param position The position which percentages are being calculated.
+     * @returns An instance of the class myObjectSecondGraphProteins which have the percentages per letter.
+     */
     objectSecondGraphProteins = (array, position) => {
         if (array.length === 0)
-            return new myObjectSegundaGraficaProteinas(position, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            return new myObjectSecondGraphProteins(position, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         let modeMap = {};
         let el;
@@ -139,16 +183,22 @@ class App extends Component {
         let numberV = modeMap["V"] ? modeMap["V"] / arraySize : 0;
         let numberDash = modeMap["-"] ? modeMap["-"] / arraySize : 0;
 
-        let answer = new myObjectSegundaGraficaProteinas(position, numberA, numberC, numberG, numberT, numberR, numberN, numberD, numberB, numberE, numberQ,
+        let answer = new myObjectSecondGraphProteins(position, numberA, numberC, numberG, numberT, numberR, numberN, numberD, numberB, numberE, numberQ,
             numberZ, numberH, numberI, numberL, numberK, numberM, numberF, numberP, numberS, numberW, numberY, numberV, numberDash);
 
         return answer;
     }
 
+    /**
+     * Function which calculates all the class variables with the selected file.
+     * @param e File chosen.
+     */
     handleFile(e) {
+        //Set the variable loading from the start, so the user knows when the file is being processed
         this.setState({
             loading: true
         })
+        //Check of what file was chosen or if it was one of the examples.
         var file;
         if (e === "proteinExample") {
             file = this.state.exampleProteinsFile;
@@ -172,6 +222,7 @@ class App extends Component {
             let myString;
             let isProtein = false;
 
+            //Read the file and split it by names. Save the result in the answer variable without the names of the sequences.
             for (let index = 0; index < initialArrays.length; index++) {
                 if (index === 0) {
                     continue;
@@ -182,6 +233,7 @@ class App extends Component {
                 answer.push(myString);
             }
 
+            //If the split can not be done, change the corrupFile class variable to true.
             if (answer.length === 0) {
                 this.setState({
                     corruptFile: true
@@ -189,6 +241,7 @@ class App extends Component {
                 return;
             }
 
+            //If the size of the Strings are of different size, change the corrupFile class variable to true.
             let addition = 0;
             answer.map(x => addition += x.length);
             if (addition !== (answer[0].length * answer.length) - 2) {
@@ -198,6 +251,7 @@ class App extends Component {
                 return;
             }
 
+            //Check is the loaded file is a gene or protein alignment.
             const lettersOnlyProteins = ["R", "N", "D", "B", "E", "Q", "Z", "H", "I", "L", "K", "M", "F", "P", "S", "W", "Y", "V"];
             if (lettersOnlyProteins.some(el => answer[0].includes(el))) {
                 isProtein = true;
@@ -208,6 +262,8 @@ class App extends Component {
             let fixJump = 0;
             let components;
 
+            //Generate the data that the first graph will be using.
+            //It uses the shannon function to generate the necessary data.
             for (let index = 0; index < answer[answer.length - 1].length; index++) {
 
                 components = [];
@@ -244,8 +300,7 @@ class App extends Component {
                 }
             }
 
-            //TERCERA GRAFICA
-
+            //Generate the data that the third and fourth graph will be using.
             fixJump = 0;
             components = [];
 
@@ -283,8 +338,7 @@ class App extends Component {
                 resultThirdGraph.push(res);
             }
 
-            //SEGUNDA GRAFICA
-
+            //Generate the data that the second graph will be using.
             let objectPosition = null;
             fixJump = 0;
             components = [];
@@ -306,7 +360,7 @@ class App extends Component {
                     resultSecondGraph.push(objectPosition);
                 }
                 else {
-                    
+
                     if (components.some(v => v !== "-" && v !== "A" && v !== "T" && v !== "C" && v !== "G" && v !== "R" && v !== "N" && v !== "D"
                         && v !== "B" && v !== "E" && v !== "Q" && v !== "Z" && v !== "H" && v !== "I" && v !== "L" && v !== "K" && v !== "M" && v !== "F"
                         && v !== "P" && v !== "S" && v !== "W" && v !== "Y" && v !== "V")) {
@@ -319,7 +373,7 @@ class App extends Component {
                 }
             }
 
-            //QUINTA GRAFICA
+            //Generate the data that the fifth graph will be using.
             let resultFifthGraph = [];
             let keys = ["percentagea", "percentagec", "percentageg", "percentaget"];
             let biggestName;
@@ -334,9 +388,10 @@ class App extends Component {
                         biggestValue = item[element];
                     }
                 });
-                resultFifthGraph.push(new myObjectQuintaGrafica(i + 1, biggestName))
+                resultFifthGraph.push(new myObjectFifthGraph(i + 1, biggestName))
             })
 
+            //Set the data to the class variables.
             this.setState({
                 dataFirstGraph: resultFirstGraph,
                 dataThirdGraph: resultThirdGraph,
@@ -351,6 +406,7 @@ class App extends Component {
                 loading: false
             })
 
+            //Change the size of the fourth table if it's too big thanks to the amount of sequences being processed.
             if (this.tableref.current.offsetHeight > 300) {
                 d3.selectAll(".table-check")
                     .style("height", "300px")
@@ -365,6 +421,10 @@ class App extends Component {
         reader.readAsText(file);
     }
 
+    /**
+     * Set the start and end position filtered to change all the graphs and tables data.
+     * @param event Is the value chosen by the user.
+     */
     filterAppJS(event) {
         const firstValue = parseInt(event.target.value.split(" - ")[0]);
         const secondValue = parseInt(event.target.value.split(" - ")[1]);
@@ -373,6 +433,9 @@ class App extends Component {
         });
     }
 
+    /**
+     * This function return the arrays to be used by the translation table.
+     */
     selections() {
         const totalSize = this.state.dataThirdGraph.length;
         const remainingNumbers = totalSize % 100;
@@ -394,6 +457,9 @@ class App extends Component {
             }))
     }
 
+    /**
+     * This function creates the checkboxes using the sequence names.
+     */
     checkboxes() {
         const names = this.state.namesGenes;
         return (
@@ -405,6 +471,9 @@ class App extends Component {
             }))
     }
 
+    /**
+     * This function updates the values in the class variables when the user filters the names of the sequences he wants to see.
+     */
     filter() {
         let namesArray = [];
         const isProtein = this.state.isProtein;
@@ -416,8 +485,6 @@ class App extends Component {
             }
         })
 
-        //PRIMER GRAFICA
-
         let objectTemp = null;
         let posAverage = 0;
         let resultFirstGraph = [];
@@ -427,6 +494,8 @@ class App extends Component {
         const namesGenes = this.state.namesGenes;
         let components = [];
 
+        //Generate the data that the first graph will be using.
+        //It uses the shannon function to generate the necessary data.
         for (let index = 0; index < answer[answer.length - 1].length; index++) {
 
             components = []
@@ -465,8 +534,7 @@ class App extends Component {
             }
         }
 
-        //GRAFICA DE COLORES
-
+        //Generate the data that the second graph will be using.
         let objectPosition = null;
         fixJump = 0;
         let resultSecondGraph = [];
@@ -502,6 +570,7 @@ class App extends Component {
             }
         }
 
+        //Update the class variables with the results.
         this.setState({
             selectedBoxes: namesArray,
             dataSecondGraph: resultSecondGraph,
@@ -511,6 +580,9 @@ class App extends Component {
 
     }
 
+    /**
+     * This function is called when the user selects the "select all sequences" option.
+     */
     selectAll() {
         const boxes = d3.selectAll(".form-check-input").nodes()
         boxes.map(function (item, i) {
@@ -519,6 +591,9 @@ class App extends Component {
         this.filter();
     }
 
+    /**
+     * This function is called when the user selects the "deselect all sequences" option.
+     */
     deselectAll() {
         const boxes = d3.selectAll(".form-check-input").nodes()
         boxes.map(function (item, i) {
@@ -527,6 +602,12 @@ class App extends Component {
         this.filter();
     }
 
+    /**
+     * This function return a piece of HTML depending on what needs to be loaded in the website.
+     * The first option is if the information is loading.
+     * The second option is if the file was corrupted or couldnt be loaded.
+     * The third option is first screen the user sees, where he needs to select one of the example files of upload a file.
+     */
     initialButtons() {
         if (this.state.loading && !this.state.corruptFile) {
             return <h1 className="innerLoad">Loading</h1>;
@@ -578,6 +659,9 @@ class App extends Component {
         }
     }
 
+    /**
+     * The render function will draw everything on the website.
+     */
     render() {
         return (
             <div className="App">
@@ -590,8 +674,8 @@ class App extends Component {
                             <div className="row">
                                 <div className="col-md">
                                     <button className="btn btn-dark" type="submit" onClick={this.filter}>Filter</button>
-                                    <button className="btn btn-dark" type="submit" onClick={this.selectAll}>Select All Genes</button>
-                                    <button className="btn btn-dark" type="submit" onClick={this.deselectAll}>Deselect All Genes</button>
+                                    <button className="btn btn-dark" type="submit" onClick={this.selectAll}>Select All Sequences</button>
+                                    <button className="btn btn-dark" type="submit" onClick={this.deselectAll}>Deselect All Sequences</button>
                                 </div>
                             </div>
                             <div className="row table-check" ref={this.tableref}>
@@ -609,7 +693,7 @@ class App extends Component {
                                 </div>
                             </div>
                         </div>
-                        <AppFirstAndSecond isProtein={this.state.isProtein} dataSecondGraph={this.state.dataSecondGraph} dataFirstGraph={this.state.dataFirstGraph} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter}/>
+                        <AppFirstAndSecond isProtein={this.state.isProtein} dataSecondGraph={this.state.dataSecondGraph} dataFirstGraph={this.state.dataFirstGraph} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
                         <AppThirdGraph isProtein={this.state.isProtein} dataThirdGraph={this.state.dataThirdGraph} namesGenes={this.state.namesGenes} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
                         <AppFourthGraph namesGenes={this.state.selectedBoxes} dataFourthGraph={this.state.dataThirdGraph} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
                     </div> : <div>{this.initialButtons()}</div>}
@@ -618,6 +702,9 @@ class App extends Component {
     }
 }
 
+/**
+ * Objects of this class will be used by the shannon graph.
+ */
 class myObject {
     constructor(position, percentage) {
         this.position = position;
@@ -625,7 +712,10 @@ class myObject {
     }
 }
 
-class myObjectSegundaGrafica {
+/**
+ * Objects of this class will be used by the second graph if the website is rendering a gene aligment.
+ */
+class myObjectSecondGraphGenes {
     constructor(position, percentagea, percentagec, percentageg, percentaget, percentagedash) {
         this.position = position;
         this.percentagea = percentagea;
@@ -636,14 +726,20 @@ class myObjectSegundaGrafica {
     }
 }
 
-class myObjectQuintaGrafica {
+/**
+ * Objects of this class will be used by the translation table.
+ */
+class myObjectFifthGraph {
     constructor(position, letter) {
         this.position = position;
         this.letter = letter;
     }
 }
 
-class myObjectSegundaGraficaProteinas {
+/**
+ * Objects of this class will be used by the second graph if the website is rendering a protein aligment.
+ */
+class myObjectSecondGraphProteins {
     constructor(position, percentagea, percentagec, percentageg, percentaget, percentager, percentagen, percentaged, percentageb, percentagee,
         percentageq, percentagez, percentageh, percentagei, percentagel, percentagek, percentagem, percentagef, percentagep,
         percentages, percentagew, percentagey, percentagev, percentagedash) {

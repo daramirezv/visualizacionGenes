@@ -2,11 +2,24 @@ import React, { Component } from "react";
 import Tooltip from './Tooltip';
 import './AppFifthGraph.css';
 
+/**
+ * This is the class where the translation table will be rendered.
+ * App.js renders this component
+ */
 class AppFifthGraph extends Component {
 
     constructor(props) {
         super(props);
+        /**
+         * The state are the variables used by the class.
+         * solution1 - Where the first possible translation will be stored.
+         * solution2 - Where the second possible translation will be stored.
+         * solution3 - Where the third possible translation will be stored.
+         * originalString - Where consensus will the stored.
+         * information5 - Informative message of what this table represent.
+         */
         this.state = { solution1: [], solution2: [], solution3: [], originalString: [], information5: "The table shows the possible translations to amino acids of the loaded genes." };
+        //The binding of "this" to all methods used by the class.
         this.positions = this.positions.bind(this);
         this.values = this.values.bind(this);
         this.characterMapping = this.characterMapping.bind(this);
@@ -15,7 +28,11 @@ class AppFifthGraph extends Component {
         this.download = this.download.bind(this);
     }
 
+    /**
+     * Function used after the render function is called for the first time.
+     */
     componentDidMount() {
+        //The dictionary that will be used to map the nucleotides to amino acids.
         let dictionary = {};
         dictionary["UUU"] = "F";
         dictionary["UUC"] = "F";
@@ -96,12 +113,13 @@ class AppFifthGraph extends Component {
         let value2;
         let value3;
 
+        //Put the nucleodites in the variable "originalString".
         for (let index = 0; index < data.length; index++) {
             originalString.push(this.characterMapping(data[index].letter));
         }
 
+        //Get the first possible translation.
         for (let index = 0; index + 2 < data.length; index += 3) {
-
             value1 = this.characterMapping(data[index].letter);
             value2 = this.characterMapping(data[index + 1].letter);
             value3 = this.characterMapping(data[index + 2].letter);
@@ -110,8 +128,8 @@ class AppFifthGraph extends Component {
             solution1.push(translation);
         }
 
+        //Get the second possible translation.
         for (let index = 1; index + 2 < data.length; index += 3) {
-
             value1 = this.characterMapping(data[index].letter);
             value2 = this.characterMapping(data[index + 1].letter);
             value3 = this.characterMapping(data[index + 2].letter);
@@ -120,8 +138,8 @@ class AppFifthGraph extends Component {
             solution2.push(translation);
         }
 
+        //Get the third possible translation.
         for (let index = 2; index + 2 < data.length; index += 3) {
-
             value1 = this.characterMapping(data[index].letter);
             value2 = this.characterMapping(data[index + 1].letter);
             value3 = this.characterMapping(data[index + 2].letter);
@@ -130,6 +148,7 @@ class AppFifthGraph extends Component {
             solution3.push(translation);
         }
 
+        //Set the class variables with the translations and the consensus.
         this.setState({
             originalString: originalString,
             solution1: solution1,
@@ -138,6 +157,9 @@ class AppFifthGraph extends Component {
         })
     }
 
+    /**
+     * Create the first row of the table, where the positions will be.
+     */
     positions() {
         const originalString = this.state.originalString;
         return (
@@ -146,6 +168,9 @@ class AppFifthGraph extends Component {
             }))
     }
 
+    /**
+    * Create the sections inside the table where the letters will be.
+    */
     values(numeroArreglo) {
         let array;
         switch (numeroArreglo) {
@@ -165,6 +190,9 @@ class AppFifthGraph extends Component {
             }))
     }
 
+    /**
+    * Depending of how many values there are in the translations, spaces are added to move right the last two possible solutions
+    */
     lastPosition(numberSolution) {
         let remaining;
         let totalSolution;
@@ -188,6 +216,9 @@ class AppFifthGraph extends Component {
         }
     }
 
+    /**
+     * Renders the last row of the table, where the original string lies.
+     */
     original() {
         let originalString = this.state.originalString;
         let classColor;
@@ -207,6 +238,10 @@ class AppFifthGraph extends Component {
             }))
     }
 
+    /**
+     * Use to change what was received by props to the corresponding letter.
+     * @param d the value which will be mapped.
+     */
     characterMapping(d) {
         switch (d) {
             case "percentagea":
@@ -220,11 +255,23 @@ class AppFifthGraph extends Component {
         }
     }
 
+    /**
+     * The function which downloads the text file off the table information.
+     */
     download() {
+        const stop = 'stop';
+        const regularExp = new RegExp(stop, 'g');
+
         let element = document.createElement('a');
-        const solution1 = this.state.solution1;
-        const solution2 = this.state.solution2;
-        const solution3 = this.state.solution3;
+        let solution1 = String(this.state.solution1);
+        solution1 = solution1.replace(regularExp, "*");
+        solution1 = solution1.replace(/,/g, '');
+        let solution2 = String(this.state.solution2);
+        solution2 = solution2.replace(regularExp, "*");
+        solution2 = solution2.replace(/,/g, '');
+        let solution3 = String(this.state.solution3);
+        solution3 = solution3.replace(regularExp, "*");
+        solution3 = solution3.replace(/,/g, '');
 
         let text = ">First Solution\n";
 
@@ -258,6 +305,9 @@ class AppFifthGraph extends Component {
         element.click();
     }
 
+    /**
+     * The render function will draw the whole table inside the component.
+     */
     render() {
         return (
             <div className="cuerpo fifthGraphMargin">

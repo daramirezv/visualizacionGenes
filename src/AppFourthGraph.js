@@ -3,20 +3,32 @@ import Tooltip from './Tooltip';
 import * as d3 from "d3";
 import './AppFourthGraph.css';
 
+/**
+ * This is the class where sequence matrix table will the rendered.
+ * App.js renders this component
+ */
 class AppFourthGraph extends Component {
 
     constructor(props) {
         super(props);
+        /**
+         * The state are the variables used by the class.
+         * information4 - Informative message of what this table represent.
+         */
         this.state = { information4: "The table shows the values of all selected sequences." };
+        //The binding of "this" to all methods used by the class.
         this.positions = this.positions.bind(this);
         this.characters = this.characters.bind(this);
         this.names = this.names.bind(this);
     }
 
+    /**
+     * Method called each time a filter in the App component changes. This forces to resize the table.
+     */
     componentDidUpdate() {
-        if (d3.selectAll(".tabla-vertical").node().offsetHeight > 750) {
+        if (d3.selectAll(".tabla-vertical").node().offsetHeight > 500) {
             d3.selectAll(".tabla-vertical")
-                .style("height", "750px")
+                .style("height", "500px")
         }
         else {
             d3.selectAll(".tabla-vertical")
@@ -24,10 +36,13 @@ class AppFourthGraph extends Component {
         }
     }
 
+    /**
+     * Method called after the render is called for the first time. This forces to resize the table.
+     */
     componentDidMount() {
-        if (d3.selectAll(".tabla-vertical").node().offsetHeight > 750) {
+        if (d3.selectAll(".tabla-vertical").node().offsetHeight > 500) {
             d3.selectAll(".tabla-vertical")
-                .style("height", "750px");
+                .style("height", "500px");
         }
         else {
             d3.selectAll(".tabla-vertical")
@@ -35,6 +50,9 @@ class AppFourthGraph extends Component {
         }
     }
 
+    /**
+      * Create the first row of the table, where the positions will be.
+      */
     positions() {
         const valueFirstFilter = this.props.valueFirstFilter;
         const valueSecondFilter = this.props.valueSecondFilter;
@@ -45,6 +63,10 @@ class AppFourthGraph extends Component {
             }))
     }
 
+    /**
+    * Create the first column of the table, where the names will be.
+    * Also calls the "characters" function to draw the sections where the letters will be.
+    */
     names(functionCharacters) {
         const names = this.props.namesGenes;
         return (
@@ -57,6 +79,10 @@ class AppFourthGraph extends Component {
             }))
     }
 
+    /**
+     * Function which draws the sections where the letters will be.
+     * @param geneName The name of the sequence to know with what row to work with.
+     */
     characters(geneName) {
         const valueFirstFilter = this.props.valueFirstFilter;
         const valueSecondFilter = this.props.valueSecondFilter;
@@ -76,6 +102,9 @@ class AppFourthGraph extends Component {
             }))
     }
 
+    /**
+     * The render function will draw the sequence matrix inside the component.
+     */
     render() {
         return (
             <div className="cuerpo fourthGraphMargin">

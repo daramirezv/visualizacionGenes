@@ -3,18 +3,34 @@ import Tooltip from './Tooltip';
 import * as d3 from "d3";
 import './AppThirdGraph.css';
 
+/**
+ * This is the class where the sequence comparison graph will be rendered.
+ * App.js renders this component
+ */
 class AppThirdGraph extends Component {
 
     constructor(props) {
         super(props);
+        /**
+         * The state are the variables used by the class.
+         * firstFilter - The first position selected in the filter.
+         * secondFilter - The Second position selected in the filter.
+         * information3 - Informative message of what this graph represent.
+         */
         this.state = { firstFilter: "", secondFilter: "", information3: "The graph compares the values of two sequences." };
+        //The binding of "this" to all methods used by the class.
         this.firstFilterThirdGraph = this.firstFilterThirdGraph.bind(this);
         this.secondFilterThirdGraph = this.secondFilterThirdGraph.bind(this);
         this.selections = this.selections.bind(this);
+        //A reference to the first sequence selected.
         this.firstselectref = React.createRef();
+        //A reference to the second sequence selected.
         this.secondselectref = React.createRef();
     }
 
+    /**
+     * Method called when the component finishes loading for the first time.
+     */
     componentDidMount() {
         const namesAllGenes = this.props.namesGenes;
         let namesGenes = [];
@@ -30,10 +46,11 @@ class AppThirdGraph extends Component {
         dataThirdGraph = dataThirdGraph.slice(valueFirstFilter - 1, valueSecondFilter);
         const isProtein = this.props.isProtein;
 
+        //Sequence comparison graph construction.
         let svg = d3.select("#svg3");
 
         let margin = { top: 20, right: 20, bottom: 110, left: 40 },
-            margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
+            margin2 = { top: 330, right: 20, bottom: 30, left: 40 },
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             height2 = +svg.attr("height") - margin2.top - margin2.bottom;
@@ -81,12 +98,12 @@ class AppThirdGraph extends Component {
         if (!isProtein) {
             Line_chart = svg.append("g")
                 .attr("class", "focus")
-                .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
+                .attr("transform", "translate(" + margin.left + "," + (2.33 * margin.top) + ")")
                 .attr("clip-path", "url(#clip)");
         } else {
             Line_chart = svg.append("g")
                 .attr("class", "focus")
-                .attr("transform", "translate(" + margin.left + "," + (1.4 * margin.top) + ")")
+                .attr("transform", "translate(" + margin.left + "," + (1.3 * margin.top) + ")")
                 .attr("clip-path", "url(#clip)");
         }
 
@@ -194,6 +211,7 @@ class AppThirdGraph extends Component {
             context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
         }
 
+        //Legend construction
         let svgLegend = d3.select("#legend3");
 
         svgLegend.attr("height", namesGenes.length * 30 + margin.top);
@@ -219,8 +237,10 @@ class AppThirdGraph extends Component {
             .style("font-size", "15px")
     }
 
+    /**
+     * Method called each time a filter in the App component changes. This forces to re-render the graph.
+     */
     componentDidUpdate() {
-
         let namesGenes = [];
         const valueFirstSelect = this.firstselectref.current.value;
         const valueSecondSelect = this.secondselectref.current.value;
@@ -240,9 +260,10 @@ class AppThirdGraph extends Component {
         d3.selectAll("#svg3 > *").remove();
         d3.selectAll("#legend3 > *").remove();
 
+        //Sequence comparison contruction
         let svg = d3.select("#svg3"),
             margin = { top: 20, right: 20, bottom: 110, left: 40 },
-            margin2 = { top: 430, right: 20, bottom: 30, left: 40 },
+            margin2 = { top: 330, right: 20, bottom: 30, left: 40 },
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             height2 = +svg.attr("height") - margin2.top - margin2.bottom;
@@ -401,6 +422,7 @@ class AppThirdGraph extends Component {
             context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
         }
 
+        //Legend contruction
         let svgLegend = d3.select("#legend3");
 
         svgLegend.attr("height", namesGenes.length * 30 + margin.top);
@@ -426,18 +448,29 @@ class AppThirdGraph extends Component {
             .style("font-size", "15px")
     }
 
+    /**
+     * Saves in the class variables the name of the first sequence selected.
+     * @param event Is the element selected in the dropdown.
+     */
     firstFilterThirdGraph(event) {
         this.setState({
             firstFilter: event.target.value
         });
     }
 
+    /**
+     * Saves in the class variables the name of the second sequence selected.
+     * @param event Is the element selected in the dropdown.
+     */
     secondFilterThirdGraph(event) {
         this.setState({
             secondFilter: event.target.value
         });
     }
 
+    /**
+     * Contructs all the possible selections the dropdown have.
+     */
     selections() {
         let nombres = this.props.namesGenes;
         return (
@@ -446,11 +479,14 @@ class AppThirdGraph extends Component {
             }))
     }
 
+    /**
+     * The render function will draw the sequence comparison graph inside the component.
+     */
     render() {
         return (
             <div className="App center marginThirdGraph">
                 <h1>Sequence Comparison <Tooltip placement="right" trigger="click" tooltip={this.state.information3}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
-                <svg id="svg3" className="thirdGraphBlock" width="1200" height="500"></svg>
+                <svg id="svg3" className="thirdGraphBlock" width="1200" height="400"></svg>
                 <svg id="legend3" className="thirdGraphBlock" width="1200"></svg>
                 <div className="container">
                     <div className="row">

@@ -3,17 +3,29 @@ import Tooltip from './Tooltip';
 import * as d3 from "d3";
 import './AppFirstAndSecond.css';
 
-class AppFusion extends Component {
+/**
+ * This is the class where the entropy and profile weight matrix will be rendered.
+ * App.js renders this component
+ */
+class AppFirstAndSecond extends Component {
 
     constructor(props) {
         super(props);
+        /**
+         * The state are the variables used by the class.
+         * information2 - Informative message of what this graph represent.
+         */
         this.state = { information2: "The graph shows the percentage of each different value per position for all selected sequences.", information1: "The graph shows the entropy between all selected sequences for each position." };
+        //The binding of "this" to all methods used by the class.
         this.letterMapping = this.letterMapping.bind(this);
     }
 
+    /**
+     * Method called when the component finishes loading for the first time.
+     */
     componentDidMount() {
 
-        //variables primera grafica
+        //Variables used by the entropy graph.
         let resultFirstGraph = this.props.dataFirstGraph;
         const valueSecondFilter = this.props.valueSecondFilter;
         const valueFirstFilter = this.props.valueFirstFilter;
@@ -22,7 +34,7 @@ class AppFusion extends Component {
             return element.position >= (valueFirstFilter - 1) && element.position <= (valueSecondFilter);
         });
 
-        //variables segunda grafica
+        //Variables used by the profile weight matrix.
         const isProtein = this.props.isProtein;
         let funcionMapeoLetras = this.letterMapping;
         let nameNucleotide = [];
@@ -37,12 +49,11 @@ class AppFusion extends Component {
             nameNucleotide = ["percentagea", "percentagec", "percentageg", "percentaget", "percentagedash"];
         }
 
-        //primera grafica
-        let svgFirst = d3.select("#svg1")
-            // .style("height", "500");
+        //Entropy graph construction
+        let svgFirst = d3.select("#svg1");
 
         let marginFirst = { top: 20, right: 20, bottom: 110, left: 40 },
-            margin2First = { top: 430, right: 20, bottom: 30, left: 40 },
+            margin2First = { top: 330, right: 20, bottom: 30, left: 40 },
             widthFirst = +svgFirst.attr("width") - marginFirst.left - marginFirst.right,
             heightFirst = +svgFirst.attr("height") - marginFirst.top - marginFirst.bottom,
             height2First = +svgFirst.attr("height") - margin2First.top - margin2First.bottom;
@@ -120,7 +131,7 @@ class AppFusion extends Component {
             .attr("transform", "translate(0," + height2First + ")")
             .call(xAxis2First);
 
-        //SEGUNDA GRAFICA
+        //Profile weight matrix graph construction
         let seriesSecond = d3.stack()
             .keys(nameNucleotide)
             .offset(d3.stackOffsetDiverging)(dataSecond);
@@ -128,7 +139,7 @@ class AppFusion extends Component {
         let svgSecond = d3.select("#svg2");
 
         let marginSecond = { top: 20, right: 20, bottom: 110, left: 40 },
-            margin2Second = { top: 430, right: 20, bottom: 30, left: 40 },
+            margin2Second = { top: 330, right: 20, bottom: 30, left: 40 },
             widthSecond = +svgSecond.attr("width") - marginSecond.left - marginSecond.right,
             heightSecond = +svgSecond.attr("height") - marginSecond.top - marginSecond.bottom,
             height2Second = +svgSecond.attr("height") - margin2Second.top - margin2Second.bottom;
@@ -142,11 +153,11 @@ class AppFusion extends Component {
         let colorSecond;
 
         if (isProtein) {
-            colorSecond = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#F6EB61", "#B5CF61", "#FFAA52", "#FF82DB", "#A89E81",
+            colorSecond = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#FCE205", "#B5CF61", "#FFAA52", "#FF82DB", "#A89E81",
                 "#696C71", "#9AFF1C", "#B88BB3", "#45B8AC", "#52703F", "#D7B7AA", "#7D303D", "#E25A06", "#3B4B87",
                 "#7B5EC6", "#CFB023", "#99D6EA", "#C800A1", "#212322", "#AA6B24"]);
         } else {
-            colorSecond = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#F6EB61", "#AA6B24"]);
+            colorSecond = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#FCE205", "#AA6B24"]);
         }
 
         let xAxisSecond = d3.axisBottom(xSecond),
@@ -205,6 +216,8 @@ class AppFusion extends Component {
             .attr("width", xBandSecond.bandwidth() * 0.9)
             .attr("height", function (d) { return ySecond(d[0]) - ySecond(d[1]); })
 
+        //Legend construction
+
         let svgLegendSecond = d3.select("#legend2");
 
         svgLegendSecond.attr("height", 150 + marginSecond.top);
@@ -215,7 +228,7 @@ class AppFusion extends Component {
                 .enter()
                 .append("text")
                 .attr("x", function (d, i) { return marginSecond.left + 15 + i * 50 })
-                .attr("y", marginSecond.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("y", marginSecond.top)
                 .text(function (d) { return funcionMapeoLetras(d) })
                 .attr("text-anchor", "left")
                 .style("alignment-baseline", "middle")
@@ -226,7 +239,7 @@ class AppFusion extends Component {
                 .enter()
                 .append("circle")
                 .attr("cx", function (d, i) { return marginSecond.left + i * 50 })
-                .attr("cy", marginSecond.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("cy", marginSecond.top)
                 .attr("r", 7)
                 .style("fill", (d, i) => colorSecond(i))
         }
@@ -236,7 +249,7 @@ class AppFusion extends Component {
                 .enter()
                 .append("text")
                 .attr("x", function (d, i) { return marginSecond.left + 415 + i * 75 })
-                .attr("y", marginSecond.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("y", marginSecond.top)
                 .text(function (d) { return funcionMapeoLetras(d) })
                 .attr("text-anchor", "left")
                 .style("alignment-baseline", "middle")
@@ -247,12 +260,12 @@ class AppFusion extends Component {
                 .enter()
                 .append("circle")
                 .attr("cx", function (d, i) { return marginSecond.left + 400 + i * 75 })
-                .attr("cy", marginSecond.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("cy", marginSecond.top)
                 .attr("r", 7)
                 .style("fill", (d, i) => colorSecond(i))
         }
 
-        //ZOOM Y BRUSH AMBAS GRAFICAS
+        //Zoom and brush for both graphs
         let brush = d3.brushX()
             .extent([[0, 0], [widthSecond, height2Second]])
             .on("brush end", brushed);
@@ -276,8 +289,8 @@ class AppFusion extends Component {
             .call(zoom);
 
         function brushed() {
-            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-            //BRUSH PRIMER GRAFICA
+            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
+            //First graph
             let s = d3.event.selection || x2First.range();
             xFirst.domain(s.map(x2First.invert, x2First));
             focusFirst.select(".area").attr("d", areaFirst);
@@ -285,7 +298,7 @@ class AppFusion extends Component {
             svgFirst.select(".zoom").call(zoom.transform, d3.zoomIdentity
                 .scale(widthFirst / (s[1] - s[0]))
                 .translate(-s[0], 0));
-            //BRUSH SEGUNDA GRAFICA
+            //Second graph
             xSecond.domain(s.map(x2Second.invert, x2Second));
             Line_chartSecond.selectAll("rect")
                 .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
@@ -296,14 +309,14 @@ class AppFusion extends Component {
         }
 
         function zoomed() {
-            //ZOOM PRIMER GRAFICA
-            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+            //First graph
+            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
             let t = d3.event.transform;
             xFirst.domain(t.rescaleX(x2First).domain());
             focusFirst.select(".area").attr("d", areaFirst);
             focusFirst.select(".axis--x").call(xAxisFirst);
             contextFirst.select(".brush").call(brush.move, xFirst.range().map(t.invertX, t));
-            //ZOOM SEGUNDA GRAFICA
+            //Second Graph
             xBandSecond.domain(d3.range(xSecond.domain()[0], xSecond.domain()[1]));
             xSecond.domain(t.rescaleX(x2Second).domain());
             Line_chartSecond.selectAll("rect")
@@ -321,13 +334,16 @@ class AppFusion extends Component {
         }
     }
 
+    /**
+     * This function is called each time a filter in App.js is changed, when it happens, this whole component re-renders.
+     */
     componentDidUpdate() {
 
         d3.selectAll("#svg1 > *").remove();
         d3.selectAll("#svg2 > *").remove();
         d3.selectAll("#legend2 > *").remove();
 
-        //variables primera grafica
+        //Variables used by the entropy graph.
         let resultFirstGraph = this.props.dataFirstGraph;
         const valueSecondFilter = this.props.valueSecondFilter;
         const valueFirstFilter = this.props.valueFirstFilter;
@@ -336,7 +352,7 @@ class AppFusion extends Component {
             return element.position >= (valueFirstFilter - 1) && element.position <= (valueSecondFilter);
         });
 
-        //variables segunda grafica
+        //Variables used by the profile weight matrix.
         const isProtein = this.props.isProtein;
         let funcionMapeoLetras = this.letterMapping;
         let nameNucleotide = [];
@@ -351,10 +367,10 @@ class AppFusion extends Component {
             nameNucleotide = ["percentagea", "percentagec", "percentageg", "percentaget", "percentagedash"];
         }
 
-        //Primera grafica
+        //Entropy graph construction
         let svgFirst = d3.select("#svg1"),
             marginFirst = { top: 20, right: 20, bottom: 110, left: 40 },
-            margin2First = { top: 430, right: 20, bottom: 30, left: 40 },
+            margin2First = { top: 330, right: 20, bottom: 30, left: 40 },
             widthFirst = +svgFirst.attr("width") - marginFirst.left - marginFirst.right,
             heightFirst = +svgFirst.attr("height") - marginFirst.top - marginFirst.bottom,
             height2First = +svgFirst.attr("height") - margin2First.top - margin2First.bottom;
@@ -434,7 +450,7 @@ class AppFusion extends Component {
             .attr("transform", "translate(0," + height2First + ")")
             .call(xAxis2First);
 
-        //SEGUNDA GRAFICA
+        //Profile weight matrix construction.
         let seriesSecond = d3.stack()
             .keys(nameNucleotide)
             .offset(d3.stackOffsetDiverging)(dataSecond);
@@ -442,7 +458,7 @@ class AppFusion extends Component {
         let svgSecond = d3.select("#svg2");
 
         let marginSecond = { top: 20, right: 20, bottom: 110, left: 40 },
-            margin2Second = { top: 430, right: 20, bottom: 30, left: 40 },
+            margin2Second = { top: 330, right: 20, bottom: 30, left: 40 },
             widthSecond = +svgSecond.attr("width") - marginSecond.left - marginSecond.right,
             heightSecond = +svgSecond.attr("height") - marginSecond.top - marginSecond.bottom,
             height2Second = +svgSecond.attr("height") - margin2Second.top - margin2Second.bottom;
@@ -456,11 +472,11 @@ class AppFusion extends Component {
         let colorSecond;
 
         if (isProtein) {
-            colorSecond = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#F6EB61", "#B5CF61", "#FFAA52", "#FF82DB", "#A89E81",
+            colorSecond = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#FCE205", "#B5CF61", "#FFAA52", "#FF82DB", "#A89E81",
                 "#696C71", "#9AFF1C", "#B88BB3", "#45B8AC", "#52703F", "#D7B7AA", "#7D303D", "#E25A06", "#3B4B87",
                 "#7B5EC6", "#CFB023", "#99D6EA", "#C800A1", "#212322", "#AA6B24"]);
         } else {
-            colorSecond = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#F6EB61", "#AA6B24"]);
+            colorSecond = d3.scaleOrdinal().range(["#D90025", "#3BD23D", "#0082B4", "#FCE205", "#AA6B24"]);
         }
 
         let xAxisSecond = d3.axisBottom(xSecond),
@@ -519,6 +535,7 @@ class AppFusion extends Component {
             .attr("width", xBandSecond.bandwidth() * 0.9)
             .attr("height", function (d) { return ySecond(d[0]) - ySecond(d[1]); })
 
+        //Legends construction
         let svgLegendSecond = d3.select("#legend2");
 
         svgLegendSecond.attr("height", 150 + marginSecond.top);
@@ -529,7 +546,7 @@ class AppFusion extends Component {
                 .enter()
                 .append("text")
                 .attr("x", function (d, i) { return marginSecond.left + 15 + i * 50 })
-                .attr("y", marginSecond.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("y", marginSecond.top)
                 .text(function (d) { return funcionMapeoLetras(d) })
                 .attr("text-anchor", "left")
                 .style("alignment-baseline", "middle")
@@ -540,7 +557,7 @@ class AppFusion extends Component {
                 .enter()
                 .append("circle")
                 .attr("cx", function (d, i) { return marginSecond.left + i * 50 })
-                .attr("cy", marginSecond.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("cy", marginSecond.top)
                 .attr("r", 7)
                 .style("fill", (d, i) => colorSecond(i))
         }
@@ -550,7 +567,7 @@ class AppFusion extends Component {
                 .enter()
                 .append("text")
                 .attr("x", function (d, i) { return marginSecond.left + 415 + i * 75 })
-                .attr("y", marginSecond.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("y", marginSecond.top)
                 .text(function (d) { return funcionMapeoLetras(d) })
                 .attr("text-anchor", "left")
                 .style("alignment-baseline", "middle")
@@ -561,12 +578,12 @@ class AppFusion extends Component {
                 .enter()
                 .append("circle")
                 .attr("cx", function (d, i) { return marginSecond.left + 400 + i * 75 })
-                .attr("cy", marginSecond.top) // 100 is where the first dot appears. 25 is the distance between dots
+                .attr("cy", marginSecond.top)
                 .attr("r", 7)
                 .style("fill", (d, i) => colorSecond(i))
         }
 
-        //ZOOM Y BRUSH AMBAS GRAFICAS
+        //Zoom and brush for both graphs.
         let brush = d3.brushX()
             .extent([[0, 0], [widthSecond, height2Second]])
             .on("brush end", brushed);
@@ -590,8 +607,8 @@ class AppFusion extends Component {
             .call(zoom);
 
         function brushed() {
-            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-            //BRUSH PRIMER GRAFICA
+            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
+            //First graph
             let s = d3.event.selection || x2First.range();
             xFirst.domain(s.map(x2First.invert, x2First));
             focusFirst.select(".area").attr("d", areaFirst);
@@ -599,7 +616,7 @@ class AppFusion extends Component {
             svgFirst.select(".zoom").call(zoom.transform, d3.zoomIdentity
                 .scale(widthFirst / (s[1] - s[0]))
                 .translate(-s[0], 0));
-            //BRUSH SEGUNDA GRAFICA
+            //Second graph
             xSecond.domain(s.map(x2Second.invert, x2Second));
             Line_chartSecond.selectAll("rect")
                 .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
@@ -610,14 +627,14 @@ class AppFusion extends Component {
         }
 
         function zoomed() {
-            //ZOOM PRIMER GRAFICA
-            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+            //First graph
+            if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
             let t = d3.event.transform;
             xFirst.domain(t.rescaleX(x2First).domain());
             focusFirst.select(".area").attr("d", areaFirst);
             focusFirst.select(".axis--x").call(xAxisFirst);
             contextFirst.select(".brush").call(brush.move, xFirst.range().map(t.invertX, t));
-            //ZOOM SEGUNDA GRAFICA
+            //Second graph
             xBandSecond.domain(d3.range(xSecond.domain()[0], xSecond.domain()[1]));
             xSecond.domain(t.rescaleX(x2Second).domain());
             Line_chartSecond.selectAll("rect")
@@ -635,6 +652,10 @@ class AppFusion extends Component {
         }
     }
 
+    /**
+     * Function used by the legend to write the corresponding letters on the screen.
+     * @param d the string to be converted to a letter. 
+     */
     letterMapping(d) {
         switch (d) {
             case "percentagea":
@@ -686,16 +707,18 @@ class AppFusion extends Component {
         }
     }
 
+    /**
+     * The render function will draw the first two graphs inside the component.
+     */
     render() {
         return (
             <div>
-                <div className="App center firstGraphMargin">
-                    <h1>Entropy <Tooltip placement="right" trigger="click" tooltip={this.state.information1}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
-                    <svg id="svg1" width="1200" height="500"></svg>
+                <div className="App center">
+                    <h1>Entropy Graph <Tooltip placement="right" trigger="click" tooltip={this.state.information1}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip>- Profile Weight Matrix <Tooltip placement="right" trigger="click" tooltip={this.state.information2}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
+                    <svg id="svg1" width="1200" height="400"></svg>
                 </div>
                 <div className="App center secondGraphMargin">
-                    <h1>Profile Weight Matrix <Tooltip placement="right" trigger="click" tooltip={this.state.information2}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
-                    <svg id="svg2" className="secondGraphBlock" width="1200" height="500"></svg>
+                    <svg id="svg2" className="secondGraphBlock" width="1200" height="400"></svg>
                     <svg id="legend2" className="secondGraphBlock" width="1200"></svg>
                 </div>
             </div>
@@ -703,4 +726,4 @@ class AppFusion extends Component {
     }
 }
 
-export default AppFusion;
+export default AppFirstAndSecond;
