@@ -13,7 +13,8 @@ class AppFirstAndSecond extends Component {
         super(props);
         /**
          * The state are the variables used by the class.
-         * information2 - Informative message of what this graph represent.
+         * information2 - Informative message of what the profile weight matrix represent.
+         * information1 - Informative message of what the shannon graph represent.
          */
         this.state = { information2: "The graph shows the percentage of each different value per position for all selected sequences.", information1: "The graph shows the entropy between all selected sequences for each position." };
         //The binding of "this" to all methods used by the class.
