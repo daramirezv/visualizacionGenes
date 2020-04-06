@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import Tooltip from './Tooltip';
-import './AppFifthGraph.css';
+import './Translation.css';
 
 /**
  * This is the class where the translation table will be rendered.
  * App.js renders this component
  */
-class AppFifthGraph extends Component {
+class Translation extends Component {
 
     constructor(props) {
         super(props);
@@ -361,4 +361,4 @@ class AppFifthGraph extends Component {
     }
 }
 
-export default AppFifthGraph;
+export default Translation;

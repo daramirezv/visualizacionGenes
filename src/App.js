@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
 import './App.css';
-import AppThirdGraph from './AppThirdGraph';
-import AppFourthGraph from './AppFourthGraph';
-import AppFifthGraph from './AppFifthGraph';
-import AppFirstAndSecond from './AppFirstAndSecond';
+import SequenceComparison from './SequenceComparison';
+import SequenceMatrix from './SequenceMatrix';
+import Translation from './Translation';
+import EntropyAndProfile from './EntropyAndProfile';
 import Tooltip from './Tooltip';
 import exampleGenes from './genefasta.txt';
 import exampleProteins from './proteinfasta.txt';
@@ -668,7 +668,7 @@ class App extends Component {
                 {this.state.dataThirdGraph.length > 0 ?
                     <div>
                         <button className="btn btn-dark btn-lg" onClick={() => window.location.reload()}>Load new file</button>
-                        {!this.state.isProtein ? <AppFifthGraph dataFifthGraph={this.state.dataFifthGraph} /> : <p></p>}
+                        {!this.state.isProtein ? <Translation dataFifthGraph={this.state.dataFifthGraph} /> : <p></p>}
                         <h1 className="marginTitle0">Table Filters <Tooltip placement="right" trigger="click" tooltip={this.state.information0}> <span type="button" className="badge badge-pill badge-primary">i</span> </Tooltip></h1>
                         <div className="container">
                             <div className="row">
@@ -693,9 +693,9 @@ class App extends Component {
                                 </div>
                             </div>
                         </div>
-                        <AppFirstAndSecond isProtein={this.state.isProtein} dataSecondGraph={this.state.dataSecondGraph} dataFirstGraph={this.state.dataFirstGraph} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
-                        <AppThirdGraph isProtein={this.state.isProtein} dataThirdGraph={this.state.dataThirdGraph} namesGenes={this.state.namesGenes} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
-                        <AppFourthGraph namesGenes={this.state.selectedBoxes} dataFourthGraph={this.state.dataThirdGraph} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
+                        <EntropyAndProfile isProtein={this.state.isProtein} dataSecondGraph={this.state.dataSecondGraph} dataFirstGraph={this.state.dataFirstGraph} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
+                        <SequenceComparison isProtein={this.state.isProtein} dataThirdGraph={this.state.dataThirdGraph} namesGenes={this.state.namesGenes} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
+                        <SequenceMatrix namesGenes={this.state.selectedBoxes} dataFourthGraph={this.state.dataThirdGraph} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
                     </div> : <div>{this.initialButtons()}</div>}
             </div>
         );

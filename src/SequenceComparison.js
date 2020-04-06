@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import Tooltip from './Tooltip';
 import * as d3 from "d3";
-import './AppThirdGraph.css';
+import './SequenceComparison.css';
 
 /**
  * This is the class where the sequence comparison graph will be rendered.
  * App.js renders this component
  */
-class AppThirdGraph extends Component {
+class SequenceComparison extends Component {
 
     constructor(props) {
         super(props);
@@ -511,4 +511,4 @@ class AppThirdGraph extends Component {
     }
 }
 
-export default AppThirdGraph;
+export default SequenceComparison;

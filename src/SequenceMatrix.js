@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import Tooltip from './Tooltip';
 import * as d3 from "d3";
-import './AppFourthGraph.css';
+import './SequenceMatrix.css';
 
 /**
  * This is the class where sequence matrix table will the rendered.
  * App.js renders this component
  */
-class AppFourthGraph extends Component {
+class SequenceMatrix extends Component {
 
     constructor(props) {
         super(props);
@@ -133,4 +133,4 @@ class AppFourthGraph extends Component {
     }
 }
 
-export default AppFourthGraph;
+export default SequenceMatrix;

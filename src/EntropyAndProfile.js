@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import Tooltip from './Tooltip';
 import * as d3 from "d3";
-import './AppFirstAndSecond.css';
+import './EntropyAndProfile.css';
 
 /**
  * This is the class where the entropy and profile weight matrix will be rendered.
  * App.js renders this component
  */
-class AppFirstAndSecond extends Component {
+class EntropyAndProfile extends Component {
 
     constructor(props) {
         super(props);
@@ -727,4 +727,4 @@ class AppFirstAndSecond extends Component {
     }
 }
 
-export default AppFirstAndSecond;
+export default EntropyAndProfile;
