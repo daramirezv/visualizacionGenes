@@ -6,8 +6,8 @@ import SequenceMatrix from './SequenceMatrix';
 import Translation from './Translation';
 import EntropyAndProfile from './EntropyAndProfile';
 import Tooltip from './Tooltip';
-import exampleGenes from './genefasta.txt';
-import exampleProteins from './proteinfasta.txt';
+import exampleGenes from './genefasta.fasta';
+import exampleProteins from './proteinfasta.fasta';
 
 /**
  * This is the main class which will be rendered in index.js.
