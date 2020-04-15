@@ -26,9 +26,11 @@ class SequenceMatrix extends Component {
      * Method called each time a filter in the App component changes. This forces to resize the table.
      */
     componentDidUpdate() {
+        d3.selectAll(".tabla-vertical")
+            .style("height", null);
         if (d3.selectAll(".tabla-vertical").node().offsetHeight > 500) {
             d3.selectAll(".tabla-vertical")
-                .style("height", "500px")
+                .style("height", "500px");
         }
         else {
             d3.selectAll(".tabla-vertical")
@@ -40,6 +42,8 @@ class SequenceMatrix extends Component {
      * Method called after the render is called for the first time. This forces to resize the table.
      */
     componentDidMount() {
+        d3.selectAll(".tabla-vertical")
+            .style("height", null);
         if (d3.selectAll(".tabla-vertical").node().offsetHeight > 500) {
             d3.selectAll(".tabla-vertical")
                 .style("height", "500px");

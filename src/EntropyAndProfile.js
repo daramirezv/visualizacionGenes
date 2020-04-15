@@ -376,8 +376,6 @@ class EntropyAndProfile extends Component {
             heightFirst = +svgFirst.attr("height") - marginFirst.top - marginFirst.bottom,
             height2First = +svgFirst.attr("height") - margin2First.top - margin2First.bottom;
 
-        console.log(svgFirst.attr("height"))
-
         let xFirst = d3.scaleLinear().range([0, widthFirst]),
             x2First = d3.scaleLinear().range([0, widthFirst]),
             yFirst = d3.scaleLinear().range([heightFirst, 0]),
