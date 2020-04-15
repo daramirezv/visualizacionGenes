@@ -307,15 +307,16 @@ class SequenceComparison extends Component {
             .attr("y", 0);
 
         let Line_chart;
+
         if (!isProtein) {
             Line_chart = svg.append("g")
                 .attr("class", "focus")
-                .attr("transform", "translate(" + margin.left + "," + (2.81 * margin.top) + ")")
+                .attr("transform", "translate(" + margin.left + "," + (2.33 * margin.top) + ")")
                 .attr("clip-path", "url(#clip)");
         } else {
             Line_chart = svg.append("g")
                 .attr("class", "focus")
-                .attr("transform", "translate(" + margin.left + "," + (1.4 * margin.top) + ")")
+                .attr("transform", "translate(" + margin.left + "," + (1.3 * margin.top) + ")")
                 .attr("clip-path", "url(#clip)");
         }
 
