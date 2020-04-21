@@ -204,11 +204,11 @@ class Translation extends Component {
                 break;
             case 2:
                 totalSolution = 3 * this.state.solution2.length;
-                remaining = total - totalSolution + 1;
+                remaining = total - totalSolution - 1;
                 break;
             default:
                 totalSolution = 3 * this.state.solution3.length;
-                remaining = total - totalSolution + 2;
+                remaining = total - totalSolution - 2;
                 break;
         }
         if (remaining !== 0) {
