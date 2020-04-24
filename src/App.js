@@ -299,8 +299,9 @@ class App extends Component {
 
                 valAverage += this.shannon(components);
 
-                if (posAverage >= 5 || index + 1 == answer[answer.length - 1].length) {
-                    let objectTemp = new myObject(index - fixJump, valAverage / (posAverage + 1));
+                if (posAverage >= 5 || index == 0 || index + 1 == answer[answer.length - 1].length) {
+                    let objectTemp = new myObject(index - fixJump + 1, valAverage / (posAverage + 1));
+                    console.log(objectTemp);
                     resultFirstGraph.push(objectTemp);
                     valAverage = 0;
                     posAverage = 0;
@@ -533,8 +534,9 @@ class App extends Component {
 
             valAverage += this.shannon(components);
 
-            if (posAverage >= 5 || index + 1 == answer[answer.length - 1].length) {
-                objectTemp = new myObject(index - fixJump, valAverage / (posAverage + 1));
+            if (posAverage >= 5 || index == 0 || index + 1 == answer[answer.length - 1].length) {
+                let objectTemp = new myObject(index - fixJump + 1, valAverage / (posAverage + 1));
+                console.log(objectTemp);
                 resultFirstGraph.push(objectTemp);
                 valAverage = 0;
                 posAverage = 0;
