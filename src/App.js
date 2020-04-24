@@ -6,6 +6,7 @@ import SequenceMatrix from './SequenceMatrix';
 import Translation from './Translation';
 import EntropyAndProfile from './EntropyAndProfile';
 import Tooltip from './Tooltip';
+import exampleCorona from './corona.fasta';
 import exampleGenes from './genefasta.fasta';
 import exampleProteins from './proteinfasta.fasta';
 
@@ -23,6 +24,7 @@ class App extends Component {
          * loading - If true, means that the graphs are rendering and the user have to wait while it finishes.
          * exampleProteinsFile - Where the example protein file will be stored.
          * exampleGenesFile - Where the example gene file will be stored.
+         * exampleCoronaFile - Where the example corona file will be stored.
          * isProtein - If the selected file is a protein alignment.
          * answer - Where the raw sequences wil be stored after splitting them by name.
          * dataFirstGraph - Data used by the first graph.
@@ -34,7 +36,7 @@ class App extends Component {
          * selectedBoxes - What sequences will be graphed.
          * information0 - Informative message of what the fiters do.
          */
-        this.state = { corruptFile: false, loading: false, exampleProteinsFile: [], exampleGenesFile: [], isProtein: false, answer: [], dataFirstGraph: [], dataThirdGraph: [], namesGenes: [], dataSecondGraph: [], valueFirstFilter: 0, valueSecondFilter: 0, selectedBoxes: [], information0: "The filters changes what sequences the graphs will use." };
+        this.state = { corruptFile: false, loading: false, exampleCoronaFile: [], exampleProteinsFile: [], exampleGenesFile: [], isProtein: false, answer: [], dataFirstGraph: [], dataThirdGraph: [], namesGenes: [], dataSecondGraph: [], valueFirstFilter: 0, valueSecondFilter: 0, selectedBoxes: [], information0: "The filters changes what sequences the graphs will use." };
         //The binding of "this" to all methods used by the class.
         this.selections = this.selections.bind(this);
         this.filterAppJS = this.filterAppJS.bind(this);
@@ -124,13 +126,18 @@ class App extends Component {
     componentDidMount() {
         let example1;
         let example2;
+        let example3;
         d3.text(exampleProteins).then(data => {
             example1 = new File([data], "proteinfasta.txt", { type: "text/plain", });
             d3.text(exampleGenes).then(data => {
                 example2 = new File([data], "genefasta.txt", { type: "text/plain", });
-                this.setState({
-                    exampleProteinsFile: example1,
-                    exampleGenesFile: example2
+                d3.text(exampleCorona).then(data => {
+                    example3 = new File([data], "coronafasta.txt", { type: "text/plain", });
+                    this.setState({
+                        exampleProteinsFile: example1,
+                        exampleGenesFile: example2,
+                        exampleCoronaFile: example3
+                    })
                 })
             })
         })
@@ -205,6 +212,9 @@ class App extends Component {
         }
         else if (e === "geneExample") {
             file = this.state.exampleGenesFile;
+        }
+        else if (e === "coronaExample") {
+            file = this.state.exampleCoronaFile;
         }
         else {
             file = e;
@@ -639,7 +649,7 @@ class App extends Component {
                             <div className="hoverHand card border-dark mb-3 cardWidth" onClick={proteinExample => this.handleFile("proteinExample")}>
                                 <div className="card-header">Example protein sequence</div>
                                 <div className="card-body text-dark">
-                                    <p className="card-text">Use an example which contains 3 protein sequences.</p>
+                                    <p className="card-text">Use an example file which contains 3 protein sequences.</p>
                                 </div>
                             </div>
                         </div>
@@ -649,7 +659,17 @@ class App extends Component {
                             <div className="hoverHand card border-dark mb-3 cardWidth" onClick={geneExample => this.handleFile("geneExample")}>
                                 <div className="card-header">Example gene sequence</div>
                                 <div className="card-body text-dark">
-                                    <p className="card-text">Use an example which contains 45 gene sequences.</p>
+                                    <p className="card-text">Use an example file which contains 45 gene sequences.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md">
+                            <div className="hoverHand card border-dark mb-3 cardWidth" onClick={exampleCorona => this.handleFile("coronaExample")}>
+                                <div className="card-header">Covid-19 sequences</div>
+                                <div className="card-body text-dark">
+                                    <p className="card-text">Use an example file which contains covid-19 sequences.</p>
                                 </div>
                             </div>
                         </div>
