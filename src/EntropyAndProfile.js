@@ -28,11 +28,13 @@ class EntropyAndProfile extends Component {
 
         //Variables used by the entropy graph.
         let resultFirstGraph = this.props.dataFirstGraph;
-        const valueSecondFilter = this.props.valueSecondFilter;
-        const valueFirstFilter = this.props.valueFirstFilter;
+        const valueSecondFilterEntropy = this.props.valueSecondFilterEntropy;
+        const valueFirstFilterEntropy = this.props.valueFirstFilterEntropy;
+        const valueSecondFilterMatrix = this.props.valueSecondFilterMatrix;
+        const valueFirstFilterMatrix = this.props.valueFirstFilterMatrix;
 
         resultFirstGraph = resultFirstGraph.filter(function (element) {
-            return element.position >= (valueFirstFilter - 1) && element.position <= (valueSecondFilter);
+            return element.position >= (valueFirstFilterEntropy - 1) && element.position <= (valueSecondFilterEntropy);
         });
 
         //Variables used by the profile weight matrix.
@@ -40,7 +42,7 @@ class EntropyAndProfile extends Component {
         let funcionMapeoLetras = this.letterMapping;
         let nameNucleotide = [];
         let dataSecond = this.props.dataSecondGraph;
-        dataSecond = dataSecond.slice(valueFirstFilter - 1, valueSecondFilter);
+        dataSecond = dataSecond.slice(valueFirstFilterMatrix - 1, valueSecondFilterMatrix);
 
         if (isProtein) {
             nameNucleotide = ["percentagea", "percentagec", "percentageg", "percentaget", "percentager", "percentagen", "percentaged", "percentageb",
@@ -117,7 +119,7 @@ class EntropyAndProfile extends Component {
                 .attr("stroke-opacity", 0.1))
             .call(g => g.select(".tick:last-of-type text").clone()
                 .attr("x", 5)
-                .attr("y", -marginFirst.top)
+                .attr("y", -8)
                 .attr("text-anchor", "start")
                 .attr("font-weight", "bold")
                 .text("Entropy"));
@@ -300,13 +302,15 @@ class EntropyAndProfile extends Component {
                 .scale(widthFirst / (s[1] - s[0]))
                 .translate(-s[0], 0));
             //Second graph
-            xSecond.domain(s.map(x2Second.invert, x2Second));
-            Line_chartSecond.selectAll("rect")
-                .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
-            focusSecond.select(".axis--x").call(xAxisSecond);
-            svgSecond.select(".zoom").call(zoom.transform, d3.zoomIdentity
-                .scale(widthSecond / (s[1] - s[0]))
-                .translate(-s[0], 0));
+            if (valueSecondFilterEntropy === valueSecondFilterMatrix && valueFirstFilterEntropy === valueFirstFilterMatrix) {
+                xSecond.domain(s.map(x2Second.invert, x2Second));
+                Line_chartSecond.selectAll("rect")
+                    .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
+                focusSecond.select(".axis--x").call(xAxisSecond);
+                svgSecond.select(".zoom").call(zoom.transform, d3.zoomIdentity
+                    .scale(widthSecond / (s[1] - s[0]))
+                    .translate(-s[0], 0));
+            }
         }
 
         function zoomed() {
@@ -318,12 +322,14 @@ class EntropyAndProfile extends Component {
             focusFirst.select(".axis--x").call(xAxisFirst);
             contextFirst.select(".brush").call(brush.move, xFirst.range().map(t.invertX, t));
             //Second Graph
-            xBandSecond.domain(d3.range(xSecond.domain()[0], xSecond.domain()[1]));
-            xSecond.domain(t.rescaleX(x2Second).domain());
-            Line_chartSecond.selectAll("rect")
-                .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
-                .attr("width", xBandSecond.bandwidth() * 0.9)
-            focusSecond.select(".axis--x").call(xAxisSecond);
+            if (valueSecondFilterEntropy === valueSecondFilterMatrix && valueFirstFilterEntropy === valueFirstFilterMatrix) {
+                xBandSecond.domain(d3.range(xSecond.domain()[0], xSecond.domain()[1]));
+                xSecond.domain(t.rescaleX(x2Second).domain());
+                Line_chartSecond.selectAll("rect")
+                    .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
+                    .attr("width", xBandSecond.bandwidth() * 0.9)
+                focusSecond.select(".axis--x").call(xAxisSecond);
+            }
         }
 
         function stackMin(serie) {
@@ -346,11 +352,13 @@ class EntropyAndProfile extends Component {
 
         //Variables used by the entropy graph.
         let resultFirstGraph = this.props.dataFirstGraph;
-        const valueSecondFilter = this.props.valueSecondFilter;
-        const valueFirstFilter = this.props.valueFirstFilter;
+        const valueSecondFilterEntropy = this.props.valueSecondFilterEntropy;
+        const valueFirstFilterEntropy = this.props.valueFirstFilterEntropy;
+        const valueSecondFilterMatrix = this.props.valueSecondFilterMatrix;
+        const valueFirstFilterMatrix = this.props.valueFirstFilterMatrix;
 
         resultFirstGraph = resultFirstGraph.filter(function (element) {
-            return element.position >= (valueFirstFilter - 1) && element.position <= (valueSecondFilter);
+            return element.position >= (valueFirstFilterEntropy - 1) && element.position <= (valueSecondFilterEntropy);
         });
 
         //Variables used by the profile weight matrix.
@@ -358,7 +366,7 @@ class EntropyAndProfile extends Component {
         let funcionMapeoLetras = this.letterMapping;
         let nameNucleotide = [];
         let dataSecond = this.props.dataSecondGraph;
-        dataSecond = dataSecond.slice(valueFirstFilter - 1, valueSecondFilter);
+        dataSecond = dataSecond.slice(valueFirstFilterMatrix - 1, valueSecondFilterMatrix);
 
         if (isProtein) {
             nameNucleotide = ["percentagea", "percentagec", "percentageg", "percentaget", "percentager", "percentagen", "percentaged", "percentageb",
@@ -434,7 +442,7 @@ class EntropyAndProfile extends Component {
                 .attr("stroke-opacity", 0.1))
             .call(g => g.select(".tick:last-of-type text").clone()
                 .attr("x", 5)
-                .attr("y", -marginFirst.top)
+                .attr("y", -8)
                 .attr("text-anchor", "start")
                 .attr("font-weight", "bold")
                 .text("Entropy"));
@@ -616,13 +624,15 @@ class EntropyAndProfile extends Component {
                 .scale(widthFirst / (s[1] - s[0]))
                 .translate(-s[0], 0));
             //Second graph
-            xSecond.domain(s.map(x2Second.invert, x2Second));
-            Line_chartSecond.selectAll("rect")
-                .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
-            focusSecond.select(".axis--x").call(xAxisSecond);
-            svgSecond.select(".zoom").call(zoom.transform, d3.zoomIdentity
-                .scale(widthSecond / (s[1] - s[0]))
-                .translate(-s[0], 0));
+            if (valueSecondFilterEntropy === valueSecondFilterMatrix && valueFirstFilterEntropy === valueFirstFilterMatrix) {
+                xSecond.domain(s.map(x2Second.invert, x2Second));
+                Line_chartSecond.selectAll("rect")
+                    .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
+                focusSecond.select(".axis--x").call(xAxisSecond);
+                svgSecond.select(".zoom").call(zoom.transform, d3.zoomIdentity
+                    .scale(widthSecond / (s[1] - s[0]))
+                    .translate(-s[0], 0));
+            }
         }
 
         function zoomed() {
@@ -634,12 +644,14 @@ class EntropyAndProfile extends Component {
             focusFirst.select(".axis--x").call(xAxisFirst);
             contextFirst.select(".brush").call(brush.move, xFirst.range().map(t.invertX, t));
             //Second graph
-            xBandSecond.domain(d3.range(xSecond.domain()[0], xSecond.domain()[1]));
-            xSecond.domain(t.rescaleX(x2Second).domain());
-            Line_chartSecond.selectAll("rect")
-                .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
-                .attr("width", xBandSecond.bandwidth() * 0.9)
-            focusSecond.select(".axis--x").call(xAxisSecond);
+            if (valueSecondFilterEntropy === valueSecondFilterMatrix && valueFirstFilterEntropy === valueFirstFilterMatrix) {
+                xBandSecond.domain(d3.range(xSecond.domain()[0], xSecond.domain()[1]));
+                xSecond.domain(t.rescaleX(x2Second).domain());
+                Line_chartSecond.selectAll("rect")
+                    .attr('x', function (d) { return xSecond(d.data.position) - xBandSecond.bandwidth() * 0.9 / 2 })
+                    .attr("width", xBandSecond.bandwidth() * 0.9)
+                focusSecond.select(".axis--x").call(xAxisSecond);
+            }
         }
 
         function stackMin(serie) {

@@ -36,7 +36,7 @@ class App extends Component {
          * selectedBoxes - What sequences will be graphed.
          * information0 - Informative message of what the fiters do.
          */
-        this.state = { corruptFile: false, loading: false, exampleCoronaFile: [], exampleProteinsFile: [], exampleGenesFile: [], isProtein: false, answer: [], dataFirstGraph: [], dataThirdGraph: [], namesGenes: [], dataSecondGraph: [], valueFirstFilter: 0, valueSecondFilter: 0, selectedBoxes: [], information0: "The filters changes what sequences the graphs will use." };
+        this.state = { initialEntropy: 0, finalEntropy: 0, entropySelection: "partial", bigFile: false, corruptFile: false, loading: false, exampleCoronaFile: [], exampleProteinsFile: [], exampleGenesFile: [], isProtein: false, answer: [], dataFirstGraph: [], dataThirdGraph: [], namesGenes: [], dataSecondGraph: [], valueFirstFilter: 0, valueSecondFilter: 0, selectedBoxes: [], information0: "The filters changes what sequences the graphs will use." };
         //The binding of "this" to all methods used by the class.
         this.selections = this.selections.bind(this);
         this.filterAppJS = this.filterAppJS.bind(this);
@@ -48,7 +48,9 @@ class App extends Component {
         this.shannon = this.shannon.bind(this);
         this.objectSecondGraph = this.objectSecondGraph.bind(this);
         this.objectSecondGraphProteins = this.objectSecondGraphProteins.bind(this);
+        this.firstGraphFullPartial = this.firstGraphFullPartial.bind(this);
         this.handleFile = this.handleFile.bind(this);
+        this.alertLength = this.alertLength.bind(this);
         //The reference to the gene translation table.
         this.tableref = React.createRef();
     }
@@ -267,11 +269,21 @@ class App extends Component {
                 isProtein = true;
             }
 
+            let array1 = answer[answer.length - 1].split("A").length - 1; //3;
+            let array2 = answer[answer.length - 1].split("T").length - 1; //3;
+            let array3 = answer[answer.length - 1].split("C").length - 1; //3;
+            let array4 = answer[answer.length - 1].split("G").length - 1; //3;
+            let array5 = answer[answer.length - 1].split("-").length - 1; //3;
+            let tamanoTotal = array1 + array2 + array3 + array4 + array5;
+            let bigFile = false;
+            if (tamanoTotal > 2000) {
+                bigFile = true;
+            }
+
             let posAverage = 0;
             let valAverage = 0;
             let fixJump = 0;
             let components;
-
             //Generate the data that the first graph will be using.
             //It uses the shannon function to generate the necessary data.
             for (let index = 0; index < answer[answer.length - 1].length; index++) {
@@ -301,7 +313,6 @@ class App extends Component {
 
                 if (posAverage >= 5 || index == 0 || index + 1 == answer[answer.length - 1].length) {
                     let objectTemp = new myObject(index - fixJump + 1, valAverage / (posAverage + 1));
-                    console.log(objectTemp);
                     resultFirstGraph.push(objectTemp);
                     valAverage = 0;
                     posAverage = 0;
@@ -403,19 +414,43 @@ class App extends Component {
             })
 
             //Set the data to the class variables.
-            this.setState({
-                dataFirstGraph: resultFirstGraph,
-                dataThirdGraph: resultThirdGraph,
-                dataSecondGraph: resultSecondGraph,
-                dataFifthGraph: resultFifthGraph,
-                valueFirstFilter: 1,
-                selectedBoxes: names,
-                valueSecondFilter: resultThirdGraph.length,
-                namesGenes: names,
-                answer: answer,
-                isProtein: isProtein,
-                loading: false
-            })
+
+            if (!bigFile) {
+                this.setState({
+                    dataFirstGraph: resultFirstGraph,
+                    dataThirdGraph: resultThirdGraph,
+                    dataSecondGraph: resultSecondGraph,
+                    dataFifthGraph: resultFifthGraph,
+                    valueFirstFilter: 1,
+                    initialEntropy: 1,
+                    valueSecondFilter: resultThirdGraph.length,
+                    finalEntropy: resultThirdGraph.length,
+                    selectedBoxes: names,
+                    bigFile: bigFile,
+                    namesGenes: names,
+                    answer: answer,
+                    isProtein: isProtein,
+                    loading: false
+                })
+            } else {
+                this.setState({
+                    dataFirstGraph: resultFirstGraph,
+                    dataThirdGraph: resultThirdGraph,
+                    dataSecondGraph: resultSecondGraph,
+                    dataFifthGraph: resultFifthGraph,
+                    valueFirstFilter: 1,
+                    initialEntropy: 1,
+                    valueSecondFilter: 500,
+                    finalEntropy: 500,
+                    selectedBoxes: names,
+                    bigFile: bigFile,
+                    namesGenes: names,
+                    answer: answer,
+                    isProtein: isProtein,
+                    loading: false
+                })
+            }
+
 
             //Change the size of the fourth table if it's too big thanks to the amount of sequences being processed.
             if (this.tableref.current.offsetHeight > 300) {
@@ -439,9 +474,20 @@ class App extends Component {
     filterAppJS(event) {
         const firstValue = parseInt(event.target.value.split(" - ")[0]);
         const secondValue = parseInt(event.target.value.split(" - ")[1]);
-        this.setState({
-            valueSecondFilter: secondValue, valueFirstFilter: firstValue
-        });
+        if (this.state.entropySelection === "partial") {
+            this.setState({
+                valueSecondFilter: secondValue,
+                valueFirstFilter: firstValue,
+                initialEntropy: firstValue,
+                finalEntropy: secondValue
+            });
+        }
+        else {
+            this.setState({
+                valueSecondFilter: secondValue,
+                valueFirstFilter: firstValue
+            });
+        }
     }
 
     /**
@@ -449,13 +495,15 @@ class App extends Component {
      */
     selections() {
         const totalSize = this.state.dataThirdGraph.length;
-        const remainingNumbers = totalSize % 100;
+        const remainingNumbers = totalSize % 500;
         let arrayMapping = []
 
-        arrayMapping.push(1 + " - " + totalSize);
+        if (!this.state.bigFile) {
+            arrayMapping.push(1 + " - " + totalSize);
+        }
 
-        for (let index = 0; index < totalSize - remainingNumbers; index += 100) {
-            arrayMapping.push((index + 1) + " - " + (index + 100));
+        for (let index = 0; index < totalSize - remainingNumbers; index += 500) {
+            arrayMapping.push((index + 1) + " - " + (index + 500));
         }
 
         if ((totalSize - remainingNumbers) != 0) {
@@ -535,8 +583,7 @@ class App extends Component {
             valAverage += this.shannon(components);
 
             if (posAverage >= 5 || index == 0 || index + 1 == answer[answer.length - 1].length) {
-                let objectTemp = new myObject(index - fixJump + 1, valAverage / (posAverage + 1));
-                console.log(objectTemp);
+                objectTemp = new myObject(index - fixJump + 1, valAverage / (posAverage + 1));
                 resultFirstGraph.push(objectTemp);
                 valAverage = 0;
                 posAverage = 0;
@@ -586,7 +633,7 @@ class App extends Component {
         this.setState({
             selectedBoxes: namesArray,
             dataSecondGraph: resultSecondGraph,
-            dataFirstGraph: resultFirstGraph
+            dataFirstGraph: resultFirstGraph,
         });
 
 
@@ -681,6 +728,111 @@ class App extends Component {
         }
     }
 
+    firstGraphFullPartial(type) {
+        if (type !== this.state.entropySelection) {
+            let sizeGroups;
+            let firstValue;
+            let lastValue;
+            if (type === "partial") {
+                sizeGroups = 5;
+                firstValue = this.state.valueFirstFilter;
+                lastValue = this.state.valueSecondFilter;
+            }
+            else {
+                sizeGroups = 50;
+                firstValue = 1;
+                lastValue = this.state.dataThirdGraph.length;
+            }
+
+            let namesArray = [];
+            const isProtein = this.state.isProtein;
+
+            let boxes = d3.selectAll(".form-check-input").nodes()
+            boxes.map(function (item, i) {
+                if (item.checked === true) {
+                    namesArray.push(item.value);
+                }
+            })
+
+            let objectTemp = null;
+            let posAverage = 0;
+            let resultFirstGraph = [];
+            let valAverage = 0;
+            let fixJump = 0;
+            const answer = this.state.answer;
+            const namesGenes = this.state.namesGenes;
+            let components = [];
+
+            //Generate the data that the first graph will be using.
+            //It uses the shannon function to generate the necessary data.
+            for (let index = 0; index < answer[answer.length - 1].length; index++) {
+
+                components = []
+
+                for (let innerIndex = 0; innerIndex < answer.length; innerIndex++) {
+                    if (namesArray.includes(namesGenes[innerIndex])) {
+                        components.push(answer[innerIndex].charAt(index));
+                    }
+                }
+
+                if (!isProtein) {
+                    if (components.some(v => v !== "-" && v !== "A" && v !== "T" && v !== "C" && v !== "G")) {
+                        fixJump++;
+                        continue;
+                    }
+                }
+                else {
+                    if (components.some(v => v !== "-" && v !== "A" && v !== "T" && v !== "C" && v !== "G" && v !== "R" && v !== "N" && v !== "D"
+                        && v !== "B" && v !== "E" && v !== "Q" && v !== "Z" && v !== "H" && v !== "I" && v !== "L" && v !== "K" && v !== "M" && v !== "F"
+                        && v !== "P" && v !== "S" && v !== "W" && v !== "Y" && v !== "V")) {
+                        fixJump++;
+                        continue;
+                    }
+                }
+
+                valAverage += this.shannon(components);
+
+                if (posAverage >= sizeGroups || index == 0 || index + 1 == answer[answer.length - 1].length) {
+                    objectTemp = new myObject(index - fixJump + 1, valAverage / (posAverage + 1));
+                    resultFirstGraph.push(objectTemp);
+                    valAverage = 0;
+                    posAverage = 0;
+                }
+                else {
+                    posAverage++;
+                }
+            }
+
+            this.setState({
+                dataFirstGraph: resultFirstGraph,
+                entropySelection: type,
+                initialEntropy: firstValue,
+                finalEntropy: lastValue
+            })
+        }
+    }
+
+    alertLength() {
+        if (this.state.dataThirdGraph.length > 2000) {
+            return (
+                <div className="row">
+                <div className="col-md">
+                    <div className="alert alert-warning" role="alert">Because of the length of the sequences, there's a limit of how many positions you can see at a time. You can still see the whole entropy graph with the next button.
+                        <div className="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label className="btn btn-dark active familiaBotones">
+                                <input type="radio" name="options" id="option1" onClick={() => this.firstGraphFullPartial("partial")} /> Partial
+                            </label>
+                            <label className="btn btn-dark familiaBotones">
+                                <input type="radio" name="options" id="option2" onClick={() => this.firstGraphFullPartial("full")} /> Full
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            )
+        }
+    }
+
     /**
      * The render function will draw everything on the website.
      */
@@ -714,8 +866,9 @@ class App extends Component {
                                     </form>
                                 </div>
                             </div>
+                            {this.alertLength()}
                         </div>
-                        <EntropyAndProfile isProtein={this.state.isProtein} dataSecondGraph={this.state.dataSecondGraph} dataFirstGraph={this.state.dataFirstGraph} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
+                        <EntropyAndProfile isProtein={this.state.isProtein} dataSecondGraph={this.state.dataSecondGraph} dataFirstGraph={this.state.dataFirstGraph} valueFirstFilterMatrix={this.state.valueFirstFilter} valueSecondFilterMatrix={this.state.valueSecondFilter} valueFirstFilterEntropy={this.state.initialEntropy} valueSecondFilterEntropy={this.state.finalEntropy} />
                         <SequenceComparison isProtein={this.state.isProtein} dataThirdGraph={this.state.dataThirdGraph} namesGenes={this.state.namesGenes} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
                         <SequenceMatrix namesGenes={this.state.selectedBoxes} dataFourthGraph={this.state.dataThirdGraph} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
                     </div> : <div>{this.initialButtons()}</div>}
