@@ -35,6 +35,10 @@ class App extends Component {
          * valueSecondFilter - Until what position sequences will be graphed.
          * selectedBoxes - What sequences will be graphed.
          * information0 - Informative message of what the fiters do.
+         * initialEntropy - The first position seen in the entropy chart.
+         * finalEntropy - The final position seen in the entropy chart.
+         * entropySelection - What type of selection is chosen in the entropy chart.
+         * bigFile - A variable showing if the selected file is large.
          */
         this.state = { initialEntropy: 0, finalEntropy: 0, entropySelection: "partial", bigFile: false, corruptFile: false, loading: false, exampleCoronaFile: [], exampleProteinsFile: [], exampleGenesFile: [], isProtein: false, answer: [], dataFirstGraph: [], dataThirdGraph: [], namesGenes: [], dataSecondGraph: [], valueFirstFilter: 0, valueSecondFilter: 0, selectedBoxes: [], information0: "The filters changes what sequences the graphs will use." };
         //The binding of "this" to all methods used by the class.
@@ -269,14 +273,15 @@ class App extends Component {
                 isProtein = true;
             }
 
+            //Calculation of how long is the sequences, so the bigFile variable changes. 
             let array1 = answer[answer.length - 1].split("A").length - 1; //3;
             let array2 = answer[answer.length - 1].split("T").length - 1; //3;
             let array3 = answer[answer.length - 1].split("C").length - 1; //3;
             let array4 = answer[answer.length - 1].split("G").length - 1; //3;
             let array5 = answer[answer.length - 1].split("-").length - 1; //3;
-            let tamanoTotal = array1 + array2 + array3 + array4 + array5;
+            let totalFullSize = array1 + array2 + array3 + array4 + array5;
             let bigFile = false;
-            if (tamanoTotal > 2000) {
+            if (totalFullSize > 2000) {
                 bigFile = true;
             }
 
@@ -401,6 +406,7 @@ class App extends Component {
             let biggestName;
             let biggestValue;
 
+            console.log(resultSecondGraph);
             resultSecondGraph.map(function (item, i) {
                 biggestName = null;
                 biggestValue = 0;
@@ -414,7 +420,6 @@ class App extends Component {
             })
 
             //Set the data to the class variables.
-
             if (!bigFile) {
                 this.setState({
                     dataFirstGraph: resultFirstGraph,
@@ -450,7 +455,6 @@ class App extends Component {
                     loading: false
                 })
             }
-
 
             //Change the size of the fourth table if it's too big thanks to the amount of sequences being processed.
             if (this.tableref.current.offsetHeight > 300) {
@@ -695,7 +699,7 @@ class App extends Component {
                     </div>
                     <div className="row">
                         <div className="col-md">
-                            <div className="hoverHand card border-dark mb-3 cardWidth" onClick={proteinExample => this.handleFile("proteinExample")}>
+                            <div className="hoverHand card border-dark mb-3 cardWidth" onClick={() => this.handleFile("proteinExample")}>
                                 <div className="card-header">Example protein sequence</div>
                                 <div className="card-body text-dark">
                                     <p className="card-text">Use an example file which contains 3 protein sequences.</p>
@@ -705,7 +709,7 @@ class App extends Component {
                     </div>
                     <div className="row">
                         <div className="col-md">
-                            <div className="hoverHand card border-dark mb-3 cardWidth" onClick={geneExample => this.handleFile("geneExample")}>
+                            <div className="hoverHand card border-dark mb-3 cardWidth" onClick={() => this.handleFile("geneExample")}>
                                 <div className="card-header">Example gene sequence</div>
                                 <div className="card-body text-dark">
                                     <p className="card-text">Use an example file which contains 45 gene sequences.</p>
@@ -715,7 +719,7 @@ class App extends Component {
                     </div>
                     <div className="row">
                         <div className="col-md">
-                            <div className="hoverHand card border-dark mb-3 cardWidth" onClick={exampleCorona => this.handleFile("coronaExample")}>
+                            <div className="hoverHand card border-dark mb-3 cardWidth" onClick={() => this.handleFile("coronaExample")}>
                                 <div className="card-header">Covid-19 sequences</div>
                                 <div className="card-body text-dark">
                                     <p className="card-text">Use an example file which contains covid-19 sequences.</p>
@@ -728,6 +732,9 @@ class App extends Component {
         }
     }
 
+    /**
+     * The function which changes the entropy chart between partial and full depending on the size of the selected file and what the user wants to see.
+     */
     firstGraphFullPartial(type) {
         if (type !== this.state.entropySelection) {
             let sizeGroups;
@@ -812,23 +819,26 @@ class App extends Component {
         }
     }
 
+    /**
+     * The function which renders the alert if the sequence is long enough.
+     */
     alertLength() {
         if (this.state.dataThirdGraph.length > 2000) {
             return (
                 <div className="row">
-                <div className="col-md">
-                    <div className="alert alert-warning" role="alert">Because of the length of the sequences, there's a limit of how many positions you can see at a time. You can still see the whole entropy graph with the next button.
+                    <div className="col-md">
+                        <div className="alert alert-warning" role="alert">Due to the length of the sequences, there's a limit of how many positions you can see at a time. You can still see the whole entropy graph with the following button.
                         <div className="btn-group btn-group-toggle" data-toggle="buttons">
-                            <label className="btn btn-dark active familiaBotones">
-                                <input type="radio" name="options" id="option1" onClick={() => this.firstGraphFullPartial("partial")} /> Partial
+                                <label className="btn btn-dark active familyButtons">
+                                    <input type="radio" name="options" id="option1" onClick={() => this.firstGraphFullPartial("partial")} /> Partial
                             </label>
-                            <label className="btn btn-dark familiaBotones">
-                                <input type="radio" name="options" id="option2" onClick={() => this.firstGraphFullPartial("full")} /> Full
+                                <label className="btn btn-dark familyButtons">
+                                    <input type="radio" name="options" id="option2" onClick={() => this.firstGraphFullPartial("full")} /> Full
                             </label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             )
         }
     }

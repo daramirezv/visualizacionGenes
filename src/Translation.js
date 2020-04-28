@@ -112,7 +112,7 @@ class Translation extends Component {
         let value1;
         let value2;
         let value3;
-
+        console.log(data);
         //Put the nucleodites in the variable "originalString".
         for (let index = 0; index < data.length; index++) {
             originalString.push(this.characterMapping(data[index].letter));

@@ -54,11 +54,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-#modaltroll{
-  height: 500px;
-}
-
-.familiaBotones{
+.familyButtons{
   margin: 0em !important;
 }
 
