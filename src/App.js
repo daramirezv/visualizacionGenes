@@ -281,7 +281,7 @@ class App extends Component {
             let array5 = answer[answer.length - 1].split("-").length - 1; //3;
             let totalFullSize = array1 + array2 + array3 + array4 + array5;
             let bigFile = false;
-            if (totalFullSize > 2000) {
+            if (totalFullSize > 2500) {
                 bigFile = true;
             }
 
@@ -445,8 +445,8 @@ class App extends Component {
                     dataFifthGraph: resultFifthGraph,
                     valueFirstFilter: 1,
                     initialEntropy: 1,
-                    valueSecondFilter: 500,
-                    finalEntropy: 500,
+                    valueSecondFilter: 2500,
+                    finalEntropy: 2500,
                     selectedBoxes: names,
                     bigFile: bigFile,
                     namesGenes: names,
@@ -504,6 +504,16 @@ class App extends Component {
 
         if (!this.state.bigFile) {
             arrayMapping.push(1 + " - " + totalSize);
+        }
+
+        if (this.state.bigFile) {
+            for (let index = 0; index < totalSize - remainingNumbers; index += 2500) {
+                arrayMapping.push((index + 1) + " - " + (index + 2500));
+            }
+    
+            if ((totalSize - remainingNumbers) != 0) {
+                arrayMapping.push((totalSize - remainingNumbers + 1) + " - " + totalSize);
+            }
         }
 
         for (let index = 0; index < totalSize - remainingNumbers; index += 500) {
@@ -823,7 +833,7 @@ class App extends Component {
      * The function which renders the alert if the sequence is long enough.
      */
     alertLength() {
-        if (this.state.dataThirdGraph.length > 2000) {
+        if (this.state.dataThirdGraph.length > 2500) {
             return (
                 <div className="row">
                     <div className="col-md">
