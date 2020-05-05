@@ -55,8 +55,12 @@ class App extends Component {
         this.firstGraphFullPartial = this.firstGraphFullPartial.bind(this);
         this.handleFile = this.handleFile.bind(this);
         this.alertLength = this.alertLength.bind(this);
+        this.rightChange = this.rightChange.bind(this);
+        this.leftChange = this.leftChange.bind(this);
         //The reference to the gene translation table.
         this.tableref = React.createRef();
+        this.selectref = React.createRef();
+        this.optionref = React.createRef();
     }
 
     /**
@@ -281,7 +285,7 @@ class App extends Component {
             let array5 = answer[answer.length - 1].split("-").length - 1; //3;
             let totalFullSize = array1 + array2 + array3 + array4 + array5;
             let bigFile = false;
-            if (totalFullSize > 2500) {
+            if (totalFullSize > 1000) {
                 bigFile = true;
             }
 
@@ -406,7 +410,6 @@ class App extends Component {
             let biggestName;
             let biggestValue;
 
-            console.log(resultSecondGraph);
             resultSecondGraph.map(function (item, i) {
                 biggestName = null;
                 biggestValue = 0;
@@ -445,8 +448,8 @@ class App extends Component {
                     dataFifthGraph: resultFifthGraph,
                     valueFirstFilter: 1,
                     initialEntropy: 1,
-                    valueSecondFilter: 2500,
-                    finalEntropy: 2500,
+                    valueSecondFilter: 1000,
+                    finalEntropy: 1000,
                     selectedBoxes: names,
                     bigFile: bigFile,
                     namesGenes: names,
@@ -478,6 +481,9 @@ class App extends Component {
     filterAppJS(event) {
         const firstValue = parseInt(event.target.value.split(" - ")[0]);
         const secondValue = parseInt(event.target.value.split(" - ")[1]);
+        if(firstValue === this.state.valueFirstFilter && secondValue === this.state.valueSecondFilter)
+            return;
+        this.optionref.current.text = "";
         if (this.state.entropySelection === "partial") {
             this.setState({
                 valueSecondFilter: secondValue,
@@ -499,35 +505,84 @@ class App extends Component {
      */
     selections() {
         const totalSize = this.state.dataThirdGraph.length;
-        const remainingNumbers = totalSize % 500;
+        const remainingNumbers = totalSize % 1000;
         let arrayMapping = []
 
-        if (!this.state.bigFile) {
+        if (totalSize < 1000) {
             arrayMapping.push(1 + " - " + totalSize);
         }
-
-        if (this.state.bigFile) {
-            for (let index = 0; index < totalSize - remainingNumbers; index += 2500) {
-                arrayMapping.push((index + 1) + " - " + (index + 2500));
+        else {
+            for (let index = 0; index < totalSize - remainingNumbers; index += 1000) {
+                arrayMapping.push((index + 1) + " - " + (index + 1000));
             }
-    
+
             if ((totalSize - remainingNumbers) != 0) {
                 arrayMapping.push((totalSize - remainingNumbers + 1) + " - " + totalSize);
             }
-        }
-
-        for (let index = 0; index < totalSize - remainingNumbers; index += 500) {
-            arrayMapping.push((index + 1) + " - " + (index + 500));
-        }
-
-        if ((totalSize - remainingNumbers) != 0) {
-            arrayMapping.push((totalSize - remainingNumbers + 1) + " - " + totalSize);
         }
 
         return (
             arrayMapping.map(function (item, i) {
                 return <option value={item} key={i}>{item}</option>
             }))
+    }
+
+    rightChange(leftValue, rightValue) {
+        let cambio;
+        const tamanoMax = this.state.dataThirdGraph.length;
+        if (rightValue + 500 >= tamanoMax + 1) {
+            cambio = tamanoMax - rightValue;
+        } else {
+            cambio = 500;
+        }
+        const bigFile = this.state.bigFile;
+        const entropySelection = this.state.entropySelection;
+        this.selectref.current.selectedIndex = this.selectref.current.length-1;
+        this.optionref.current.text = "" + (leftValue + 500) + " - " + (rightValue + cambio);
+        if (entropySelection === "full" && bigFile) {
+            this.setState({
+                valueFirstFilter: leftValue + 500,
+                valueSecondFilter: rightValue + cambio
+            });
+        } else if (bigFile) {
+            this.setState({
+                initialEntropy: leftValue + 500,
+                finalEntropy: rightValue + cambio,
+                valueFirstFilter: leftValue + 500,
+                valueSecondFilter: rightValue + cambio
+            });
+        }
+    }
+
+    leftChange(leftValue, rightValue) {
+        let cambio;
+        const tamanoMax = this.state.dataThirdGraph.length;
+        if (tamanoMax === (rightValue)) {
+            if (leftValue + 500 >= tamanoMax) {
+                cambio = 0;
+            } else {
+                cambio = - rightValue + leftValue + 499;
+            }
+        } else {
+            cambio = - 500;
+        }
+        const bigFile = this.state.bigFile;
+        const entropySelection = this.state.entropySelection;
+        this.selectref.current.selectedIndex = this.selectref.current.length-1;
+        this.optionref.current.text = "" + (leftValue - 500) + " - " + (rightValue + cambio);
+        if (entropySelection === "full" && bigFile) {
+            this.setState({
+                valueFirstFilter: leftValue - 500,
+                valueSecondFilter: rightValue + cambio
+            });
+        } else if (bigFile) {
+            this.setState({
+                initialEntropy: leftValue - 500,
+                finalEntropy: rightValue + cambio,
+                valueFirstFilter: leftValue - 500,
+                valueSecondFilter: rightValue + cambio
+            });
+        }
     }
 
     /**
@@ -649,8 +704,6 @@ class App extends Component {
             dataSecondGraph: resultSecondGraph,
             dataFirstGraph: resultFirstGraph,
         });
-
-
     }
 
     /**
@@ -683,7 +736,7 @@ class App extends Component {
      */
     initialButtons() {
         if (this.state.loading && !this.state.corruptFile) {
-            return <h1 className="innerLoad">Loading</h1>;
+            return <h1 className="innerLoad">Loading...</h1>;
         }
         else if (this.state.corruptFile) {
             return (<div className="body innerLoad">
@@ -833,7 +886,7 @@ class App extends Component {
      * The function which renders the alert if the sequence is long enough.
      */
     alertLength() {
-        if (this.state.dataThirdGraph.length > 2500) {
+        if (this.state.dataThirdGraph.length > 1000) {
             return (
                 <div className="row">
                     <div className="col-md">
@@ -880,16 +933,17 @@ class App extends Component {
                             <div className="row">
                                 <div className="col-md">
                                     <form>
-                                        <select width="500" id="numberBar" className="form-control" onChange={this.filterAppJS}>
+                                        <select width="500" id="numberBar" className="form-control" onChange={this.filterAppJS} ref={this.selectref}>
                                             {this.selections()}
+                                            <option value="" disabled ref={this.optionref}></option>
                                         </select>
                                     </form>
                                 </div>
                             </div>
                             {this.alertLength()}
                         </div>
-                        <EntropyAndProfile isProtein={this.state.isProtein} dataSecondGraph={this.state.dataSecondGraph} dataFirstGraph={this.state.dataFirstGraph} valueFirstFilterMatrix={this.state.valueFirstFilter} valueSecondFilterMatrix={this.state.valueSecondFilter} valueFirstFilterEntropy={this.state.initialEntropy} valueSecondFilterEntropy={this.state.finalEntropy} />
-                        <SequenceComparison isProtein={this.state.isProtein} dataThirdGraph={this.state.dataThirdGraph} namesGenes={this.state.namesGenes} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
+                        <EntropyAndProfile leftChange={this.leftChange} rightChange={this.rightChange} bigFile={this.state.bigFile} isProtein={this.state.isProtein} dataSecondGraph={this.state.dataSecondGraph} dataFirstGraph={this.state.dataFirstGraph} valueFirstFilterMatrix={this.state.valueFirstFilter} valueSecondFilterMatrix={this.state.valueSecondFilter} valueFirstFilterEntropy={this.state.initialEntropy} valueSecondFilterEntropy={this.state.finalEntropy} />
+                        <SequenceComparison leftChange={this.leftChange} rightChange={this.rightChange} bigFile={this.state.bigFile} isProtein={this.state.isProtein} dataThirdGraph={this.state.dataThirdGraph} namesGenes={this.state.namesGenes} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
                         <SequenceMatrix namesGenes={this.state.selectedBoxes} dataFourthGraph={this.state.dataThirdGraph} valueFirstFilter={this.state.valueFirstFilter} valueSecondFilter={this.state.valueSecondFilter} />
                     </div> : <div>{this.initialButtons()}</div>}
             </div>

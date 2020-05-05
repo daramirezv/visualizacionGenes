@@ -32,6 +32,9 @@ class EntropyAndProfile extends Component {
         const valueFirstFilterEntropy = this.props.valueFirstFilterEntropy;
         const valueSecondFilterMatrix = this.props.valueSecondFilterMatrix;
         const valueFirstFilterMatrix = this.props.valueFirstFilterMatrix;
+        const bigFile = this.props.bigFile;
+        const rightChange = this.props.rightChange;
+        const leftChange = this.props.leftChange;
 
         resultFirstGraph = resultFirstGraph.filter(function (element) {
             return element.position >= (valueFirstFilterEntropy - 1) && element.position <= (valueSecondFilterEntropy);
@@ -42,6 +45,7 @@ class EntropyAndProfile extends Component {
         let funcionMapeoLetras = this.letterMapping;
         let nameNucleotide = [];
         let dataSecond = this.props.dataSecondGraph;
+        const maxSize = dataSecond.length;
         dataSecond = dataSecond.slice(valueFirstFilterMatrix - 1, valueSecondFilterMatrix);
 
         if (isProtein) {
@@ -273,28 +277,55 @@ class EntropyAndProfile extends Component {
             .extent([[0, 0], [widthSecond, height2Second]])
             .on("brush end", brushed);
 
-        let zoom = d3.zoom()
-            .scaleExtent([1, Infinity])
-            .translateExtent([[0, 0], [widthSecond, heightSecond]])
-            .extent([[0, 0], [widthSecond, heightSecond]])
-            .on("zoom", zoomed)
+        let zoom;
 
-        contextFirst.append("g")
-            .attr("class", "brush")
-            .call(brush)
-            .call(brush.move, xFirst.range());
+        if (bigFile && valueFirstFilterEntropy === valueFirstFilterMatrix && valueSecondFilterEntropy === valueSecondFilterMatrix) {
+            zoom = d3.zoom()
+                .scaleExtent([5, Infinity])
+                .translateExtent([[0, 0], [widthSecond, heightSecond]])
+                .extent([[0, 0], [widthSecond, heightSecond]])
+                .on("zoom", zoomed)
 
-        svgFirst.append("rect")
-            .attr("class", "zoom")
-            .attr("width", widthFirst)
-            .attr("height", heightFirst)
-            .attr("transform", "translate(" + marginFirst.left + "," + marginFirst.top + ")")
-            .call(zoom);
+            svgFirst.append("rect")
+                .attr("class", "zoom")
+                .attr("width", widthFirst)
+                .attr("height", heightFirst)
+                .attr("transform", "translate(" + marginFirst.left + "," + marginFirst.top + ")")
+                .call(zoom);
+
+            contextFirst.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.move, [2 * (xFirst.range()[1]) / 5, 3 * ((xFirst.range()[1]) / 5)]);
+        }
+        else {
+            zoom = d3.zoom()
+                .scaleExtent([1, Infinity])
+                .translateExtent([[0, 0], [widthSecond, heightSecond]])
+                .extent([[0, 0], [widthSecond, heightSecond]])
+                .on("zoom", zoomed)
+
+            svgFirst.append("rect")
+                .attr("class", "zoom")
+                .attr("width", widthFirst)
+                .attr("height", heightFirst)
+                .attr("transform", "translate(" + marginFirst.left + "," + marginFirst.top + ")")
+                .call(zoom);
+            
+            contextFirst.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.move, xFirst.range());
+        }
 
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
             //First graph
             let s = d3.event.selection || x2First.range();
+            if (bigFile && Math.abs(s[0] - s[1]) > ((xFirst.range()[1]) / 5))
+            {
+                s = [s[0], s[0]+228];
+            }
             xFirst.domain(s.map(x2First.invert, x2First));
             focusFirst.select(".area").attr("d", areaFirst);
             focusFirst.select(".axis--x").call(xAxisFirst);
@@ -310,6 +341,12 @@ class EntropyAndProfile extends Component {
                 svgSecond.select(".zoom").call(zoom.transform, d3.zoomIdentity
                     .scale(widthSecond / (s[1] - s[0]))
                     .translate(-s[0], 0));
+                if (s[0] === 0 && valueFirstFilterMatrix !== 1) {
+                    leftChange(valueFirstFilterMatrix, valueSecondFilterMatrix);
+                }
+                else if (s[1] === xFirst.range()[1] && valueSecondFilterMatrix < maxSize) {
+                    rightChange(valueFirstFilterMatrix, valueSecondFilterMatrix);
+                }
             }
         }
 
@@ -356,6 +393,9 @@ class EntropyAndProfile extends Component {
         const valueFirstFilterEntropy = this.props.valueFirstFilterEntropy;
         const valueSecondFilterMatrix = this.props.valueSecondFilterMatrix;
         const valueFirstFilterMatrix = this.props.valueFirstFilterMatrix;
+        const bigFile = this.props.bigFile;
+        const rightChange = this.props.rightChange;
+        const leftChange = this.props.leftChange;
 
         resultFirstGraph = resultFirstGraph.filter(function (element) {
             return element.position >= (valueFirstFilterEntropy - 1) && element.position <= (valueSecondFilterEntropy);
@@ -366,6 +406,7 @@ class EntropyAndProfile extends Component {
         let funcionMapeoLetras = this.letterMapping;
         let nameNucleotide = [];
         let dataSecond = this.props.dataSecondGraph;
+        const maxSize = dataSecond.length;
         dataSecond = dataSecond.slice(valueFirstFilterMatrix - 1, valueSecondFilterMatrix);
 
         if (isProtein) {
@@ -595,28 +636,55 @@ class EntropyAndProfile extends Component {
             .extent([[0, 0], [widthSecond, height2Second]])
             .on("brush end", brushed);
 
-        let zoom = d3.zoom()
-            .scaleExtent([1, Infinity])
-            .translateExtent([[0, 0], [widthSecond, heightSecond]])
-            .extent([[0, 0], [widthSecond, heightSecond]])
-            .on("zoom", zoomed)
+        let zoom;
 
-        contextFirst.append("g")
-            .attr("class", "brush")
-            .call(brush)
-            .call(brush.move, xFirst.range());
+        if (bigFile && valueFirstFilterEntropy === valueFirstFilterMatrix && valueSecondFilterEntropy === valueSecondFilterMatrix) {
+            zoom = d3.zoom()
+                .scaleExtent([5, Infinity])
+                .translateExtent([[0, 0], [widthSecond, heightSecond]])
+                .extent([[0, 0], [widthSecond, heightSecond]])
+                .on("zoom", zoomed);
 
-        svgFirst.append("rect")
-            .attr("class", "zoom")
-            .attr("width", widthFirst)
-            .attr("height", heightFirst)
-            .attr("transform", "translate(" + marginFirst.left + "," + marginFirst.top + ")")
-            .call(zoom);
+            svgFirst.append("rect")
+                .attr("class", "zoom")
+                .attr("width", widthFirst)
+                .attr("height", heightFirst)
+                .attr("transform", "translate(" + marginFirst.left + "," + marginFirst.top + ")")
+                .call(zoom);
+
+            contextFirst.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.move, [2 * (xFirst.range()[1]) / 5, 3 * ((xFirst.range()[1]) / 5)]);
+        }
+        else {
+            zoom = d3.zoom()
+                .scaleExtent([1, Infinity])
+                .translateExtent([[0, 0], [widthSecond, heightSecond]])
+                .extent([[0, 0], [widthSecond, heightSecond]])
+                .on("zoom", zoomed);
+
+            svgFirst.append("rect")
+                .attr("class", "zoom")
+                .attr("width", widthFirst)
+                .attr("height", heightFirst)
+                .attr("transform", "translate(" + marginFirst.left + "," + marginFirst.top + ")")
+                .call(zoom);
+            
+            contextFirst.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.move, xFirst.range());
+        }
 
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
             //First graph
             let s = d3.event.selection || x2First.range();
+            if (bigFile && Math.abs(s[0] - s[1]) > ((xFirst.range()[1]) / 5))
+            {
+                s = [s[0], s[0]+228];
+            }
             xFirst.domain(s.map(x2First.invert, x2First));
             focusFirst.select(".area").attr("d", areaFirst);
             focusFirst.select(".axis--x").call(xAxisFirst);
@@ -632,6 +700,12 @@ class EntropyAndProfile extends Component {
                 svgSecond.select(".zoom").call(zoom.transform, d3.zoomIdentity
                     .scale(widthSecond / (s[1] - s[0]))
                     .translate(-s[0], 0));
+                if (s[0] === 0 && valueFirstFilterMatrix !== 1) {
+                    leftChange(valueFirstFilterMatrix, valueSecondFilterMatrix);
+                }
+                else if (s[1] === xFirst.range()[1] && valueSecondFilterMatrix < maxSize) {
+                    rightChange(valueFirstFilterMatrix, valueSecondFilterMatrix);
+                }
             }
         }
 

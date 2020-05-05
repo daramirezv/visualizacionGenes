@@ -43,8 +43,12 @@ class SequenceComparison extends Component {
         let dataThirdGraph = this.props.dataThirdGraph;
         const valueSecondFilter = this.props.valueSecondFilter;
         const valueFirstFilter = this.props.valueFirstFilter;
+        const maxSize = dataThirdGraph.length;
         dataThirdGraph = dataThirdGraph.slice(valueFirstFilter - 1, valueSecondFilter);
         const isProtein = this.props.isProtein;
+        const rightChange = this.props.rightChange;
+        const leftChange = this.props.leftChange;
+        const bigFile = this.props.bigFile;
 
         //Sequence comparison graph construction.
         let svg = d3.select("#svg3");
@@ -69,11 +73,21 @@ class SequenceComparison extends Component {
             .extent([[0, 0], [width, height2]])
             .on("brush end", brushed);
 
-        let zoom = d3.zoom()
-            .scaleExtent([1, Infinity])
-            .translateExtent([[0, 0], [width, height]])
-            .extent([[0, 0], [width, height]])
-            .on("zoom", zoomed);
+        let zoom;
+
+        if (bigFile) {
+            zoom = d3.zoom()
+                .scaleExtent([5, Infinity])
+                .translateExtent([[0, 0], [width, height]])
+                .extent([[0, 0], [width, height]])
+                .on("zoom", zoomed)
+        } else {
+            zoom = d3.zoom()
+                .scaleExtent([1, Infinity])
+                .translateExtent([[0, 0], [width, height]])
+                .extent([[0, 0], [width, height]])
+                .on("zoom", zoomed);
+        }
 
         let line = d3.line()
             .curve(d3.curveLinear)
@@ -179,11 +193,6 @@ class SequenceComparison extends Component {
             .attr("transform", "translate(0," + height2 + ")")
             .call(xAxis2);
 
-        context.append("g")
-            .attr("class", "brush")
-            .call(brush)
-            .call(brush.move, x.range());
-
         svg.append("rect")
             .attr("class", "zoom")
             .attr("width", width)
@@ -191,15 +200,39 @@ class SequenceComparison extends Component {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .call(zoom);
 
+
+        if (bigFile) {
+            context.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.move, [2 * (x.range()[1]) / 5, 3 * ((x.range()[1]) / 5)]);
+        }
+        else {
+            context.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.move, x.range());
+        }
+
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
             let s = d3.event.selection || x2.range();
+            if (bigFile && Math.abs(s[0] - s[1]) > ((x.range()[1]) / 5))
+            {
+                s = [s[0], s[0]+228];
+            }
             x.domain(s.map(x2.invert, x2));
             Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
             focus.select(".axis--x").call(xAxis);
             svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
                 .scale(width / (s[1] - s[0]))
                 .translate(-s[0], 0));
+            if (s[0] === 0 && valueFirstFilter !== 1) {
+                leftChange(valueFirstFilter, valueSecondFilter);
+            }
+            else if (s[1] === x.range()[1] && valueSecondFilter < maxSize) {
+                rightChange(valueFirstFilter, valueSecondFilter);
+            }
         }
 
         function zoomed() {
@@ -245,7 +278,9 @@ class SequenceComparison extends Component {
         const valueFirstSelect = this.firstselectref.current.value;
         const valueSecondSelect = this.secondselectref.current.value;
         const isProtein = this.props.isProtein;
-
+        const rightChange = this.props.rightChange;
+        const leftChange = this.props.leftChange;
+        const bigFile = this.props.bigFile;
         namesGenes.push(valueFirstSelect);
 
         if (valueSecondSelect !== valueFirstSelect) {
@@ -253,6 +288,7 @@ class SequenceComparison extends Component {
         }
 
         let dataThirdGraph = this.props.dataThirdGraph;
+        const maxSize = dataThirdGraph.length;
         const valueSecondFilter = this.props.valueSecondFilter;
         const valueFirstFilter = this.props.valueFirstFilter;
         dataThirdGraph = dataThirdGraph.slice(valueFirstFilter - 1, valueSecondFilter);
@@ -282,11 +318,21 @@ class SequenceComparison extends Component {
             .extent([[0, 0], [width, height2]])
             .on("brush end", brushed);
 
-        let zoom = d3.zoom()
-            .scaleExtent([1, Infinity])
-            .translateExtent([[0, 0], [width, height]])
-            .extent([[0, 0], [width, height]])
-            .on("zoom", zoomed);
+        let zoom;
+
+        if (bigFile) {
+            zoom = d3.zoom()
+                .scaleExtent([5, Infinity])
+                .translateExtent([[0, 0], [width, height]])
+                .extent([[0, 0], [width, height]])
+                .on("zoom", zoomed)
+        } else {
+            zoom = d3.zoom()
+                .scaleExtent([1, Infinity])
+                .translateExtent([[0, 0], [width, height]])
+                .extent([[0, 0], [width, height]])
+                .on("zoom", zoomed);
+        }
 
         let line = d3.line()
             .curve(d3.curveLinear)
@@ -391,10 +437,18 @@ class SequenceComparison extends Component {
             .attr("transform", "translate(0," + height2 + ")")
             .call(xAxis2);
 
-        context.append("g")
-            .attr("class", "brush")
-            .call(brush)
-            .call(brush.move, x.range());
+        if (bigFile) {
+            context.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.move, [2 * (x.range()[1]) / 5, 3 * ((x.range()[1]) / 5)]);
+        }
+        else {
+            context.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.move, x.range());
+        }
 
         svg.append("rect")
             .attr("class", "zoom")
@@ -406,12 +460,22 @@ class SequenceComparison extends Component {
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
             let s = d3.event.selection || x2.range();
+            if (bigFile && Math.abs(s[0] - s[1]) > ((x.range()[1]) / 5))
+            {
+                s = [s[0], s[0]+228];
+            }
             x.domain(s.map(x2.invert, x2));
             Line_chart.selectAll(".line").attr("d", function (d) { return line(d.datapoints) });
             focus.select(".axis--x").call(xAxis);
             svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
                 .scale(width / (s[1] - s[0]))
                 .translate(-s[0], 0));
+            if (s[0] === 0 && valueFirstFilter !== 1) {
+                leftChange(valueFirstFilter, valueSecondFilter);
+            }
+            else if (s[1] === x.range()[1] && valueSecondFilter < maxSize) {
+                rightChange(valueFirstFilter, valueSecondFilter);
+            }
         }
 
         function zoomed() {
