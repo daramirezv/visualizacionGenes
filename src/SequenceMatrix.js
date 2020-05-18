@@ -211,7 +211,7 @@ class SequenceMatrix extends Component {
                     <div className="modal-dialog modal-xl" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title" id="listOfNames">Position Selected - {this.state.positionSelected}</h5>
+                                <h5 className="modal-title" id="listOfNames">Position Selected - {this.state.positionSelected + this.props.valueFirstFilter - 1}</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
