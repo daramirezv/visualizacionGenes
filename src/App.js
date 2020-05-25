@@ -962,7 +962,7 @@ class myObject {
 }
 
 /**
- * Objects of this class will be used by the second graph if the website is rendering a gene aligment.
+ * Objects of this class will be used by the second graph if the website is rendering a gene alignment.
  */
 class myObjectSecondGraphGenes {
     constructor(position, percentagea, percentagec, percentageg, percentaget, percentagedash) {
@@ -986,7 +986,7 @@ class myObjectFifthGraph {
 }
 
 /**
- * Objects of this class will be used by the second graph if the website is rendering a protein aligment.
+ * Objects of this class will be used by the second graph if the website is rendering a protein alignment.
  */
 class myObjectSecondGraphProteins {
     constructor(position, percentagea, percentagec, percentageg, percentaget, percentager, percentagen, percentaged, percentageb, percentagee,
