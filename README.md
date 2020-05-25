@@ -1,3 +1,5 @@
+# SAV3 - Modern Visualizations for Gene and Protein Multiple Sequence Alignments 
+
 ## Introduction
 
 Multiple sequence alignment is a way to organize gene or protein sequences for an easy comparison. Despite the fact that this procedure has been done for years, there are not many applications that facilitate the alignment's analysis. The objective of this project is to build a website that offers different visualizations, allowing the user to filter and manage the presented information.
@@ -30,11 +32,3 @@ Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
