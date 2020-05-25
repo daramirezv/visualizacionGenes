@@ -17,7 +17,7 @@ class SequenceMatrix extends Component {
          * objectWithNames - All the sequences divided into groups by nucleotides or amino acids.
          * positionSelected - The selected position for the modal.
          */
-        this.state = { information4: "The table shows the values of all selected sequences.", objectWithNames: [], positionSelected: "" };
+        this.state = { information4: "The table shows the values of all filtered sequences. If a position is selected, a modal pops with the sequences organized by value.", objectWithNames: [], positionSelected: "" };
         //The binding of "this" to all methods used by the class.
         this.positions = this.positions.bind(this);
         this.characters = this.characters.bind(this);
